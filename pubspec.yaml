@@ -1,0 +1,62 @@
+name: event_marketplace_customer
+description: Customer app for event marketplace in Saudi Arabia
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.2.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # Supabase
+  supabase_flutter: ^2.0.0
+  
+  # State Management
+  provider: ^6.1.0
+  
+  # UI Components
+  cupertino_icons: ^1.0.6
+  cached_network_image: ^3.3.0
+  shimmer: ^3.0.0
+  
+  # Maps & Location
+  google_maps_flutter: ^2.5.0
+  geolocator: ^10.1.0
+  geocoding: ^2.1.1
+  
+  # Images & Media
+  image_picker: ^1.0.4
+  
+  # Authentication
+  google_sign_in: ^6.1.5
+  sign_in_with_apple: ^6.1.0
+  
+  # Firebase
+  firebase_core: ^2.24.0
+  firebase_messaging: ^14.7.6
+  firebase_analytics: ^10.7.4
+  
+  # Utilities
+  intl: ^0.18.1
+  url_launcher: ^6.2.1
+  share_plus: ^7.2.1
+  flutter_rating_bar: ^4.0.1
+  http: ^1.1.0
+
+  # Payment
+  webview_flutter: ^4.4.0
+  
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+  
+  # Uncomment and add your assets here
+  assets:
+    - assets/images/
+    - assets/icons/

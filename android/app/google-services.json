@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "971219541479",
+    "project_id": "azimah-tech",
+    "storage_bucket": "azimah-tech.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:971219541479:android:cda3de979e815a37723142",
+        "android_client_info": {
+          "package_name": "com.event.marketplace.customer"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCVVFtHOQCwh0oMj4WfvUhnMAl3DpKNznQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
