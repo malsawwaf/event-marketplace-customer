@@ -297,18 +297,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('About Event Marketplace'),
+        title: const Text('About Azimah Tech'),
         content: const Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Version: 1.0.0'),
             SizedBox(height: 8),
-            Text('Event Marketplace Customer App'),
+            Text('Azimah Tech - Event Marketplace'),
             SizedBox(height: 8),
             Text('Browse and book event services'),
             SizedBox(height: 16),
-            Text('© 2025 Event Marketplace'),
+            Text('© 2025 Azimah Tech'),
           ],
         ),
         actions: [

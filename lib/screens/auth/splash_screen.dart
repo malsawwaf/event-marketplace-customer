@@ -108,7 +108,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
                 // App Name
                 const Text(
-                  'Event Marketplace',
+                  'Azimah Tech',
                   style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,

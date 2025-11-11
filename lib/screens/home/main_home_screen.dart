@@ -112,7 +112,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Event Marketplace'),
+        title: const Text('Azimah Tech'),
         backgroundColor: AppTheme.primaryNavy,
         foregroundColor: Colors.white,
         elevation: 0,

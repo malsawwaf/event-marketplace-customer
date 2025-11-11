@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
         // Add other providers here later (cart, favorites, etc.)
       ],
       child: MaterialApp(
-        title: 'Event Marketplace',
+        title: 'Azimah Tech',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.theme,
         home: const SplashScreen(),

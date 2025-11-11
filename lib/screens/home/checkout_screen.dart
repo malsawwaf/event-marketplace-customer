@@ -482,7 +482,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       final sdkService = PaymobSDKService();
       final paymentResult = await sdkService.processPayment(
         clientSecret: clientSecret,
-        appName: 'Event Marketplace',
+        appName: 'Azimah Tech',
       );
 
       print('Payment result: ${paymentResult['status']}');

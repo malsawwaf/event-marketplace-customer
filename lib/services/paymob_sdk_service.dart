@@ -37,7 +37,7 @@ class PaymobSDKService {
       final String result = await methodChannel.invokeMethod('payWithPaymob', {
         "publicKey": publicKey ?? PaymobConfig.publicKey,
         "clientSecret": clientSecret,
-        "appName": appName ?? "Event Marketplace",
+        "appName": appName ?? "Azimah Tech",
         "buttonBackgroundColor": buttonBackgroundColor?.value,
         "buttonTextColor": buttonTextColor?.value,
         "saveCardDefault": saveCardDefault ?? false,
