@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../config/app_theme.dart';
 import '../../utils/categories.dart';
 import '../../services/provider_service.dart';
 import '../../services/favourites_service.dart';
@@ -112,7 +113,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Event Marketplace'),
-        backgroundColor: Colors.blue[700],
+        backgroundColor: AppTheme.primaryNavy,
         foregroundColor: Colors.white,
         elevation: 0,
       ),
@@ -125,7 +126,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
                   // Search Bar
                   SliverToBoxAdapter(
                     child: Container(
-                      color: Colors.blue[700],
+                      color: AppTheme.primaryNavy,
                       padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                       child: TextField(
                         controller: _searchController,

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 // Import configuration
 import 'config/supabase_config.dart';
+import 'config/app_theme.dart';
 
 // Import your auth files
 import 'screens/auth/auth_provider.dart';
@@ -34,14 +35,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Event Marketplace',
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-          useMaterial3: true,
-          inputDecorationTheme: InputDecorationTheme(
-            filled: true,
-            fillColor: Colors.grey[50],
-          ),
-        ),
+        theme: AppTheme.theme,
         home: const SplashScreen(),
       ),
     );
