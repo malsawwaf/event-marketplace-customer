@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../config/app_theme.dart';
 import '../home/bottom_nav_screen.dart'; // ✅ Import to access bottomNavKey
 
 class OrderConfirmationScreen extends StatefulWidget {
@@ -97,13 +98,17 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
-        body: const Center(child: CircularProgressIndicator()),
+        body: Center(child: CircularProgressIndicator(color: AppTheme.primaryNavy)),
       );
     }
 
     if (_orderData == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Order Confirmation')),
+        appBar: AppBar(
+          title: const Text('Order Confirmation'),
+          backgroundColor: AppTheme.primaryNavy,
+          foregroundColor: Colors.white,
+        ),
         body: const Center(child: Text('Order not found')),
       );
     }
@@ -291,15 +296,15 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Colors.blue[50],
+                        color: AppTheme.primaryNavy.withOpacity(0.05),
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.blue[200]!),
+                        border: Border.all(color: AppTheme.primaryNavy.withOpacity(0.3)),
                       ),
                       child: Column(
                         children: [
                           Row(
                             children: [
-                              Icon(Icons.info_outline, color: Colors.blue[700]),
+                              Icon(Icons.info_outline, color: AppTheme.primaryNavy),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Text(
@@ -307,7 +312,7 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
-                                    color: Colors.blue[700],
+                                    color: AppTheme.primaryNavy,
                                   ),
                                 ),
                               ),
@@ -354,7 +359,8 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
                     child: ElevatedButton(
                       onPressed: _goToOrders,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
+                        backgroundColor: AppTheme.primaryNavy,
+                        foregroundColor: Colors.white,
                       ),
                       child: const Text(
                         'View Order Status',
@@ -372,6 +378,10 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
                     height: 50,
                     child: OutlinedButton(
                       onPressed: _goToHome,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppTheme.primaryNavy,
+                        side: BorderSide(color: AppTheme.primaryNavy, width: 2),
+                      ),
                       child: const Text(
                         'Back to Home',
                         style: TextStyle(
@@ -426,7 +436,7 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
           width: 24,
           height: 24,
           decoration: BoxDecoration(
-            color: Colors.blue[700],
+            color: AppTheme.primaryNavy,
             shape: BoxShape.circle,
           ),
           child: Center(

@@ -56,18 +56,30 @@ class ReviewsService {
   }
 
   /// Format customer name (first name + stars for last name)
-  String formatCustomerName(Map<String, dynamic>? customer) {
+  /// Shows "You Posted This Review" if the review belongs to the current user
+  String formatCustomerName(
+    Map<String, dynamic>? customer,
+    String? reviewCustomerId,
+    String? currentUserId,
+  ) {
+    // Check if the review was posted by the logged-in user
+    if (reviewCustomerId != null &&
+        currentUserId != null &&
+        reviewCustomerId == currentUserId) {
+      return 'You Posted This Review';
+    }
+
     if (customer == null) return 'Anonymous';
-    
+
     final firstName = customer['first_name'] ?? 'Anonymous';
     final lastName = customer['last_name'] ?? '';
-    
+
     if (lastName.isEmpty) return firstName;
-    
+
     // Hide last name with stars (e.g., "Ahmed M***")
     final lastNameInitial = lastName.isNotEmpty ? lastName[0] : '';
     final stars = '*' * (lastName.length - 1).clamp(3, 5);
-    
+
     return '$firstName $lastNameInitial$stars';
   }
 

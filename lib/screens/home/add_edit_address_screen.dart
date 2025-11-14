@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../services/address_service.dart';
+import '../../config/app_theme.dart';
 
 class AddEditAddressScreen extends StatefulWidget {
   final Map<String, dynamic>? existingAddress;
@@ -139,6 +140,8 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(isEditing ? 'Edit Address' : 'Add New Address'),
+        backgroundColor: AppTheme.primaryNavy,
+        foregroundColor: Colors.white,
       ),
       body: Form(
         key: _formKey,
@@ -222,7 +225,7 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.location_on, color: Colors.blue),
+                        Icon(Icons.location_on, color: AppTheme.primaryNavy),
                         const SizedBox(width: 8),
                         const Text(
                           'Location',
@@ -264,6 +267,7 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
               value: _isDefault,
               onChanged: (value) => setState(() => _isDefault = value),
               secondary: const Icon(Icons.bookmark),
+              activeColor: AppTheme.primaryNavy,
             ),
             const SizedBox(height: 24),
 
@@ -273,7 +277,7 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
               child: ElevatedButton(
                 onPressed: _isSaving ? null : _saveAddress,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
+                  backgroundColor: AppTheme.primaryNavy,
                 ),
                 child: _isSaving
                     ? const SizedBox(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../config/supabase_config.dart';
+import '../../config/app_theme.dart';
 import '../auth/auth_provider.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -22,7 +23,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),
-        backgroundColor: Colors.blue[700],
+        backgroundColor: AppTheme.primaryNavy,
         foregroundColor: Colors.white,
       ),
       body: ListView(
@@ -139,7 +140,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         style: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.bold,
-          color: Colors.blue[700],
+          color: AppTheme.primaryNavy,
         ),
       ),
     );

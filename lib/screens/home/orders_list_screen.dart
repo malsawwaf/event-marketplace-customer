@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../services/orders_service.dart';
 import '../../services/reviews_service.dart';
+import '../../config/app_theme.dart';
 import 'order_detail_screen.dart';
 import 'submit_review_screen.dart';
 import 'dart:async';
@@ -112,9 +113,15 @@ class _OrdersListScreenState extends State<OrdersListScreen>
     return Scaffold(
       appBar: AppBar(
         title: const Text('My Orders'),
+        backgroundColor: AppTheme.primaryNavy,
+        foregroundColor: Colors.white,
         bottom: TabBar(
           controller: _tabController,
           isScrollable: true,
+          indicatorColor: AppTheme.secondaryCoral,
+          indicatorWeight: 3,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white.withOpacity(0.6),
           tabs: [
             Tab(text: 'All (${_allOrders.length})'),
             Tab(
@@ -133,28 +140,33 @@ class _OrdersListScreenState extends State<OrdersListScreen>
         ),
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(child: CircularProgressIndicator(color: AppTheme.primaryNavy))
           : TabBarView(
               controller: _tabController,
               children: [
                 RefreshIndicator(
                   onRefresh: _loadOrders,
+                  color: AppTheme.primaryNavy,
                   child: _buildOrdersList(_allOrders),
                 ),
                 RefreshIndicator(
                   onRefresh: _loadOrders,
+                  color: AppTheme.primaryNavy,
                   child: _buildOrdersList(_filterOrdersByStatus('active')),
                 ),
                 RefreshIndicator(
                   onRefresh: _loadOrders,
+                  color: AppTheme.primaryNavy,
                   child: _buildOrdersList(_filterOrdersByStatus('pending')),
                 ),
                 RefreshIndicator(
                   onRefresh: _loadOrders,
+                  color: AppTheme.primaryNavy,
                   child: _buildOrdersList(_filterOrdersByStatus('delivered')),
                 ),
                 RefreshIndicator(
                   onRefresh: _loadOrders,
+                  color: AppTheme.primaryNavy,
                   child: _buildOrdersList(_filterOrdersByStatus('cancelled')),
                 ),
               ],
@@ -319,10 +331,10 @@ class _OrdersListScreenState extends State<OrdersListScreen>
                   ),
                   Text(
                     '${totalAmount.toStringAsFixed(2)} SAR',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
-                      color: Colors.green,
+                      color: AppTheme.primaryNavy,
                     ),
                   ),
                 ],
@@ -425,7 +437,8 @@ class _OrdersListScreenState extends State<OrdersListScreen>
                           icon: const Icon(Icons.rate_review, size: 18),
                           label: const Text('Write Review'),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue,
+                            backgroundColor: AppTheme.primaryNavy,
+                            foregroundColor: Colors.white,
                           ),
                         ),
                       );

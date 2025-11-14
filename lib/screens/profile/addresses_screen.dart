@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../services/address_service.dart';
 import '../../config/supabase_config.dart';
+import '../../config/app_theme.dart';
 import 'add_edit_address_screen.dart';
 
 class AddressesScreen extends StatefulWidget {
@@ -119,11 +120,11 @@ class _AddressesScreenState extends State<AddressesScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('My Addresses'),
-        backgroundColor: Colors.blue[700],
+        backgroundColor: AppTheme.primaryNavy,
         foregroundColor: Colors.white,
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(child: CircularProgressIndicator(color: AppTheme.primaryNavy))
           : _addresses.isEmpty
               ? _buildEmptyState()
               : _buildAddressList(),
@@ -139,7 +140,8 @@ class _AddressesScreenState extends State<AddressesScreen> {
         },
         icon: const Icon(Icons.add),
         label: const Text('Add Address'),
-        backgroundColor: Colors.blue[700],
+        backgroundColor: AppTheme.primaryNavy,
+        foregroundColor: Colors.white,
       ),
     );
   }
@@ -188,7 +190,7 @@ class _AddressesScreenState extends State<AddressesScreen> {
           child: ListTile(
             contentPadding: const EdgeInsets.all(16),
             leading: CircleAvatar(
-              backgroundColor: isDefault ? Colors.blue[700] : Colors.grey[300],
+              backgroundColor: isDefault ? AppTheme.primaryNavy : Colors.grey[300],
               child: Icon(
                 Icons.location_on,
                 color: isDefault ? Colors.white : Colors.grey[600],
@@ -210,7 +212,7 @@ class _AddressesScreenState extends State<AddressesScreen> {
                       vertical: 2,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.blue[700],
+                      color: AppTheme.primaryNavy,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Text(

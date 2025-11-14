@@ -118,27 +118,61 @@ class _ProviderCardWidgetState extends State<ProviderCardWidget> {
             // Cover Photo with Featured Badge and Favorite Button
             Stack(
               children: [
-                ClipRRect(
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-                  child: photoUrl != null
-                      ? Image.network(
-                          photoUrl,
-                          height: 150,
-                          width: double.infinity,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              height: 150,
-                              color: Colors.grey[300],
-                              child: const Icon(Icons.business, size: 50),
-                            );
-                          },
-                        )
-                      : Container(
-                          height: 150,
-                          color: Colors.grey[300],
-                          child: const Icon(Icons.business, size: 50),
-                        ),
+                Container(
+                  height: 180,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                    color: Colors.grey[300],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                    child: photoUrl != null
+                        ? Image.network(
+                            photoUrl,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes != null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                          loadingProgress.expectedTotalBytes!
+                                      : null,
+                                ),
+                              );
+                            },
+                            errorBuilder: (context, error, stackTrace) {
+                              return Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.business, size: 50, color: Colors.grey[600]),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      'Image not available',
+                                      style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          )
+                        : Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.business, size: 50, color: Colors.grey[600]),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'No image',
+                                  style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                                ),
+                              ],
+                            ),
+                          ),
+                  ),
                 ),
                 // Featured Badge
                 if (isFeatured)
@@ -185,15 +219,27 @@ class _ProviderCardWidgetState extends State<ProviderCardWidget> {
                             child: CircularProgressIndicator(strokeWidth: 2),
                           ),
                         )
-                      : IconButton(
-                          icon: Icon(
-                            _isFavorited ? Icons.favorite : Icons.favorite_border,
-                            color: _isFavorited ? Colors.red : Colors.white,
+                      : Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.9),
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
                           ),
-                          onPressed: _toggleFavorite,
-                          style: IconButton.styleFrom(
-                            backgroundColor: Colors.white.withOpacity(0.9),
-                            padding: const EdgeInsets.all(8),
+                          child: IconButton(
+                            icon: Icon(
+                              _isFavorited ? Icons.favorite : Icons.favorite_border,
+                              color: Colors.red,
+                            ),
+                            onPressed: _toggleFavorite,
+                            style: IconButton.styleFrom(
+                              padding: const EdgeInsets.all(8),
+                            ),
                           ),
                         ),
                 ),

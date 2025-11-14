@@ -70,12 +70,14 @@ class FavoritesService {
   /// Get all favorited items for a customer with full details
   Future<List<Map<String, dynamic>>> getItemFavorites(String customerId) async {
     try {
+      print('🔍 Fetching item favorites for customer: $customerId');
+
       final response = await _supabase
           .from('item_favorites')
           .select('''
             id,
             created_at,
-            items!inner(
+            items!item_favorites_item_id_fkey(
               id,
               name,
               price,
@@ -84,7 +86,7 @@ class FavoritesService {
               stock_quantity,
               category,
               provider_id,
-              providers!inner(
+              providers(
                 id,
                 company_name_en,
                 company_name_ar,
@@ -98,13 +100,32 @@ class FavoritesService {
           .eq('customer_id', customerId)
           .order('created_at', ascending: false);
 
+      print('📦 Raw item favorites response: $response');
+
       if (response is List) {
-        return response.map((item) => Map<String, dynamic>.from(item)).toList();
+        // Filter out items where the item or provider data is null (deleted items)
+        final validItems = response.where((item) {
+          final itemData = item['items'];
+          if (itemData == null) {
+            print('⚠️ Skipping favorite with null item data: ${item['id']}');
+            return false;
+          }
+          final providerData = itemData['providers'];
+          if (providerData == null) {
+            print('⚠️ Skipping favorite with null provider data for item: ${itemData['id']}');
+            return false;
+          }
+          return true;
+        }).toList();
+
+        print('✅ Valid item favorites: ${validItems.length} out of ${response.length}');
+        return validItems.map((item) => Map<String, dynamic>.from(item)).toList();
       }
 
+      print('⚠️ Item favorites response is not a list');
       return [];
     } catch (e) {
-      print('Error fetching item favorites: $e');
+      print('❌ Error fetching item favorites: $e');
       return [];
     }
   }
@@ -195,12 +216,14 @@ class FavoritesService {
   /// Get all favorited providers for a customer with full details
   Future<List<Map<String, dynamic>>> getProviderFavorites(String customerId) async {
     try {
+      print('🔍 Fetching provider favorites for customer: $customerId');
+
       final response = await _supabase
           .from('provider_favorites')
           .select('''
             id,
             created_at,
-            providers!inner(
+            providers(
               id,
               company_name_en,
               company_name_ar,
@@ -217,13 +240,27 @@ class FavoritesService {
           .eq('customer_id', customerId)
           .order('created_at', ascending: false);
 
+      print('📦 Raw provider favorites response: $response');
+
       if (response is List) {
-        return response.map((item) => Map<String, dynamic>.from(item)).toList();
+        // Filter out providers where the provider data is null (deleted providers)
+        final validProviders = response.where((item) {
+          final providerData = item['providers'];
+          if (providerData == null) {
+            print('⚠️ Skipping favorite with null provider data: ${item['id']}');
+            return false;
+          }
+          return true;
+        }).toList();
+
+        print('✅ Valid provider favorites: ${validProviders.length} out of ${response.length}');
+        return validProviders.map((item) => Map<String, dynamic>.from(item)).toList();
       }
 
+      print('⚠️ Provider favorites response is not a list');
       return [];
     } catch (e) {
-      print('Error fetching provider favorites: $e');
+      print('❌ Error fetching provider favorites: $e');
       return [];
     }
   }
@@ -253,11 +290,15 @@ class FavoritesService {
   /// Returns a list where each entry contains a provider and their favorited items
   Future<List<Map<String, dynamic>>> getAllFavorites(String customerId) async {
     try {
+      print('🔍 Getting ALL favorites (combined view) for customer: $customerId');
+
       // Get favorited providers
       final providerFavorites = await getProviderFavorites(customerId);
-      
+      print('📊 Provider favorites count: ${providerFavorites.length}');
+
       // Get favorited items
       final itemFavorites = await getItemFavorites(customerId);
+      print('📊 Item favorites count: ${itemFavorites.length}');
 
       // Group items by provider
       final Map<String, Map<String, dynamic>> providerMap = {};
@@ -307,9 +348,17 @@ class FavoritesService {
         return bDate.compareTo(aDate);
       });
 
+      print('✅ Combined favorites: ${favoritesList.length} provider groups');
+      for (var i = 0; i < favoritesList.length; i++) {
+        final group = favoritesList[i];
+        final provider = group['provider'] as Map<String, dynamic>;
+        final items = group['items'] as List;
+        print('   ${i + 1}. ${provider['company_name_en']} - ${items.length} items, is_favorited: ${group['is_provider_favorited']}');
+      }
+
       return favoritesList;
     } catch (e) {
-      print('Error fetching all favorites: $e');
+      print('❌ Error fetching all favorites: $e');
       return [];
     }
   }

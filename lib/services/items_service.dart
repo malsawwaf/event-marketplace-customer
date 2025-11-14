@@ -4,34 +4,56 @@ class ItemsService {
   final SupabaseClient _supabase = Supabase.instance.client;
 
   /// Fetch items for a specific provider, grouped by category
-  /// Includes add-ons with selection_type for each item
+  /// Includes add-on groups with their options for each item
   Future<Map<String, List<Map<String, dynamic>>>> fetchItemsByProvider(
     String providerId,
   ) async {
     try {
-      // Fetch items with their add-ons
+      // Fetch items with their add-on groups and options, plus category name
       final response = await _supabase
           .from('items')
-          .select('*, item_addons(*)')
+          .select('''
+            *,
+            item_categories!inner(id, name),
+            item_addon_groups(
+              id,
+              name,
+              description,
+              is_required,
+              selection_type,
+              min_selection,
+              max_selection,
+              display_order,
+              item_addon_options(
+                id,
+                name,
+                description,
+                photo_url,
+                additional_price,
+                display_order
+              )
+            )
+          ''')
           .eq('provider_id', providerId)
           .eq('is_enabled', true)
-          .order('category')
+          .order('category_id')
           .order('created_at', ascending: false);
 
       if (response is List) {
         final items = response.map((item) => Map<String, dynamic>.from(item)).toList();
 
-        // Group items by category
+        // Group items by category name
         final Map<String, List<Map<String, dynamic>>> groupedItems = {};
 
         for (final item in items) {
-          final category = item['category'] as String;
+          final categoryData = item['item_categories'] as Map<String, dynamic>?;
+          final categoryName = categoryData?['name'] as String? ?? 'Uncategorized';
 
-          if (!groupedItems.containsKey(category)) {
-            groupedItems[category] = [];
+          if (!groupedItems.containsKey(categoryName)) {
+            groupedItems[categoryName] = [];
           }
 
-          groupedItems[category]!.add(item);
+          groupedItems[categoryName]!.add(item);
         }
 
         return groupedItems;
@@ -44,12 +66,34 @@ class ItemsService {
     }
   }
 
-  /// Fetch a single item with full details including add-ons
+  /// Fetch a single item with full details including add-on groups and options
   Future<Map<String, dynamic>?> fetchItemById(String itemId) async {
     try {
       final response = await _supabase
           .from('items')
-          .select('*, item_addons(*), providers!inner(company_name_en, company_name_ar, profile_photo_url, store_location, price_range)')
+          .select('''
+            *,
+            item_categories(id, name),
+            item_addon_groups(
+              id,
+              name,
+              description,
+              is_required,
+              selection_type,
+              min_selection,
+              max_selection,
+              display_order,
+              item_addon_options(
+                id,
+                name,
+                description,
+                photo_url,
+                additional_price,
+                display_order
+              )
+            ),
+            providers!inner(company_name_en, company_name_ar, profile_photo_url, store_location, price_range)
+          ''')
           .eq('id', itemId)
           .eq('is_enabled', true)
           .single();
@@ -62,6 +106,7 @@ class ItemsService {
   }
 
   /// Fetch all items across all providers (for search/browse)
+  /// category parameter filters by item category name (e.g., "Wooden Chairs")
   Future<List<Map<String, dynamic>>> fetchAllItems({
     String? category,
     String? searchQuery,
@@ -71,13 +116,35 @@ class ItemsService {
     try {
       var query = _supabase
           .from('items')
-          .select('*, item_addons(*), providers!inner(company_name_en, profile_photo_url, store_location, average_rating)')
+          .select('''
+            *,
+            item_categories(id, name),
+            item_addon_groups(
+              id,
+              name,
+              description,
+              is_required,
+              selection_type,
+              min_selection,
+              max_selection,
+              display_order,
+              item_addon_options(
+                id,
+                name,
+                description,
+                photo_url,
+                additional_price,
+                display_order
+              )
+            ),
+            providers!inner(company_name_en, profile_photo_url, store_location, average_rating)
+          ''')
           .eq('is_enabled', true)
           .eq('providers.is_active', true);
 
-      // Apply category filter
+      // Apply category filter (by category name through join)
       if (category != null && category.isNotEmpty) {
-        query = query.eq('category', category);
+        query = query.eq('item_categories.name', category);
       }
 
       // Apply search filter
@@ -99,74 +166,125 @@ class ItemsService {
     }
   }
 
-  /// Get add-ons for a specific item
-  /// Returns list with selection_type included
-  Future<List<Map<String, dynamic>>> fetchItemAddons(String itemId) async {
+  /// Get add-on groups with their options for a specific item
+  /// Returns list of groups with nested options
+  Future<List<Map<String, dynamic>>> fetchItemAddonGroups(String itemId) async {
     try {
       final response = await _supabase
-          .from('item_addons')
-          .select()
+          .from('item_addon_groups')
+          .select('''
+            id,
+            name,
+            description,
+            is_required,
+            selection_type,
+            min_selection,
+            max_selection,
+            display_order,
+            item_addon_options(
+              id,
+              name,
+              description,
+              photo_url,
+              additional_price,
+              display_order
+            )
+          ''')
           .eq('item_id', itemId)
-          .order('name');
+          .order('display_order');
 
       if (response is List) {
-        return response.map((addon) => Map<String, dynamic>.from(addon)).toList();
+        return response.map((group) => Map<String, dynamic>.from(group)).toList();
       }
 
       return [];
     } catch (e) {
-      print('Error fetching item add-ons: $e');
+      print('Error fetching item add-on groups: $e');
       return [];
     }
   }
 
-  /// Get required add-ons for an item
-  Future<List<Map<String, dynamic>>> fetchRequiredAddons(String itemId) async {
+  /// Get required add-on groups for an item
+  Future<List<Map<String, dynamic>>> fetchRequiredAddonGroups(String itemId) async {
     try {
       final response = await _supabase
-          .from('item_addons')
-          .select()
+          .from('item_addon_groups')
+          .select('''
+            id,
+            name,
+            description,
+            is_required,
+            selection_type,
+            min_selection,
+            max_selection,
+            display_order,
+            item_addon_options(
+              id,
+              name,
+              description,
+              photo_url,
+              additional_price,
+              display_order
+            )
+          ''')
           .eq('item_id', itemId)
           .eq('is_required', true)
-          .order('name');
+          .order('display_order');
 
       if (response is List) {
-        return response.map((addon) => Map<String, dynamic>.from(addon)).toList();
+        return response.map((group) => Map<String, dynamic>.from(group)).toList();
       }
 
       return [];
     } catch (e) {
-      print('Error fetching required add-ons: $e');
+      print('Error fetching required add-on groups: $e');
       return [];
     }
   }
 
-  /// Get optional add-ons for an item
-  Future<List<Map<String, dynamic>>> fetchOptionalAddons(String itemId) async {
+  /// Get optional add-on groups for an item
+  Future<List<Map<String, dynamic>>> fetchOptionalAddonGroups(String itemId) async {
     try {
       final response = await _supabase
-          .from('item_addons')
-          .select()
+          .from('item_addon_groups')
+          .select('''
+            id,
+            name,
+            description,
+            is_required,
+            selection_type,
+            min_selection,
+            max_selection,
+            display_order,
+            item_addon_options(
+              id,
+              name,
+              description,
+              photo_url,
+              additional_price,
+              display_order
+            )
+          ''')
           .eq('item_id', itemId)
           .eq('is_required', false)
-          .order('name');
+          .order('display_order');
 
       if (response is List) {
-        return response.map((addon) => Map<String, dynamic>.from(addon)).toList();
+        return response.map((group) => Map<String, dynamic>.from(group)).toList();
       }
 
       return [];
     } catch (e) {
-      print('Error fetching optional add-ons: $e');
+      print('Error fetching optional add-on groups: $e');
       return [];
     }
   }
 
-  /// Check if item has any required add-ons
-  Future<bool> hasRequiredAddons(String itemId) async {
+  /// Check if item has any required add-on groups
+  Future<bool> hasRequiredAddonGroups(String itemId) async {
     try {
       final response = await _supabase
-          .from('item_addons')
+          .from('item_addon_groups')
           .select('id')
           .eq('item_id', itemId)
           .eq('is_required', true)
@@ -178,7 +296,7 @@ class ItemsService {
 
       return false;
     } catch (e) {
-      print('Error checking required add-ons: $e');
+      print('Error checking required add-on groups: $e');
       return false;
     }
   }

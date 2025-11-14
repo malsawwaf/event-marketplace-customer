@@ -353,32 +353,16 @@ class CartService {
       final item = cartItem['items'] as Map<String, dynamic>;
       final quantity = cartItem['quantity'] as int;
       final price = (item['price'] as num).toDouble();
-      final pricingType = item['pricing_type'] as String;
 
-      // Calculate rental days if applicable
-      int days = 1;
-      if (pricingType == 'per_day') {
-        if (cartItem['event_start_date'] != null && 
-            cartItem['event_end_date'] != null) {
-          final startDate = DateTime.parse(cartItem['event_start_date']);
-          final endDate = DateTime.parse(cartItem['event_end_date']);
-          days = endDate.difference(startDate).inDays + 1;
-        }
-      }
+      // Calculate item price (base price only for per_day - final price in checkout)
+      double itemPrice = price * quantity;
 
-      // Calculate item price
-      double itemPrice = pricingType == 'per_day' 
-          ? price * days * quantity 
-          : price * quantity;
-
-      // Add add-ons price
+      // Add add-ons price (base price)
       final addons = cartItem['addons'] as List<dynamic>?;
       if (addons != null && addons.isNotEmpty) {
         for (final addon in addons) {
           final addonPrice = (addon['additional_price'] as num).toDouble();
-          itemPrice += pricingType == 'per_day' 
-              ? addonPrice * days * quantity 
-              : addonPrice * quantity;
+          itemPrice += addonPrice * quantity;
         }
       }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../services/reviews_service.dart';
 
 class ReviewCard extends StatelessWidget {
@@ -12,11 +13,13 @@ class ReviewCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final reviewsService = ReviewsService(); // Create instance in build method
-    
+    final currentUserId = Supabase.instance.client.auth.currentUser?.id;
+
     final rating = (review['rating'] as num?)?.toInt() ?? 0;
     final reviewText = review['review_text'] ?? '';
     final customer = review['customers'] as Map<String, dynamic>?;
-    final customerName = reviewsService.formatCustomerName(customer);
+    final customerId = review['customer_id'] as String?;
+    final customerName = reviewsService.formatCustomerName(customer, customerId, currentUserId);
     final timeAgo = reviewsService.getTimeAgo(review['created_at']);
 
     return Container(

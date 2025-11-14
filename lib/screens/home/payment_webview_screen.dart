@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import '../../config/app_theme.dart';
 
 /// Payment WebView Screen
 /// Displays Paymob payment iframe for card payments
@@ -143,7 +144,7 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: Text('Payment - ${widget.orderNumber}'),
-          backgroundColor: Colors.blue[700],
+          backgroundColor: AppTheme.primaryNavy,
           foregroundColor: Colors.white,
           leading: IconButton(
             icon: const Icon(Icons.close),
@@ -221,11 +222,11 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
             if (_isLoading && _errorMessage == null)
               Container(
                 color: Colors.white,
-                child: const Center(
+                child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      CircularProgressIndicator(),
+                      CircularProgressIndicator(color: AppTheme.primaryNavy),
                       SizedBox(height: 16),
                       Text(
                         'Loading secure payment page...',

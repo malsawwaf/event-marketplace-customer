@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../services/orders_service.dart';
 import '../../services/reviews_service.dart';
+import '../../config/app_theme.dart';
 import 'submit_review_screen.dart';
 import 'dart:async';
 
@@ -88,14 +89,22 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Order Details')),
-        body: const Center(child: CircularProgressIndicator()),
+        appBar: AppBar(
+          title: const Text('Order Details'),
+          backgroundColor: AppTheme.primaryNavy,
+          foregroundColor: Colors.white,
+        ),
+        body: Center(child: CircularProgressIndicator(color: AppTheme.primaryNavy)),
       );
     }
 
     if (_order == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Order Details')),
+        appBar: AppBar(
+          title: const Text('Order Details'),
+          backgroundColor: AppTheme.primaryNavy,
+          foregroundColor: Colors.white,
+        ),
         body: const Center(child: Text('Order not found')),
       );
     }
@@ -104,7 +113,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     final orderNumber = _order!['order_number'] as String;
     final provider = _order!['providers'] as Map<String, dynamic>;
     final orderItems = _order!['order_items'] as List;
-    
+
     final acceptanceDeadline = _order!['acceptance_deadline'] != null
         ? DateTime.parse(_order!['acceptance_deadline'])
         : null;
@@ -114,6 +123,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(orderNumber),
+        backgroundColor: AppTheme.primaryNavy,
+        foregroundColor: Colors.white,
         actions: [
           if (canCancel)
             IconButton(
@@ -125,6 +136,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
       ),
       body: RefreshIndicator(
         onRefresh: _loadOrderDetails,
+        color: AppTheme.primaryNavy,
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -416,7 +428,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.location_on, color: Colors.blue[700]),
+                Icon(Icons.location_on, color: AppTheme.primaryNavy),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -443,7 +455,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
               const SizedBox(height: 16),
               Row(
                 children: [
-                  Icon(Icons.event, color: Colors.blue[700]),
+                  Icon(Icons.event, color: AppTheme.primaryNavy),
                   const SizedBox(width: 12),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -856,7 +868,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
           icon: const Icon(Icons.rate_review),
           label: const Text('Write a Review'),
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.blue,
+            backgroundColor: AppTheme.primaryNavy,
+            foregroundColor: Colors.white,
           ),
         ),
       );

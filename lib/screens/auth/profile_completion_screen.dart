@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../config/app_theme.dart';
 import 'auth_provider.dart';
 import '../home/bottom_nav_screen.dart';
 
@@ -56,7 +57,7 @@ class _ProfileCompletionScreenState extends State<ProfileCompletionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppTheme.lightBackground,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
@@ -66,20 +67,29 @@ class _ProfileCompletionScreenState extends State<ProfileCompletionScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const SizedBox(height: 40),
-                // Icon
-                Icon(
-                  Icons.person_add_alt_1,
-                  size: 80,
-                  color: Colors.blue[700],
+                // Logo
+                Center(
+                  child: Image.asset(
+                    'assets/images/logo.png',
+                    width: 80,
+                    height: 80,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Icon(
+                        Icons.person_add_alt_1,
+                        size: 80,
+                        color: AppTheme.primaryNavy,
+                      );
+                    },
+                  ),
                 ),
                 const SizedBox(height: 24),
                 // Title
                 Text(
                   'Complete Your Profile',
                   style: TextStyle(
-                    fontSize: 28,
+                    fontSize: 32,
                     fontWeight: FontWeight.bold,
-                    color: Colors.grey[800],
+                    color: AppTheme.primaryNavy,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -88,7 +98,7 @@ class _ProfileCompletionScreenState extends State<ProfileCompletionScreen> {
                   'Please provide your information to continue',
                   style: TextStyle(
                     fontSize: 16,
-                    color: Colors.grey[600],
+                    color: AppTheme.textSecondary,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -99,9 +109,14 @@ class _ProfileCompletionScreenState extends State<ProfileCompletionScreen> {
                   textCapitalization: TextCapitalization.words,
                   decoration: InputDecoration(
                     labelText: 'First Name',
-                    prefixIcon: const Icon(Icons.person_outlined),
+                    hintText: 'Enter your first name',
+                    prefixIcon: Icon(Icons.person_outlined, color: AppTheme.primaryNavy),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: AppTheme.primaryNavy, width: 2),
                     ),
                   ),
                   validator: (value) {
@@ -121,9 +136,14 @@ class _ProfileCompletionScreenState extends State<ProfileCompletionScreen> {
                   textCapitalization: TextCapitalization.words,
                   decoration: InputDecoration(
                     labelText: 'Last Name',
-                    prefixIcon: const Icon(Icons.person_outlined),
+                    hintText: 'Enter your last name',
+                    prefixIcon: Icon(Icons.person_outlined, color: AppTheme.primaryNavy),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: AppTheme.primaryNavy, width: 2),
                     ),
                   ),
                   validator: (value) {
@@ -143,10 +163,14 @@ class _ProfileCompletionScreenState extends State<ProfileCompletionScreen> {
                   keyboardType: TextInputType.phone,
                   decoration: InputDecoration(
                     labelText: 'Phone Number',
-                    prefixIcon: const Icon(Icons.phone_outlined),
                     hintText: '05xxxxxxxx',
+                    prefixIcon: Icon(Icons.phone_outlined, color: AppTheme.primaryNavy),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: AppTheme.primaryNavy, width: 2),
                     ),
                   ),
                   validator: (value) {
@@ -168,12 +192,13 @@ class _ProfileCompletionScreenState extends State<ProfileCompletionScreen> {
                     return ElevatedButton(
                       onPressed: authProvider.isLoading ? null : _handleSubmit,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue[700],
+                        backgroundColor: AppTheme.secondaryCoral,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
+                        elevation: 2,
                       ),
                       child: authProvider.isLoading
                           ? const SizedBox(
@@ -201,7 +226,7 @@ class _ProfileCompletionScreenState extends State<ProfileCompletionScreen> {
                   'You can add your profile photo and delivery address later from your profile',
                   style: TextStyle(
                     fontSize: 14,
-                    color: Colors.grey[600],
+                    color: AppTheme.textSecondary,
                   ),
                   textAlign: TextAlign.center,
                 ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../services/favourites_service.dart';
+import '../../config/app_theme.dart';
 import 'provider_detail_screen.dart';
 import 'item_detail_screen.dart';
 
@@ -12,7 +13,7 @@ class FavoritesScreen extends StatefulWidget {
 }
 
 class _FavoritesScreenState extends State<FavoritesScreen>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, RouteAware {
   final _supabase = Supabase.instance.client;
   late TabController _tabController;
 
@@ -29,7 +30,25 @@ class _FavoritesScreenState extends State<FavoritesScreen>
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Subscribe to route changes
+    final route = ModalRoute.of(context);
+    if (route is PageRoute) {
+      RouteObserver<PageRoute>().subscribe(this, route);
+    }
+  }
+
+  @override
+  void didPopNext() {
+    // Called when returning to this screen from another screen
+    print('🔄 Favorites screen: Refreshing after navigation back');
+    _loadFavorites();
+  }
+
+  @override
   void dispose() {
+    RouteObserver<PageRoute>().unsubscribe(this);
     _tabController.dispose();
     super.dispose();
   }
@@ -37,10 +56,12 @@ class _FavoritesScreenState extends State<FavoritesScreen>
   Future<void> _loadFavorites() async {
     final customerId = _supabase.auth.currentUser?.id;
     if (customerId == null) {
+      print('⚠️ Favorites: No user logged in');
       setState(() => _isLoading = false);
       return;
     }
 
+    print('🔄 Favorites: Loading for customer $customerId');
     setState(() => _isLoading = true);
 
     final favoritesService = FavoritesService();
@@ -49,6 +70,8 @@ class _FavoritesScreenState extends State<FavoritesScreen>
       final all = await favoritesService.getAllFavorites(customerId);
       final providers = await favoritesService.getProviderFavorites(customerId);
       final items = await favoritesService.getItemFavorites(customerId);
+
+      print('✅ Favorites loaded: ${all.length} groups, ${providers.length} providers, ${items.length} items');
 
       if (mounted) {
         setState(() {
@@ -59,10 +82,14 @@ class _FavoritesScreenState extends State<FavoritesScreen>
         });
       }
     } catch (e) {
+      print('❌ Error loading favorites: $e');
       if (mounted) {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading favorites: $e')),
+          SnackBar(
+            content: Text('Error loading favorites: $e'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     }
@@ -163,8 +190,14 @@ class _FavoritesScreenState extends State<FavoritesScreen>
     return Scaffold(
       appBar: AppBar(
         title: const Text('Favorites'),
+        backgroundColor: AppTheme.primaryNavy,
+        foregroundColor: Colors.white,
         bottom: TabBar(
           controller: _tabController,
+          indicatorColor: AppTheme.secondaryCoral,
+          indicatorWeight: 3,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white.withOpacity(0.6),
           tabs: const [
             Tab(text: 'All', icon: Icon(Icons.favorite)),
             Tab(text: 'Providers', icon: Icon(Icons.business)),
@@ -173,7 +206,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
         ),
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(child: CircularProgressIndicator(color: AppTheme.primaryNavy))
           : TabBarView(
               controller: _tabController,
               children: [
@@ -192,6 +225,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
 
     return RefreshIndicator(
       onRefresh: _loadFavorites,
+      color: AppTheme.primaryNavy,
       child: ListView.builder(
         padding: const EdgeInsets.all(16),
         itemCount: _allFavorites.length,
@@ -217,6 +251,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
 
     return RefreshIndicator(
       onRefresh: _loadFavorites,
+      color: AppTheme.primaryNavy,
       child: ListView.builder(
         padding: const EdgeInsets.all(16),
         itemCount: _providerFavorites.length,
@@ -239,6 +274,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
 
     return RefreshIndicator(
       onRefresh: _loadFavorites,
+      color: AppTheme.primaryNavy,
       child: ListView.builder(
         padding: const EdgeInsets.all(16),
         itemCount: _itemFavorites.length,
@@ -300,8 +336,8 @@ class _FavoritesScreenState extends State<FavoritesScreen>
         children: [
           // Provider Header
           InkWell(
-            onTap: () {
-              Navigator.push(
+            onTap: () async {
+              await Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => ProviderDetailScreen(
@@ -309,6 +345,8 @@ class _FavoritesScreenState extends State<FavoritesScreen>
                   ),
                 ),
               );
+              // Refresh after returning
+              _loadFavorites();
             },
             child: Padding(
               padding: const EdgeInsets.all(12),
@@ -324,24 +362,12 @@ class _FavoritesScreenState extends State<FavoritesScreen>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                companyName,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ),
-                            if (isProviderFavorited)
-                              Icon(
-                                Icons.favorite,
-                                color: Colors.red,
-                                size: 20,
-                              ),
-                          ],
+                        Text(
+                          companyName,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
                         ),
                         const SizedBox(height: 4),
                         Row(
@@ -416,8 +442,8 @@ class _FavoritesScreenState extends State<FavoritesScreen>
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       child: InkWell(
-        onTap: () {
-          Navigator.push(
+        onTap: () async {
+          await Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => ProviderDetailScreen(
@@ -425,6 +451,8 @@ class _FavoritesScreenState extends State<FavoritesScreen>
               ),
             ),
           );
+          // Refresh after returning
+          _loadFavorites();
         },
         child: Padding(
           padding: const EdgeInsets.all(12),
@@ -511,13 +539,15 @@ class _FavoritesScreenState extends State<FavoritesScreen>
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       child: InkWell(
-        onTap: () {
-          Navigator.push(
+        onTap: () async {
+          await Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => ItemDetailScreen(itemId: itemId),
             ),
           );
+          // Refresh after returning
+          _loadFavorites();
         },
         child: Padding(
           padding: const EdgeInsets.all(12),
@@ -569,10 +599,10 @@ class _FavoritesScreenState extends State<FavoritesScreen>
                     const SizedBox(height: 4),
                     Text(
                       '$price SAR',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
-                        color: Colors.green,
+                        color: AppTheme.primaryNavy,
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -626,13 +656,15 @@ class _FavoritesScreenState extends State<FavoritesScreen>
         : null;
 
     return InkWell(
-      onTap: () {
-        Navigator.push(
+      onTap: () async {
+        await Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => ItemDetailScreen(itemId: itemId),
           ),
         );
+        // Refresh after returning
+        _loadFavorites();
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 8),
@@ -683,9 +715,9 @@ class _FavoritesScreenState extends State<FavoritesScreen>
                   ),
                   Text(
                     '$price SAR',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 12,
-                      color: Colors.green,
+                      color: AppTheme.primaryNavy,
                       fontWeight: FontWeight.bold,
                     ),
                   ),

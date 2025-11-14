@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../config/app_theme.dart';
 import 'auth_provider.dart';
 import 'profile_completion_screen.dart';
 
@@ -120,11 +121,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppTheme.lightBackground,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: IconThemeData(color: Colors.grey[800]),
+        iconTheme: IconThemeData(color: AppTheme.primaryNavy),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -134,22 +135,40 @@ class _RegisterScreenState extends State<RegisterScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                // Logo
+                Center(
+                  child: Image.asset(
+                    'assets/images/logo.png',
+                    width: 80,
+                    height: 80,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Icon(
+                        Icons.celebration,
+                        size: 80,
+                        color: AppTheme.primaryNavy,
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 24),
                 // Title
                 Text(
                   'Create Account',
                   style: TextStyle(
-                    fontSize: 28,
+                    fontSize: 32,
                     fontWeight: FontWeight.bold,
-                    color: Colors.grey[800],
+                    color: AppTheme.primaryNavy,
                   ),
+                  textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
                 Text(
                   'Sign up to get started',
                   style: TextStyle(
                     fontSize: 16,
-                    color: Colors.grey[600],
+                    color: AppTheme.textSecondary,
                   ),
+                  textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 32),
                 // Email field
@@ -158,9 +177,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
                     labelText: 'Email',
-                    prefixIcon: const Icon(Icons.email_outlined),
+                    hintText: 'Enter your email',
+                    prefixIcon: Icon(Icons.email_outlined, color: AppTheme.primaryNavy),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: AppTheme.primaryNavy, width: 2),
                     ),
                   ),
                   validator: (value) {
@@ -180,12 +204,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   obscureText: _obscurePassword,
                   decoration: InputDecoration(
                     labelText: 'Password',
-                    prefixIcon: const Icon(Icons.lock_outlined),
+                    hintText: 'Create a password',
+                    prefixIcon: Icon(Icons.lock_outlined, color: AppTheme.primaryNavy),
                     suffixIcon: IconButton(
                       icon: Icon(
                         _obscurePassword
                             ? Icons.visibility_outlined
                             : Icons.visibility_off_outlined,
+                        color: AppTheme.primaryNavy,
                       ),
                       onPressed: () {
                         setState(() {
@@ -195,6 +221,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: AppTheme.primaryNavy, width: 2),
                     ),
                   ),
                 ),
@@ -219,7 +249,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   obscureText: _obscureConfirmPassword,
                   decoration: InputDecoration(
                     labelText: 'Confirm Password',
-                    prefixIcon: const Icon(Icons.lock_outlined),
+                    hintText: 'Re-enter your password',
+                    prefixIcon: Icon(Icons.lock_outlined, color: AppTheme.primaryNavy),
                     suffixIcon: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -234,6 +265,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             _obscureConfirmPassword
                                 ? Icons.visibility_outlined
                                 : Icons.visibility_off_outlined,
+                            color: AppTheme.primaryNavy,
                           ),
                           onPressed: () {
                             setState(() {
@@ -246,6 +278,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: AppTheme.primaryNavy, width: 2),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -254,6 +290,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   children: [
                     Checkbox(
                       value: _agreedToTerms,
+                      activeColor: AppTheme.secondaryCoral,
                       onChanged: (value) {
                         setState(() {
                           _agreedToTerms = value ?? false;
@@ -271,14 +308,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           text: TextSpan(
                             style: TextStyle(
                               fontSize: 14,
-                              color: Colors.grey[700],
+                              color: AppTheme.textSecondary,
                             ),
                             children: [
                               const TextSpan(text: 'I agree to the '),
                               TextSpan(
                                 text: 'Terms of Service',
                                 style: TextStyle(
-                                  color: Colors.blue[700],
+                                  color: AppTheme.primaryNavy,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -286,7 +323,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               TextSpan(
                                 text: 'Privacy Policy',
                                 style: TextStyle(
-                                  color: Colors.blue[700],
+                                  color: AppTheme.primaryNavy,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -304,12 +341,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     return ElevatedButton(
                       onPressed: authProvider.isLoading ? null : _handleRegister,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue[700],
+                        backgroundColor: AppTheme.secondaryCoral,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
+                        elevation: 2,
                       ),
                       child: authProvider.isLoading
                           ? const SizedBox(
@@ -338,16 +376,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   children: [
                     Text(
                       'Already have an account? ',
-                      style: TextStyle(color: Colors.grey[600]),
+                      style: TextStyle(color: AppTheme.textSecondary),
                     ),
                     TextButton(
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                      child: Text(
+                      style: TextButton.styleFrom(
+                        foregroundColor: AppTheme.primaryNavy,
+                      ),
+                      child: const Text(
                         'Sign In',
                         style: TextStyle(
-                          color: Colors.blue[700],
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -368,7 +408,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       child: Row(
         children: [
           Icon(
-            isMet ? Icons.check_circle : Icons.cancel,
+            isMet ? Icons.check_circle : Icons.circle_outlined,
             size: 20,
             color: isMet ? Colors.green : Colors.grey[400],
           ),
@@ -377,7 +417,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
             text,
             style: TextStyle(
               fontSize: 14,
-              color: isMet ? Colors.green : Colors.grey[600],
+              color: isMet ? Colors.green : AppTheme.textSecondary,
+              fontWeight: isMet ? FontWeight.w500 : FontWeight.normal,
             ),
           ),
         ],

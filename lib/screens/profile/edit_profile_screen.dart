@@ -3,6 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'dart:io';
 import '../../config/supabase_config.dart';
+import '../../config/app_theme.dart';
 import '../auth/auth_provider.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -199,17 +200,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       return Scaffold(
         appBar: AppBar(
           title: const Text('Edit Profile'),
-          backgroundColor: Colors.blue[700],
+          backgroundColor: AppTheme.primaryNavy,
           foregroundColor: Colors.white,
         ),
-        body: const Center(child: CircularProgressIndicator()),
+        body: Center(child: CircularProgressIndicator(color: AppTheme.primaryNavy)),
       );
     }
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Edit Profile'),
-        backgroundColor: Colors.blue[700],
+        backgroundColor: AppTheme.primaryNavy,
         foregroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
@@ -225,7 +226,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   children: [
                     CircleAvatar(
                       radius: 60,
-                      backgroundColor: Colors.blue[100],
+                      backgroundColor: AppTheme.primaryNavy.withOpacity(0.1),
                       backgroundImage: _selectedImage != null
                           ? FileImage(_selectedImage!)
                           : (_profileImageUrl != null
@@ -235,7 +236,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           ? Icon(
                               Icons.person,
                               size: 60,
-                              color: Colors.blue[700],
+                              color: AppTheme.primaryNavy,
                             )
                           : null,
                     ),
@@ -245,7 +246,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       child: Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: Colors.blue[700],
+                          color: AppTheme.primaryNavy,
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
@@ -337,7 +338,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 child: ElevatedButton(
                   onPressed: _isSaving ? null : _saveProfile,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue[700],
+                    backgroundColor: AppTheme.primaryNavy,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),

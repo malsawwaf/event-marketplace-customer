@@ -8,6 +8,7 @@ class ProviderService {
     String? category,
     String? searchQuery,
     String? city,
+    String? country,
     bool? isFeatured,
     int? limit,
   }) async {
@@ -29,8 +30,14 @@ class ProviderService {
         query = query.or('company_name_en.ilike.%$searchQuery%,company_name_ar.ilike.%$searchQuery%,store_description.ilike.%$searchQuery%');
       }
 
+      // Filter by city (new dedicated field)
       if (city != null && city.isNotEmpty) {
-        query = query.eq('store_location', city);
+        query = query.eq('city', city);
+      }
+
+      // Filter by country (for future multi-country expansion)
+      if (country != null && country.isNotEmpty) {
+        query = query.eq('country', country);
       }
 
       // Apply ordering and limit at the end
@@ -70,17 +77,24 @@ class ProviderService {
     }
   }
 
-  /// Get all unique cities (for location filter)
-  Future<List<String>> getAllCities() async {
+  /// Get all unique cities where providers are available
+  Future<List<String>> getAllCities({String? country}) async {
     try {
-      final response = await _supabase
+      var query = _supabase
           .from('providers')
-          .select('store_location')
+          .select('city')
           .eq('is_active', true);
+
+      // Filter by country if specified
+      if (country != null && country.isNotEmpty) {
+        query = query.eq('country', country);
+      }
+
+      final response = await query;
 
       final cities = <String>{};
       for (var provider in response) {
-        final city = provider['store_location'] as String?;
+        final city = provider['city'] as String?;
         if (city != null && city.isNotEmpty) {
           cities.add(city);
         }

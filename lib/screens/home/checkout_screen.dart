@@ -4,6 +4,7 @@ import '../../services/cart_service.dart';
 import '../../services/address_service.dart';
 import '../../services/paymob_intention_service.dart';
 import '../../services/paymob_sdk_service.dart';
+import '../../config/app_theme.dart';
 import 'address_selection_screen.dart';
 import 'order_confirmation_screen.dart';
 
@@ -28,6 +29,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   Map<String, dynamic>? _cartData;
   Map<String, dynamic>? _selectedAddress;
   Map<String, Map<String, DateTime?>> _itemDates = {};
+  Map<String, Map<String, TimeOfDay?>> _itemTimes = {};
   Set<String> _expandedItems = {};
   
   bool _isLoading = true;
@@ -84,26 +86,50 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   bool _validateDates() {
     final items = _cartData!['items'] as List<dynamic>;
-    
+
     for (final cartItem in items) {
       final cartItemId = cartItem['id'] as String;
       final item = cartItem['items'] as Map<String, dynamic>;
       final pricingType = item['pricing_type'] as String;
-      
+
       final dates = _itemDates[cartItemId];
-      
+      final times = _itemTimes[cartItemId];
+
       if (pricingType == 'per_day') {
-        if (dates == null || dates['startDate'] == null || dates['endDate'] == null) {
+        if (dates == null || dates['startDate'] == null || dates['endDate'] == null ||
+            times == null || times['startTime'] == null || times['endTime'] == null) {
           return false;
         }
       } else {
-        if (dates == null || dates['eventDate'] == null) {
+        if (dates == null || dates['eventDate'] == null ||
+            times == null || times['eventTime'] == null) {
           return false;
         }
       }
     }
-    
+
     return true;
+  }
+
+  /// Calculate rental days based on 24-hour periods with 4-hour grace period
+  int _calculateRentalDays(DateTime startDateTime, DateTime endDateTime) {
+    final totalHours = endDateTime.difference(startDateTime).inHours;
+    final totalMinutes = endDateTime.difference(startDateTime).inMinutes;
+
+    // Calculate full 24-hour periods
+    final fullDays = totalHours ~/ 24;
+
+    // Calculate remaining hours and minutes
+    final remainingMinutes = totalMinutes % (24 * 60);
+    final remainingHours = remainingMinutes / 60;
+
+    // If remaining time is more than 4 hours, charge an extra day
+    if (remainingHours > 4) {
+      return fullDays + 1;
+    }
+
+    // Minimum 1 day rental
+    return fullDays > 0 ? fullDays : 1;
   }
 
   double _calculateItemTotal(Map<String, dynamic> cartItem) {
@@ -117,20 +143,46 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     int days = 1;
     if (pricingType == 'per_day') {
       final dates = _itemDates[cartItemId];
-      if (dates?['startDate'] != null && dates?['endDate'] != null) {
-        days = dates!['endDate']!.difference(dates['startDate']!).inDays + 1;
+      final times = _itemTimes[cartItemId];
+
+      if (dates?['startDate'] != null && dates?['endDate'] != null &&
+          times?['startTime'] != null && times?['endTime'] != null) {
+
+        final startDate = dates!['startDate']!;
+        final endDate = dates['endDate']!;
+        final startTime = times!['startTime']!;
+        final endTime = times['endTime']!;
+
+        // Combine date and time into DateTime objects
+        final startDateTime = DateTime(
+          startDate.year,
+          startDate.month,
+          startDate.day,
+          startTime.hour,
+          startTime.minute,
+        );
+
+        final endDateTime = DateTime(
+          endDate.year,
+          endDate.month,
+          endDate.day,
+          endTime.hour,
+          endTime.minute,
+        );
+
+        days = _calculateRentalDays(startDateTime, endDateTime);
       }
     }
 
-    double itemTotal = pricingType == 'per_day' 
-        ? price * days * quantity 
+    double itemTotal = pricingType == 'per_day'
+        ? price * days * quantity
         : price * quantity;
 
     if (addons != null && addons.isNotEmpty) {
       for (final addon in addons) {
         final addonPrice = (addon['additional_price'] as num).toDouble();
-        itemTotal += pricingType == 'per_day' 
-            ? addonPrice * days * quantity 
+        itemTotal += pricingType == 'per_day'
+            ? addonPrice * days * quantity
             : addonPrice * quantity;
       }
     }
@@ -347,25 +399,60 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         final pricingType = item['pricing_type'] as String;
 
         final dates = _itemDates[cartItemId];
-        
+        final times = _itemTimes[cartItemId];
+
         int days = 1;
-        DateTime? eventDate;
-        DateTime? eventStartDate;
-        DateTime? eventEndDate;
-        
+        DateTime? eventDateTime;
+        DateTime? eventStartDateTime;
+        DateTime? eventEndDateTime;
+
         if (pricingType == 'per_day') {
-          eventStartDate = dates?['startDate'];
-          eventEndDate = dates?['endDate'];
-          if (eventStartDate != null && eventEndDate != null) {
-            days = eventEndDate.difference(eventStartDate).inDays + 1;
+          // Combine dates and times for per_day items
+          if (dates?['startDate'] != null && times?['startTime'] != null) {
+            final startDate = dates!['startDate']!;
+            final startTime = times!['startTime']!;
+            eventStartDateTime = DateTime(
+              startDate.year,
+              startDate.month,
+              startDate.day,
+              startTime.hour,
+              startTime.minute,
+            );
+          }
+
+          if (dates?['endDate'] != null && times?['endTime'] != null) {
+            final endDate = dates!['endDate']!;
+            final endTime = times!['endTime']!;
+            eventEndDateTime = DateTime(
+              endDate.year,
+              endDate.month,
+              endDate.day,
+              endTime.hour,
+              endTime.minute,
+            );
+          }
+
+          if (eventStartDateTime != null && eventEndDateTime != null) {
+            days = _calculateRentalDays(eventStartDateTime, eventEndDateTime);
           }
         } else {
-          eventDate = dates?['eventDate'];
+          // Combine date and time for per_event and purchasable items
+          if (dates?['eventDate'] != null && times?['eventTime'] != null) {
+            final eventDate = dates!['eventDate']!;
+            final eventTime = times!['eventTime']!;
+            eventDateTime = DateTime(
+              eventDate.year,
+              eventDate.month,
+              eventDate.day,
+              eventTime.hour,
+              eventTime.minute,
+            );
+          }
         }
 
         final unitPrice = price;
-        final subtotal = pricingType == 'per_day' 
-            ? price * days * quantity 
+        final subtotal = pricingType == 'per_day'
+            ? price * days * quantity
             : price * quantity;
 
         final orderItem = await _supabase.from('order_items').insert({
@@ -374,9 +461,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           'quantity': quantity,
           'unit_price': unitPrice,
           'subtotal': subtotal,
-          'event_date': eventDate?.toIso8601String(),
-          'event_start_date': eventStartDate?.toIso8601String(),
-          'event_end_date': eventEndDate?.toIso8601String(),
+          'event_date': eventDateTime?.toIso8601String(),
+          'event_start_date': eventStartDateTime?.toIso8601String(),
+          'event_end_date': eventEndDateTime?.toIso8601String(),
         }).select().single();
 
         final orderItemId = orderItem['id'] as String;
@@ -595,20 +682,55 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         final pricingType = item['pricing_type'] as String;
 
         final dates = _itemDates[cartItemId];
+        final times = _itemTimes[cartItemId];
 
         int days = 1;
-        DateTime? eventDate;
-        DateTime? eventStartDate;
-        DateTime? eventEndDate;
+        DateTime? eventDateTime;
+        DateTime? eventStartDateTime;
+        DateTime? eventEndDateTime;
 
         if (pricingType == 'per_day') {
-          eventStartDate = dates?['startDate'];
-          eventEndDate = dates?['endDate'];
-          if (eventStartDate != null && eventEndDate != null) {
-            days = eventEndDate.difference(eventStartDate).inDays + 1;
+          // Combine dates and times for per_day items
+          if (dates?['startDate'] != null && times?['startTime'] != null) {
+            final startDate = dates!['startDate']!;
+            final startTime = times!['startTime']!;
+            eventStartDateTime = DateTime(
+              startDate.year,
+              startDate.month,
+              startDate.day,
+              startTime.hour,
+              startTime.minute,
+            );
+          }
+
+          if (dates?['endDate'] != null && times?['endTime'] != null) {
+            final endDate = dates!['endDate']!;
+            final endTime = times!['endTime']!;
+            eventEndDateTime = DateTime(
+              endDate.year,
+              endDate.month,
+              endDate.day,
+              endTime.hour,
+              endTime.minute,
+            );
+          }
+
+          if (eventStartDateTime != null && eventEndDateTime != null) {
+            days = _calculateRentalDays(eventStartDateTime, eventEndDateTime);
           }
         } else {
-          eventDate = dates?['eventDate'];
+          // Combine date and time for per_event and purchasable items
+          if (dates?['eventDate'] != null && times?['eventTime'] != null) {
+            final eventDate = dates!['eventDate']!;
+            final eventTime = times!['eventTime']!;
+            eventDateTime = DateTime(
+              eventDate.year,
+              eventDate.month,
+              eventDate.day,
+              eventTime.hour,
+              eventTime.minute,
+            );
+          }
         }
 
         final unitPrice = price;
@@ -622,9 +744,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           'quantity': quantity,
           'unit_price': unitPrice,
           'subtotal': subtotal,
-          'event_date': eventDate?.toIso8601String(),
-          'event_start_date': eventStartDate?.toIso8601String(),
-          'event_end_date': eventEndDate?.toIso8601String(),
+          'event_date': eventDateTime?.toIso8601String(),
+          'event_start_date': eventStartDateTime?.toIso8601String(),
+          'event_end_date': eventEndDateTime?.toIso8601String(),
         }).select().single();
 
         final orderItemId = orderItem['id'] as String;
@@ -776,7 +898,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           children: [
             Row(
               children: [
-                const Icon(Icons.location_on, color: Colors.blue),
+                Icon(Icons.location_on, color: AppTheme.primaryNavy),
                 const SizedBox(width: 8),
                 const Text(
                   'Delivery Address',
@@ -829,7 +951,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           children: [
             Row(
               children: [
-                const Icon(Icons.shopping_bag, color: Colors.blue),
+                Icon(Icons.shopping_bag, color: AppTheme.primaryNavy),
                 const SizedBox(width: 8),
                 Text(
                   'Order Items (${items.length})',
@@ -853,18 +975,43 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     final cartItemId = cartItem['id'] as String;
     final quantity = cartItem['quantity'] as int;
     final addons = cartItem['addons'] as List<dynamic>?;
-    
+
     final name = item['name'] as String;
     final price = (item['price'] as num).toDouble();
     final pricingType = item['pricing_type'] as String;
-    
+
     final isExpanded = _expandedItems.contains(cartItemId);
     final dates = _itemDates[cartItemId];
+    final times = _itemTimes[cartItemId];
     final itemTotal = _calculateItemTotal(cartItem);
 
     int days = 1;
-    if (pricingType == 'per_day' && dates?['startDate'] != null && dates?['endDate'] != null) {
-      days = dates!['endDate']!.difference(dates['startDate']!).inDays + 1;
+    if (pricingType == 'per_day') {
+      if (dates?['startDate'] != null && dates?['endDate'] != null &&
+          times?['startTime'] != null && times?['endTime'] != null) {
+        final startDate = dates!['startDate']!;
+        final endDate = dates['endDate']!;
+        final startTime = times!['startTime']!;
+        final endTime = times['endTime']!;
+
+        final startDateTime = DateTime(
+          startDate.year,
+          startDate.month,
+          startDate.day,
+          startTime.hour,
+          startTime.minute,
+        );
+
+        final endDateTime = DateTime(
+          endDate.year,
+          endDate.month,
+          endDate.day,
+          endTime.hour,
+          endTime.minute,
+        );
+
+        days = _calculateRentalDays(startDateTime, endDateTime);
+      }
     }
 
     String pricingLabel = pricingType == 'per_day' 
@@ -973,9 +1120,16 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   const SizedBox(height: 8),
                   
                   if (pricingType == 'per_day') ...[
+                    // Start Date & Time
+                    const Text(
+                      'Start Date & Time:',
+                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(height: 8),
                     Row(
                       children: [
                         Expanded(
+                          flex: 3,
                           child: OutlinedButton.icon(
                             onPressed: () async {
                               final picked = await showDatePicker(
@@ -993,23 +1147,61 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                 });
                               }
                             },
-                            icon: const Icon(Icons.calendar_today, size: 16),
+                            icon: const Icon(Icons.calendar_today, size: 14),
                             label: Text(
                               dates?['startDate'] != null
-                                  ? '${dates!['startDate']!.day}/${dates['startDate']!.month}'
-                                  : 'Start',
-                              style: const TextStyle(fontSize: 12),
+                                  ? '${dates!['startDate']!.day}/${dates['startDate']!.month}/${dates['startDate']!.year}'
+                                  : 'Date',
+                              style: const TextStyle(fontSize: 11),
                             ),
                           ),
                         ),
                         const SizedBox(width: 8),
                         Expanded(
+                          flex: 2,
+                          child: OutlinedButton.icon(
+                            onPressed: () async {
+                              final picked = await showTimePicker(
+                                context: context,
+                                initialTime: times?['startTime'] ?? TimeOfDay.now(),
+                              );
+                              if (picked != null) {
+                                setState(() {
+                                  _itemTimes[cartItemId] = {
+                                    ...?times,
+                                    'startTime': picked,
+                                  };
+                                });
+                              }
+                            },
+                            icon: const Icon(Icons.access_time, size: 14),
+                            label: Text(
+                              times?['startTime'] != null
+                                  ? times!['startTime']!.format(context)
+                                  : 'Time',
+                              style: const TextStyle(fontSize: 11),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    // End Date & Time
+                    const Text(
+                      'End Date & Time:',
+                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 3,
                           child: OutlinedButton.icon(
                             onPressed: () async {
                               final startDate = dates?['startDate'];
                               final picked = await showDatePicker(
                                 context: context,
-                                initialDate: dates?['endDate'] ?? 
+                                initialDate: dates?['endDate'] ??
                                     (startDate?.add(const Duration(days: 1)) ?? DateTime.now()),
                                 firstDate: startDate ?? DateTime.now(),
                                 lastDate: DateTime.now().add(const Duration(days: 365)),
@@ -1023,41 +1215,127 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                 });
                               }
                             },
-                            icon: const Icon(Icons.calendar_today, size: 16),
+                            icon: const Icon(Icons.calendar_today, size: 14),
                             label: Text(
                               dates?['endDate'] != null
-                                  ? '${dates!['endDate']!.day}/${dates['endDate']!.month}'
-                                  : 'End',
-                              style: const TextStyle(fontSize: 12),
+                                  ? '${dates!['endDate']!.day}/${dates['endDate']!.month}/${dates['endDate']!.year}'
+                                  : 'Date',
+                              style: const TextStyle(fontSize: 11),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          flex: 2,
+                          child: OutlinedButton.icon(
+                            onPressed: () async {
+                              final picked = await showTimePicker(
+                                context: context,
+                                initialTime: times?['endTime'] ?? TimeOfDay.now(),
+                              );
+                              if (picked != null) {
+                                setState(() {
+                                  _itemTimes[cartItemId] = {
+                                    ...?times,
+                                    'endTime': picked,
+                                  };
+                                });
+                              }
+                            },
+                            icon: const Icon(Icons.access_time, size: 14),
+                            label: Text(
+                              times?['endTime'] != null
+                                  ? times!['endTime']!.format(context)
+                                  : 'Time',
+                              style: const TextStyle(fontSize: 11),
                             ),
                           ),
                         ),
                       ],
                     ),
-                  ] else ...[
-                    OutlinedButton.icon(
-                      onPressed: () async {
-                        final picked = await showDatePicker(
-                          context: context,
-                          initialDate: dates?['eventDate'] ?? DateTime.now(),
-                          firstDate: DateTime.now(),
-                          lastDate: DateTime.now().add(const Duration(days: 365)),
-                        );
-                        if (picked != null) {
-                          setState(() {
-                            _itemDates[cartItemId] = {
-                              'eventDate': picked,
-                            };
-                          });
-                        }
-                      },
-                      icon: const Icon(Icons.calendar_today, size: 16),
-                      label: Text(
-                        dates?['eventDate'] != null
-                            ? '${pricingType == 'purchasable' ? 'Delivery' : 'Event'}: ${dates!['eventDate']!.day}/${dates['eventDate']!.month}/${dates['eventDate']!.year}'
-                            : '${pricingType == 'purchasable' ? 'Select Delivery Date' : 'Select Event Date'}',
-                        style: const TextStyle(fontSize: 12),
+                    // Show calculated days
+                    if (dates?['startDate'] != null && dates?['endDate'] != null &&
+                        times?['startTime'] != null && times?['endTime'] != null) ...[
+                      const SizedBox(height: 8),
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.blue[50],
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          'Rental Period: $days day${days > 1 ? 's' : ''} (includes 4-hour grace period)',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Colors.blue[900],
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ),
+                    ],
+                  ] else ...[
+                    // Event/Delivery Date & Time
+                    Text(
+                      pricingType == 'purchasable' ? 'Delivery Date & Time:' : 'Event Date & Time:',
+                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 3,
+                          child: OutlinedButton.icon(
+                            onPressed: () async {
+                              final picked = await showDatePicker(
+                                context: context,
+                                initialDate: dates?['eventDate'] ?? DateTime.now(),
+                                firstDate: DateTime.now(),
+                                lastDate: DateTime.now().add(const Duration(days: 365)),
+                              );
+                              if (picked != null) {
+                                setState(() {
+                                  _itemDates[cartItemId] = {
+                                    'eventDate': picked,
+                                  };
+                                });
+                              }
+                            },
+                            icon: const Icon(Icons.calendar_today, size: 14),
+                            label: Text(
+                              dates?['eventDate'] != null
+                                  ? '${dates!['eventDate']!.day}/${dates['eventDate']!.month}/${dates['eventDate']!.year}'
+                                  : 'Date',
+                              style: const TextStyle(fontSize: 11),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          flex: 2,
+                          child: OutlinedButton.icon(
+                            onPressed: () async {
+                              final picked = await showTimePicker(
+                                context: context,
+                                initialTime: times?['eventTime'] ?? TimeOfDay.now(),
+                              );
+                              if (picked != null) {
+                                setState(() {
+                                  _itemTimes[cartItemId] = {
+                                    'eventTime': picked,
+                                  };
+                                });
+                              }
+                            },
+                            icon: const Icon(Icons.access_time, size: 14),
+                            label: Text(
+                              times?['eventTime'] != null
+                                  ? times!['eventTime']!.format(context)
+                                  : 'Time',
+                              style: const TextStyle(fontSize: 11),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ],
@@ -1097,7 +1375,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           children: [
             Row(
               children: [
-                const Icon(Icons.discount, color: Colors.blue),
+                Icon(Icons.discount, color: AppTheme.primaryNavy),
                 const SizedBox(width: 8),
                 const Text(
                   'Coupon Code',
@@ -1183,7 +1461,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           children: [
             Row(
               children: [
-                const Icon(Icons.payment, color: Colors.blue),
+                Icon(Icons.payment, color: AppTheme.primaryNavy),
                 const SizedBox(width: 8),
                 const Text(
                   'Payment Method',
@@ -1316,7 +1594,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           child: ElevatedButton(
             onPressed: canPlaceOrder ? _placeOrder : null,
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue,
+              backgroundColor: AppTheme.primaryNavy,
               disabledBackgroundColor: Colors.grey,
             ),
             child: _isPlacingOrder

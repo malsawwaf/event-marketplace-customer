@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:async';
-import 'main_home_screen.dart';
+import 'categories_screen.dart';
 import 'cart_screen.dart';
 import 'orders_list_screen.dart';
 import 'favourites_screen.dart';
@@ -128,7 +128,7 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
         body: IndexedStack(
           index: _selectedIndex,
           children: [
-            _buildNavigator(0, MainHomeScreen(onCartUpdate: _loadCartCount)),
+            _buildNavigator(0, const CategoriesScreen()),
             _buildNavigator(1, const CartScreen()),
             _buildNavigator(2, const OrdersListScreen()),
             _buildNavigator(3, const FavoritesScreen()),

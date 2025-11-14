@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../config/app_theme.dart';
 import 'auth_provider.dart';
 import 'login_screen.dart';
+import 'profile_completion_screen.dart';
 import '../home/bottom_nav_screen.dart'; // ✅ This import gives us access to bottomNavKey
 
 class SplashScreen extends StatefulWidget {
@@ -20,36 +21,59 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _navigateToNextScreen() async {
-    // Wait for 2 seconds to show splash
-    await Future.delayed(const Duration(seconds: 2));
+    try {
+      // Wait for 2 seconds to show splash
+      await Future.delayed(const Duration(seconds: 2));
 
-    if (!mounted) return;
-
-    final authProvider = context.read<AuthProvider>();
-
-    // Check authentication status
-    if (authProvider.isAuthenticated) {
-      // Check if profile is completed
-      final hasProfile = await authProvider.checkProfileCompletion();
-      
       if (!mounted) return;
 
-      if (hasProfile) {
-        // ✅ FIXED: Navigate to home with global key
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (_) => BottomNavScreen(key: bottomNavKey), // ✅ Added key
-          ),
-        );
+      print('🔵 Splash: Starting navigation check...');
+
+      final authProvider = context.read<AuthProvider>();
+      print('🔵 Splash: Auth provider loaded, isAuthenticated: ${authProvider.isAuthenticated}');
+
+      // Check authentication status
+      if (authProvider.isAuthenticated) {
+        print('🔵 Splash: User is authenticated, checking profile...');
+        // Check if profile is completed
+        final hasProfile = await authProvider.checkProfileCompletion();
+
+        if (!mounted) return;
+
+        print('🔵 Splash: Profile check result: $hasProfile');
+
+        if (hasProfile) {
+          print('🔵 Splash: Navigating to home...');
+          // ✅ FIXED: Navigate to home with global key
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (_) => BottomNavScreen(key: bottomNavKey), // ✅ Added key
+            ),
+          );
+        } else {
+          print('🔵 Splash: Navigating to profile completion...');
+          // Navigate to profile completion
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => ProfileCompletionScreen()),
+          );
+        }
       } else {
-        // Navigate to profile completion (you'll create this)
-        Navigator.of(context).pushReplacementNamed('/complete-profile');
+        print('🔵 Splash: User not authenticated, navigating to login...');
+        // Navigate to login
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const LoginScreen()),
+        );
       }
-    } else {
-      // Navigate to login
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const LoginScreen()),
-      );
+    } catch (e, stackTrace) {
+      print('❌ Splash: Error during navigation: $e');
+      print('❌ Stack trace: $stackTrace');
+
+      // Fallback: navigate to login on error
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const LoginScreen()),
+        );
+      }
     }
   }
 
@@ -59,12 +83,12 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
             colors: [
-              AppTheme.primaryNavy,
-              AppTheme.accentBlue,
-              AppTheme.primaryNavy.withOpacity(0.8),
+              AppTheme.secondaryCoral,
+              AppTheme.secondaryCoral.withOpacity(0.8),
+              const Color(0xFFFF8A6A),
             ],
           ),
         ),
@@ -75,59 +99,89 @@ class _SplashScreenState extends State<SplashScreen> {
               children: [
                 const Spacer(flex: 2),
 
-                // App Logo
+                // ========================================
+                // LOGO EDGE EFFECT OPTIONS
+                // Uncomment ONE option at a time to test
+                // ========================================
+
+                // OPTION 1: Soft Glow/Shadow Effect
                 Container(
-                  padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(24),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
-                        blurRadius: 20,
-                        offset: const Offset(0, 10),
+                        color: Colors.white.withOpacity(0.3),
+                        blurRadius: 40,
+                        spreadRadius: 10,
                       ),
                     ],
                   ),
                   child: Image.asset(
                     'assets/images/logo.png',
-                    width: 120,
-                    height: 120,
-                    errorBuilder: (context, error, stackTrace) {
-                      // Fallback if logo doesn't load
-                      return Icon(
-                        Icons.celebration,
-                        size: 120,
-                        color: AppTheme.secondaryCoral,
-                      );
-                    },
+                    width: 280,
+                    height: 280,
                   ),
                 ),
 
-                const SizedBox(height: 32),
+//                 OPTION 2: Circular Gradient Fade
+//                 Container(
+//                   width: 280,
+//                   height: 280,
+//                   decoration: BoxDecoration(
+//                     gradient: RadialGradient(
+//                       colors: [
+//                         Colors.transparent,
+//                         AppTheme.secondaryCoral.withOpacity(0.3),
+//                       ],
+//                       stops: const [0.7, 1.0],
+//                     ),
+//                   ),
+//                   child: Image.asset(
+//                     'assets/images/logo.png',
+//                     width: 280,
+//                     height: 280,
+//                   ),
+//                 ),
 
-                // App Name
-                const Text(
-                  'Azimah Tech',
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    letterSpacing: 0.5,
-                  ),
-                ),
+//               OPTION 3: Rounded Container with Blur
+//                 ClipRRect(
+//                   borderRadius: BorderRadius.circular(40),
+//                   child: Container(
+//                     padding: const EdgeInsets.all(20),
+//                     decoration: BoxDecoration(
+//                       color: Colors.white.withOpacity(0.1),
+//                     ),
+//                     child: Image.asset(
+//                       'assets/images/logo.png',
+//                       width: 280,
+//                       height: 280,
+//                     ),
+//                   ),
+//                 ),
 
-                const SizedBox(height: 8),
+                // OPTION 4: Subtle Drop Shadow
+                // Container(
+                //   decoration: BoxDecoration(
+                //     boxShadow: [
+                //       BoxShadow(
+                //         color: Colors.black.withOpacity(0.2),
+                //         blurRadius: 30,
+                //         offset: const Offset(0, 15),
+                //       ),
+                //     ],
+                //   ),
+                //   child: Image.asset(
+                //     'assets/images/logo.png',
+                //     width: 280,
+                //     height: 280,
+                //   ),
+                // ),
 
-                // Tagline
-                Text(
-                  'Discover & Book Amazing Events',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white.withOpacity(0.9),
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
+                // OPTION 5: No Effect (Keep Clean)
+                // Image.asset(
+                //   'assets/images/logo.png',
+                //   width: 280,
+                //   height: 280,
+                // ),
 
                 const Spacer(flex: 2),
 
@@ -143,7 +197,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   'Loading...',
                   style: TextStyle(
                     fontSize: 14,
-                    color: Colors.white.withOpacity(0.8),
+                    color: Colors.white.withOpacity(0.9),
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -154,10 +208,10 @@ class _SplashScreenState extends State<SplashScreen> {
                 Padding(
                   padding: const EdgeInsets.only(bottom: 24),
                   child: Text(
-                    'Powered by Azimah Tech',
+                    '© 2025 Althawra Altakniya & Azimah Tech - All Rights Reserved',
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.white.withOpacity(0.6),
+                      color: Colors.white.withOpacity(0.7),
                       fontWeight: FontWeight.w400,
                     ),
                   ),

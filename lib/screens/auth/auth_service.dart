@@ -95,15 +95,23 @@ class AuthService {
       final userId = currentUserId;
       if (userId == null) throw Exception('No user logged in');
 
-      await _supabase.from('customers').insert({
+      print('🔵 Creating customer profile for user: $userId');
+
+      final data = {
         'id': userId,
         'first_name': firstName,
         'last_name': lastName,
         'phone': phone,
         'profile_image_url': profileImageUrl,
-        'created_at': DateTime.now().toIso8601String(),
-      });
+      };
+
+      print('🔵 Profile data: $data');
+
+      await _supabase.from('customers').insert(data);
+
+      print('✅ Customer profile created successfully');
     } catch (e) {
+      print('❌ Error creating customer profile: $e');
       rethrow;
     }
   }

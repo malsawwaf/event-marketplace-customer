@@ -4,6 +4,7 @@ import '../../services/items_service.dart';
 import '../../services/stock_service.dart';
 import '../../services/cart_service.dart';
 import '../../services/favourites_service.dart';
+import '../../config/app_theme.dart';
 
 class ItemDetailScreen extends StatefulWidget {
   final String itemId;
@@ -27,8 +28,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
   int _availableStock = 0;
   
   int _quantity = 1;
-  final Set<String> _selectedAddonIds = {};
-  final Map<String, List<String>> _radioSelections = {}; // For single selection add-ons
+  // Map of group ID to set of selected option IDs
+  final Map<String, Set<String>> _selectedAddonOptions = {};
   String? _notes;
   int _currentPhotoIndex = 0;
 
@@ -119,40 +120,52 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
       return;
     }
 
-    // Validate required add-ons
-    final addons = _itemData!['item_addons'] as List<dynamic>?;
-    if (addons != null) {
-      for (final addon in addons) {
-        final isRequired = addon['is_required'] as bool? ?? false;
-        final selectionType = addon['selection_type'] as String? ?? 'multiple';
-        final addonId = addon['id'] as String;
+    // Validate required add-on groups
+    final addonGroups = _itemData!['item_addon_groups'] as List<dynamic>?;
+    if (addonGroups != null) {
+      for (final group in addonGroups) {
+        final groupMap = Map<String, dynamic>.from(group);
+        final groupId = groupMap['id'] as String;
+        final groupName = groupMap['name'] as String;
+        final isRequired = groupMap['is_required'] as bool? ?? false;
+        final selectionType = groupMap['selection_type'] as String? ?? 'single';
+        final minSelection = groupMap['min_selection'] as int? ?? 1;
+        final maxSelection = groupMap['max_selection'] as int?;
 
-        if (isRequired) {
-          if (selectionType == 'single') {
-            // Check if a selection was made in this radio group
-            if (!_radioSelections.containsKey(addon['name']) || 
-                _radioSelections[addon['name']]!.isEmpty) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Please select ${addon['name']}')),
-              );
-              return;
-            }
-          } else {
-            // Multiple selection - check if this specific addon is selected
-            if (!_selectedAddonIds.contains(addonId)) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Please select ${addon['name']}')),
-              );
-              return;
-            }
+        final selectedOptions = _selectedAddonOptions[groupId] ?? {};
+        final selectedCount = selectedOptions.length;
+
+        // Check if required group has no selections
+        if (isRequired && selectedCount == 0) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Please select from "$groupName"')),
+          );
+          return;
+        }
+
+        // For multiple selection, check min/max constraints
+        if (selectionType == 'multiple' && selectedCount > 0) {
+          if (selectedCount < minSelection) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Please select at least $minSelection option(s) from "$groupName"')),
+            );
+            return;
+          }
+          if (maxSelection != null && selectedCount > maxSelection) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Please select at most $maxSelection option(s) from "$groupName"')),
+            );
+            return;
           }
         }
       }
     }
 
-    // Collect all selected addon IDs (both radio and checkbox)
-    final allSelectedAddons = <String>{..._selectedAddonIds};
-    _radioSelections.values.forEach((list) => allSelectedAddons.addAll(list));
+    // Collect all selected addon option IDs from all groups
+    final allSelectedAddons = <String>{};
+    for (final optionIds in _selectedAddonOptions.values) {
+      allSelectedAddons.addAll(optionIds);
+    }
 
     setState(() => _isAddingToCart = true);
 
@@ -225,7 +238,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
     final maxQuantity = _itemData!['max_order_quantity'] as int?;
     final photoUrls = _itemData!['photo_urls'] as List<dynamic>?;
     final provider = _itemData!['providers'] as Map<String, dynamic>;
-    final addons = _itemData!['item_addons'] as List<dynamic>?;
+    final addonGroups = _itemData!['item_addon_groups'] as List<dynamic>?;
 
     final itemsService = ItemsService();
 
@@ -313,16 +326,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                         ],
 
                         // Add-ons Section
-                        if (addons != null && addons.isNotEmpty) ...[
-                          const Text(
-                            'Add-ons',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          _buildAddonsSection(addons),
+                        if (addonGroups != null && addonGroups.isNotEmpty) ...[
+                          _buildAddonGroupsSection(addonGroups),
                           const SizedBox(height: 16),
                         ],
 
@@ -399,7 +404,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: _currentPhotoIndex == index
-                        ? Colors.blue
+                        ? AppTheme.primaryNavy
                         : Colors.grey[300],
                   ),
                 ),
@@ -446,8 +451,13 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
 
   Widget _buildProviderInfo(Map<String, dynamic> provider) {
     final companyName = provider['company_name_en'] as String;
-    final location = provider['store_location'] as String;
+    final city = provider['city'] as String? ?? '';
+    final country = provider['country'] as String? ?? '';
     final photoUrl = provider['profile_photo_url'] as String?;
+
+    final location = city.isNotEmpty
+        ? (country.isNotEmpty ? '$city, $country' : city)
+        : (country.isNotEmpty ? country : '');
 
     return Card(
       child: Padding(
@@ -471,22 +481,24 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                       fontSize: 16,
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      const Icon(Icons.location_on, size: 14, color: Colors.grey),
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: Text(
-                          location,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey,
+                  if (location.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        const Icon(Icons.location_on, size: 14, color: Colors.grey),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            location,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -496,41 +508,80 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
     );
   }
 
-  Widget _buildAddonsSection(List<dynamic> addons) {
-    // Group add-ons by selection type and name (for radio groups)
-    final Map<String, List<Map<String, dynamic>>> radioGroups = {};
-    final List<Map<String, dynamic>> checkboxAddons = [];
+  Widget _buildAddonGroupsSection(List<dynamic> groups) {
+    // Separate required and optional groups
+    final List<Map<String, dynamic>> requiredGroups = [];
+    final List<Map<String, dynamic>> optionalGroups = [];
 
-    for (final addon in addons) {
-      final addonMap = Map<String, dynamic>.from(addon);
-      final selectionType = addonMap['selection_type'] as String? ?? 'multiple';
-      
-      if (selectionType == 'single') {
-        final name = addonMap['name'] as String;
-        if (!radioGroups.containsKey(name)) {
-          radioGroups[name] = [];
-        }
-        radioGroups[name]!.add(addonMap);
+    for (final group in groups) {
+      final groupMap = Map<String, dynamic>.from(group);
+      final isRequired = groupMap['is_required'] as bool? ?? false;
+
+      if (isRequired) {
+        requiredGroups.add(groupMap);
       } else {
-        checkboxAddons.add(addonMap);
+        optionalGroups.add(groupMap);
       }
     }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Radio groups (single selection)
-        ...radioGroups.entries.map((entry) => _buildRadioGroup(entry.key, entry.value)),
-        
-        // Checkboxes (multiple selection)
-        ...checkboxAddons.map(_buildCheckboxAddon),
+        // Required Add-on Groups
+        if (requiredGroups.isNotEmpty) ...[
+          const Text(
+            'Required Options',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.red,
+            ),
+          ),
+          const SizedBox(height: 8),
+          ...requiredGroups.map((group) => _buildAddonGroup(group)),
+          const SizedBox(height: 16),
+        ],
+
+        // Optional Add-on Groups
+        if (optionalGroups.isNotEmpty) ...[
+          const Text(
+            'Optional Extras',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          ...optionalGroups.map((group) => _buildAddonGroup(group)),
+        ],
       ],
     );
   }
 
-  Widget _buildRadioGroup(String groupName, List<Map<String, dynamic>> options) {
-    final isRequired = options.first['is_required'] as bool? ?? false;
-    
+  Widget _buildAddonGroup(Map<String, dynamic> group) {
+    final groupId = group['id'] as String;
+    final groupName = group['name'] as String;
+    final groupDescription = group['description'] as String?;
+    final selectionType = group['selection_type'] as String? ?? 'single';
+    final minSelection = group['min_selection'] as int? ?? 1;
+    final maxSelection = group['max_selection'] as int?;
+    final options = group['item_addon_options'] as List<dynamic>?;
+
+    if (options == null || options.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    String selectionInfo = '';
+    if (selectionType == 'multiple') {
+      if (maxSelection != null) {
+        selectionInfo = ' (Select $minSelection-$maxSelection)';
+      } else {
+        selectionInfo = minSelection > 1 ? ' (Select at least $minSelection)' : ' (Select multiple)';
+      }
+    } else {
+      selectionInfo = ' (Choose one)';
+    }
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: Padding(
@@ -540,72 +591,106 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
           children: [
             Row(
               children: [
-                Text(
-                  groupName,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+                Expanded(
+                  child: Text(
+                    groupName + selectionInfo,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
                   ),
                 ),
-                if (isRequired)
-                  const Text(
-                    ' *',
-                    style: TextStyle(color: Colors.red, fontSize: 16),
-                  ),
               ],
             ),
+            if (groupDescription != null && groupDescription.isNotEmpty) ...[
+              const SizedBox(height: 4),
+              Text(
+                groupDescription,
+                style: TextStyle(
+                  fontSize: 13,
+                  color: Colors.grey[600],
+                ),
+              ),
+            ],
             const SizedBox(height: 8),
-            ...options.map((option) {
-              final id = option['id'] as String;
-              final name = option['name'] as String;
-              final price = (option['additional_price'] as num).toDouble();
-              final isSelected = _radioSelections[groupName]?.contains(id) ?? false;
-
-              return RadioListTile<String>(
-                title: Text(name),
-                subtitle: price > 0 ? Text('+$price SAR') : null,
-                value: id,
-                groupValue: _radioSelections[groupName]?.firstOrNull,
-                onChanged: (value) {
-                  setState(() {
-                    _radioSelections[groupName] = value != null ? [value] : [];
-                  });
-                },
-                dense: true,
-                contentPadding: EdgeInsets.zero,
-              );
-            }),
+            // Display options based on selection type
+            if (selectionType == 'single')
+              ...options.map((option) => _buildRadioOption(groupId, option))
+            else
+              ...options.map((option) => _buildCheckboxOption(groupId, option, maxSelection)),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildCheckboxAddon(Map<String, dynamic> addon) {
-    final id = addon['id'] as String;
-    final name = addon['name'] as String;
-    final price = (addon['additional_price'] as num).toDouble();
-    final isRequired = addon['is_required'] as bool? ?? false;
+  Widget _buildRadioOption(String groupId, dynamic option) {
+    final optionMap = Map<String, dynamic>.from(option);
+    final optionId = optionMap['id'] as String;
+    final optionName = optionMap['name'] as String;
+    final optionDescription = optionMap['description'] as String?;
+    final price = (optionMap['additional_price'] as num?)?.toDouble() ?? 0.0;
 
-    return CheckboxListTile(
-      title: Row(
+    final selectedOptions = _selectedAddonOptions[groupId] ?? {};
+    final isSelected = selectedOptions.contains(optionId);
+
+    return RadioListTile<String>(
+      title: Text(optionName),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(child: Text(name)),
-          if (isRequired)
-            const Text(
-              ' *',
-              style: TextStyle(color: Colors.red),
-            ),
+          if (optionDescription != null && optionDescription.isNotEmpty)
+            Text(optionDescription, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+          if (price > 0) Text('+$price SAR', style: const TextStyle(fontWeight: FontWeight.w500)),
         ],
       ),
-      subtitle: price > 0 ? Text('+$price SAR') : null,
-      value: _selectedAddonIds.contains(id),
+      value: optionId,
+      groupValue: isSelected ? optionId : (selectedOptions.isNotEmpty ? selectedOptions.first : null),
       onChanged: (value) {
         setState(() {
-          if (value == true) {
-            _selectedAddonIds.add(id);
+          if (value != null) {
+            _selectedAddonOptions[groupId] = {value};
           } else {
-            _selectedAddonIds.remove(id);
+            _selectedAddonOptions[groupId] = {};
+          }
+        });
+      },
+      dense: true,
+      contentPadding: EdgeInsets.zero,
+    );
+  }
+
+  Widget _buildCheckboxOption(String groupId, dynamic option, int? maxSelection) {
+    final optionMap = Map<String, dynamic>.from(option);
+    final optionId = optionMap['id'] as String;
+    final optionName = optionMap['name'] as String;
+    final optionDescription = optionMap['description'] as String?;
+    final price = (optionMap['additional_price'] as num?)?.toDouble() ?? 0.0;
+
+    final selectedOptions = _selectedAddonOptions[groupId] ?? {};
+    final isSelected = selectedOptions.contains(optionId);
+    final isMaxReached = maxSelection != null && selectedOptions.length >= maxSelection;
+
+    return CheckboxListTile(
+      title: Text(optionName),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (optionDescription != null && optionDescription.isNotEmpty)
+            Text(optionDescription, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+          if (price > 0) Text('+$price SAR', style: const TextStyle(fontWeight: FontWeight.w500)),
+        ],
+      ),
+      value: isSelected,
+      onChanged: (isMaxReached && !isSelected) ? null : (value) {
+        setState(() {
+          if (!_selectedAddonOptions.containsKey(groupId)) {
+            _selectedAddonOptions[groupId] = {};
+          }
+          if (value == true) {
+            _selectedAddonOptions[groupId]!.add(optionId);
+          } else {
+            _selectedAddonOptions[groupId]!.remove(optionId);
           }
         });
       },
@@ -685,7 +770,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
           child: ElevatedButton(
             onPressed: canAddToCart && !_isAddingToCart ? _addToCart : null,
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue,
+              backgroundColor: AppTheme.primaryNavy,
               disabledBackgroundColor: Colors.grey,
             ),
             child: _isAddingToCart

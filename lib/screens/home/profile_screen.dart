@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../config/app_theme.dart';
 import '../auth/auth_provider.dart';
 import '../auth/login_screen.dart';
 import '../profile/edit_profile_screen.dart';
@@ -18,7 +19,7 @@ class ProfileScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
-        backgroundColor: Colors.blue[700],
+        backgroundColor: AppTheme.primaryNavy,
         foregroundColor: Colors.white,
         actions: [
           IconButton(
@@ -59,7 +60,7 @@ class ProfileScreen extends StatelessWidget {
         ],
       ),
       body: profile == null
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(child: CircularProgressIndicator(color: AppTheme.primaryNavy))
           : SingleChildScrollView(
               padding: const EdgeInsets.all(24),
               child: Column(
@@ -67,7 +68,7 @@ class ProfileScreen extends StatelessWidget {
                   // Profile Picture
                   CircleAvatar(
                     radius: 60,
-                    backgroundColor: Colors.blue[100],
+                    backgroundColor: AppTheme.primaryNavy.withOpacity(0.1),
                     backgroundImage: profile['profile_image_url'] != null
                         ? NetworkImage(profile['profile_image_url'])
                         : null,
@@ -75,7 +76,7 @@ class ProfileScreen extends StatelessWidget {
                         ? Icon(
                             Icons.person,
                             size: 60,
-                            color: Colors.blue[700],
+                            color: AppTheme.primaryNavy,
                           )
                         : null,
                   ),
@@ -223,12 +224,12 @@ class ProfileScreen extends StatelessWidget {
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Colors.blue[50],
+            color: AppTheme.primaryNavy.withOpacity(0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(
             icon,
-            color: Colors.blue[700],
+            color: AppTheme.primaryNavy,
           ),
         ),
         title: Text(

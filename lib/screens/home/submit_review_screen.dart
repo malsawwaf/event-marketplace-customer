@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import '../../services/reviews_service.dart';
+import '../../config/app_theme.dart';
 
 class SubmitReviewScreen extends StatefulWidget {
   final String orderId;
@@ -188,6 +189,8 @@ class _SubmitReviewScreenState extends State<SubmitReviewScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Write a Review'),
+        backgroundColor: AppTheme.primaryNavy,
+        foregroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -286,10 +289,10 @@ class _SubmitReviewScreenState extends State<SubmitReviewScreen> {
             Center(
               child: Text(
                 _getRatingLabel(_providerRating),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: Colors.blue,
+                  color: AppTheme.primaryNavy,
                 ),
               ),
             ),
@@ -523,7 +526,8 @@ class _SubmitReviewScreenState extends State<SubmitReviewScreen> {
       child: ElevatedButton(
         onPressed: _isSubmitting ? null : _submitReview,
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.blue,
+          backgroundColor: AppTheme.primaryNavy,
+          foregroundColor: Colors.white,
         ),
         child: _isSubmitting
             ? const SizedBox(

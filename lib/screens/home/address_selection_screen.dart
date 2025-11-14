@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../services/address_service.dart';
+import '../../config/app_theme.dart';
 import 'add_edit_address_screen.dart';
 
 class AddressSelectionScreen extends StatefulWidget {
@@ -149,6 +150,8 @@ class _AddressSelectionScreenState extends State<AddressSelectionScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Select Delivery Address'),
+        backgroundColor: AppTheme.primaryNavy,
+        foregroundColor: Colors.white,
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
@@ -211,7 +214,7 @@ class _AddressSelectionScreenState extends State<AddressSelectionScreen> {
             icon: const Icon(Icons.add),
             label: const Text('Add Address'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue,
+              backgroundColor: AppTheme.primaryNavy,
               foregroundColor: Colors.white,
             ),
           ),
@@ -235,7 +238,7 @@ class _AddressSelectionScreenState extends State<AddressSelectionScreen> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(
-          color: isSelected ? Colors.blue : Colors.transparent,
+          color: isSelected ? AppTheme.primaryNavy : Colors.transparent,
           width: 2,
         ),
       ),
@@ -253,6 +256,7 @@ class _AddressSelectionScreenState extends State<AddressSelectionScreen> {
                     value: addressId,
                     groupValue: _selectedAddressId,
                     onChanged: (value) => setState(() => _selectedAddressId = value),
+                    activeColor: AppTheme.primaryNavy,
                   ),
                   Expanded(
                     child: Column(
@@ -275,14 +279,14 @@ class _AddressSelectionScreenState extends State<AddressSelectionScreen> {
                                   vertical: 2,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: Colors.blue[100],
+                                  color: AppTheme.primaryNavy.withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
-                                child: const Text(
+                                child: Text(
                                   'Default',
                                   style: TextStyle(
                                     fontSize: 10,
-                                    color: Colors.blue,
+                                    color: AppTheme.primaryNavy,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -361,7 +365,7 @@ class _AddressSelectionScreenState extends State<AddressSelectionScreen> {
           child: ElevatedButton(
             onPressed: _selectedAddressId != null ? _confirmSelection : null,
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue,
+              backgroundColor: AppTheme.primaryNavy,
               disabledBackgroundColor: Colors.grey,
             ),
             child: const Text(

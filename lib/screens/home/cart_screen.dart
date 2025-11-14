@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:async';
 import '../../services/cart_service.dart';
+import '../../config/app_theme.dart';
 import 'checkout_screen.dart';
 
 class CartScreen extends StatefulWidget {
@@ -11,19 +12,24 @@ class CartScreen extends StatefulWidget {
   State<CartScreen> createState() => _CartScreenState();
 }
 
-class _CartScreenState extends State<CartScreen> {
+class _CartScreenState extends State<CartScreen> with AutomaticKeepAliveClientMixin {
   final _supabase = Supabase.instance.client;
-  
+
   List<Map<String, dynamic>> _carts = [];
   bool _isLoading = true;
   Timer? _refreshTimer;
 
   @override
+  bool get wantKeepAlive => true;
+
+  @override
   void initState() {
     super.initState();
     _loadCarts();
-    // Refresh every 30 seconds to update expiry timers
-    _refreshTimer = Timer.periodic(const Duration(seconds: 30), (_) => _loadCarts());
+    // Refresh every 5 seconds to update expiry timers and catch new items quickly
+    _refreshTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+      if (mounted) _loadCarts();
+    });
   }
 
   @override
@@ -106,18 +112,29 @@ class _CartScreenState extends State<CartScreen> {
 
     final newQuantity = increase ? currentQuantity + 1 : currentQuantity - 1;
 
+    // Optimistic update - update UI immediately
+    setState(() {
+      for (var cart in _carts) {
+        final items = cart['items'] as List<dynamic>;
+        for (var item in items) {
+          if (item['id'] == cartItemId) {
+            item['quantity'] = newQuantity;
+            break;
+          }
+        }
+      }
+    });
+
     try {
       await cartService.updateCartItemQuantity(
         customerId: customerId,
         cartItemId: cartItemId,
         newQuantity: newQuantity,
       );
-
+    } catch (e) {
+      // Revert on error
       if (mounted) {
         _loadCarts();
-      }
-    } catch (e) {
-      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(e.toString().replaceAll('Exception: ', ''))),
         );
@@ -126,21 +143,32 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   String _getTimeRemaining(DateTime expiresAt) {
-    final now = DateTime.now();
-    final difference = expiresAt.difference(now);
+    // Ensure both times are in UTC for consistent comparison
+    final now = DateTime.now().toUtc();
+    final expiresAtUtc = expiresAt.toUtc();
+    final difference = expiresAtUtc.difference(now);
 
     if (difference.isNegative) {
       return 'Expired';
     }
 
-    final minutes = difference.inMinutes;
+    final totalMinutes = difference.inMinutes;
     final seconds = difference.inSeconds % 60;
 
-    return '${minutes}m ${seconds}s';
+    // If more than 60 minutes, show hours
+    if (totalMinutes >= 60) {
+      final hours = totalMinutes ~/ 60;
+      final minutes = totalMinutes % 60;
+      return '${hours}h ${minutes}m';
+    }
+
+    return '${totalMinutes}m ${seconds}s';
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context); // Required for AutomaticKeepAliveClientMixin
+
     if (_isLoading) {
       return Scaffold(
         appBar: AppBar(title: const Text('Shopping Cart')),
@@ -194,6 +222,7 @@ class _CartScreenState extends State<CartScreen> {
       ),
       body: RefreshIndicator(
         onRefresh: _loadCarts,
+        color: AppTheme.primaryNavy,
         child: ListView.builder(
           padding: const EdgeInsets.all(16),
           itemCount: _carts.length,
@@ -269,6 +298,36 @@ class _CartScreenState extends State<CartScreen> {
                   isBold: true,
                   fontSize: 18,
                 ),
+                // Check if any items are per_day
+                if (items.any((item) {
+                  final itemData = item['items'] as Map<String, dynamic>;
+                  return itemData['pricing_type'] == 'per_day';
+                })) ...[
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.amber[50],
+                      borderRadius: BorderRadius.circular(4),
+                      border: Border.all(color: Colors.amber[200]!),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.info_outline, size: 16, color: Colors.amber[800]),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'Final price for rental items will be calculated based on rental period in checkout',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Colors.amber[900],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 12),
                 SizedBox(
                   width: double.infinity,
@@ -284,7 +343,7 @@ class _CartScreenState extends State<CartScreen> {
                       ).then((_) => _loadCarts());
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
+                      backgroundColor: AppTheme.primaryNavy,
                       padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
                     child: const Text(
@@ -325,26 +384,14 @@ class _CartScreenState extends State<CartScreen> {
         : null;
 
     // Calculate item total
-    int days = 1;
-    if (pricingType == 'per_day') {
-      if (cartItem['event_start_date'] != null && cartItem['event_end_date'] != null) {
-        final startDate = DateTime.parse(cartItem['event_start_date']);
-        final endDate = DateTime.parse(cartItem['event_end_date']);
-        days = endDate.difference(startDate).inDays + 1;
-      }
-    }
+    // For per_day items, show base price only - final price calculated at checkout with times
+    double itemTotal = price * quantity;
 
-    double itemTotal = pricingType == 'per_day' 
-        ? price * days * quantity 
-        : price * quantity;
-
-    // Add addons to total
+    // Add addons to total (base price)
     if (addons != null && addons.isNotEmpty) {
       for (final addon in addons) {
         final addonPrice = (addon['additional_price'] as num).toDouble();
-        itemTotal += pricingType == 'per_day' 
-            ? addonPrice * days * quantity 
-            : addonPrice * quantity;
+        itemTotal += addonPrice * quantity;
       }
     }
 
@@ -410,12 +457,38 @@ class _CartScreenState extends State<CartScreen> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '$price SAR ${pricingType == 'per_day' ? '× $days days' : ''}',
+                      '$price SAR ${pricingType == 'per_day' ? 'per day' : pricingType == 'per_event' ? 'per event' : ''}',
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey[600],
                       ),
                     ),
+                    if (pricingType == 'per_day') ...[
+                      const SizedBox(height: 4),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.blue[50],
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(color: Colors.blue[200]!),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.info_outline, size: 12, color: Colors.blue[700]),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Rental period set in checkout',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: Colors.blue[700],
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                     if (addons != null && addons.isNotEmpty) ...[
                       const SizedBox(height: 4),
                       Text(

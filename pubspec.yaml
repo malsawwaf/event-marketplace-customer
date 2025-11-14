@@ -55,7 +55,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-  
+
   # Uncomment and add your assets here
   assets:
     - assets/images/
