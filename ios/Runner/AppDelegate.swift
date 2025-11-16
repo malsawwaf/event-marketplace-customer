@@ -1,9 +1,9 @@
 import Flutter
 import UIKit
-import PaymobSDK
+// import PaymobSDK  // Temporarily disabled - TODO: Update to latest SDK
 
 @main
-@objc class AppDelegate: FlutterAppDelegate, PaymobSDKDelegate {
+@objc class AppDelegate: FlutterAppDelegate { // PaymobSDKDelegate temporarily removed
     var sdkResult: FlutterResult?
 
     override func application(
@@ -34,65 +34,16 @@ import PaymobSDK
 
     // Function to call native PaymobSDK
     private func callNativeSDK(arguments: [String: Any], VC: FlutterViewController) {
-        // Initialize Paymob SDK
-        let paymob = PaymobSDK()
-        paymob.delegate = self
-
-        // Customize the SDK
-        if let appName = arguments["appName"] as? String {
-            paymob.paymobSDKCustomization.appName = appName
-        }
-
-        if let buttonBackgroundColor = arguments["buttonBackgroundColor"] as? NSNumber {
-            let colorInt = buttonBackgroundColor.intValue
-            let alpha = CGFloat((colorInt >> 24) & 0xFF) / 255.0
-            let red = CGFloat((colorInt >> 16) & 0xFF) / 255.0
-            let green = CGFloat((colorInt >> 8) & 0xFF) / 255.0
-            let blue = CGFloat(colorInt & 0xFF) / 255.0
-
-            let color = UIColor(red: red, green: green, blue: blue, alpha: alpha)
-            paymob.paymobSDKCustomization.buttonBackgroundColor = color
-        }
-
-        if let buttonTextColor = arguments["buttonTextColor"] as? NSNumber {
-            let colorInt = buttonTextColor.intValue
-            let alpha = CGFloat((colorInt >> 24) & 0xFF) / 255.0
-            let red = CGFloat((colorInt >> 16) & 0xFF) / 255.0
-            let green = CGFloat((colorInt >> 8) & 0xFF) / 255.0
-            let blue = CGFloat(colorInt & 0xFF) / 255.0
-
-            let color = UIColor(red: red, green: green, blue: blue, alpha: alpha)
-            paymob.paymobSDKCustomization.buttonTextColor = color
-        }
-
-        if let saveCardDefault = arguments["saveCardDefault"] as? Bool {
-            paymob.paymobSDKCustomization.saveCardDefault = saveCardDefault
-        }
-
-        if let showSaveCard = arguments["showSaveCard"] as? Bool {
-            paymob.paymobSDKCustomization.showSaveCard = showSaveCard
-        }
-
-        // Call Paymob SDK with publicKey and clientSecret
-        if let publicKey = arguments["publicKey"] as? String,
-           let clientSecret = arguments["clientSecret"] as? String {
-            do {
-                try paymob.presentPayVC(VC: VC, PublicKey: publicKey, ClientSecret: clientSecret)
-            } catch let error {
-                print("PaymobSDK Error: \(error.localizedDescription)")
-                self.sdkResult?("Error")
-                self.sdkResult = nil
-            }
-            return
-        }
-
-        // If keys are missing
+        // Paymob SDK temporarily disabled - TODO: Re-enable after protocol update
+        print("PaymobSDK: Currently disabled - payment functionality unavailable")
         self.sdkResult?("Error")
         self.sdkResult = nil
     }
 }
 
-// MARK: - PaymobSDKDelegate Methods
+// MARK: - PaymobSDKDelegate Methods (Temporarily Disabled)
+// TODO: Re-enable and update delegate methods when Paymob SDK is re-integrated
+/*
 extension AppDelegate {
     @objc public func transactionRejected() {
         print("PaymobSDK: Transaction Rejected")
@@ -118,3 +69,4 @@ extension AppDelegate {
         self.sdkResult = nil
     }
 }
+*/

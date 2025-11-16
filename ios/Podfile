@@ -33,8 +33,9 @@ target 'Runner' do
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 
-  # Paymob SDK for payments - pinned to older stable version
-  pod 'Paymob', '~> 3.0'
+  # Paymob SDK - Temporarily commented out due to protocol conformance issues
+  # TODO: Re-enable after updating AppDelegate to match latest SDK requirements
+  # pod 'Paymob'
 
   target 'RunnerTests' do
     inherit! :search_paths
