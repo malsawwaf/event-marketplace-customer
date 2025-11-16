@@ -100,7 +100,7 @@ extension AppDelegate {
         self.sdkResult = nil
     }
 
-    public func transactionAccepted() {
+    public func transactionAccepted(transactionDetails: Any?) {
         print("PaymobSDK: Transaction Successful")
         self.sdkResult?("Successfull")
         self.sdkResult = nil
