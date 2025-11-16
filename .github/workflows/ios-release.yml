@@ -1,0 +1,148 @@
+name: iOS Release to TestFlight
+
+on:
+  workflow_dispatch:  # Manual trigger only for now
+
+jobs:
+  build-ios:
+    runs-on: macos-14  # macOS 14 with Xcode 16.x support
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: List available Xcode versions
+        run: ls /Applications | grep Xcode
+
+      - name: Select Xcode 16.2
+        run: |
+          sudo xcode-select -s /Applications/Xcode_16.2.app/Contents/Developer
+          xcodebuild -version
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.38.0'
+          channel: 'stable'
+
+      - name: Get Flutter dependencies
+        run: flutter pub get
+
+      - name: Import Code Signing Certificate
+        env:
+          CERT_BASE64: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE }}
+          KEY_BASE64: ${{ secrets.IOS_DISTRIBUTION_KEY }}
+        run: |
+          # Create temporary keychain
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+          KEYCHAIN_PASSWORD=$(openssl rand -base64 32)
+
+          # Decode certificate and key
+          echo "$CERT_BASE64" | base64 --decode > $RUNNER_TEMP/certificate.cer
+          echo "$KEY_BASE64" | base64 --decode > $RUNNER_TEMP/private.key
+
+          # Convert CER to PEM
+          openssl x509 -in $RUNNER_TEMP/certificate.cer -inform DER -out $RUNNER_TEMP/certificate.pem -outform PEM
+
+          # Create P12 on macOS (native format)
+          openssl pkcs12 -export -out $RUNNER_TEMP/certificate.p12 \
+            -inkey $RUNNER_TEMP/private.key \
+            -in $RUNNER_TEMP/certificate.pem \
+            -password pass:temppass
+
+          # Create keychain
+          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+
+          # Import P12 (created natively on macOS)
+          security import $RUNNER_TEMP/certificate.p12 \
+            -k $KEYCHAIN_PATH \
+            -P temppass \
+            -T /usr/bin/codesign \
+            -T /usr/bin/security
+
+          security list-keychain -d user -s $KEYCHAIN_PATH
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+
+      - name: Import Provisioning Profile
+        env:
+          PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_CUSTOMER }}
+        run: |
+          # Decode provisioning profile
+          PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
+          echo "$PROVISIONING_PROFILE_BASE64" | base64 --decode > $PP_PATH
+
+          # Get UUID from provisioning profile
+          PP_UUID=$(/usr/libexec/PlistBuddy -c "Print :UUID" /dev/stdin <<< $(/usr/bin/security cms -D -i $PP_PATH))
+
+          # Install provisioning profile with correct name
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles/$PP_UUID.mobileprovision
+
+          echo "Installed provisioning profile: $PP_UUID"
+
+      - name: Build iOS App (manual signing)
+        run: |
+          flutter build ios --release --no-codesign
+
+      - name: Configure Manual Signing
+        run: |
+          cd ios
+
+          # Update Runner project to use manual signing
+          sed -i '' 's/CODE_SIGN_STYLE = Automatic;/CODE_SIGN_STYLE = Manual;/g' Runner.xcodeproj/project.pbxproj
+
+          # Set code signing identity to Apple Distribution (SDK-specific format)
+          sed -i '' 's/"CODE_SIGN_IDENTITY\[sdk=iphoneos\*\]" = "iPhone Developer"/"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution"/g' Runner.xcodeproj/project.pbxproj
+
+          # Set provisioning profile specifier for Release configuration
+          sed -i '' '/PRODUCT_BUNDLE_IDENTIFIER = com.azimahtech.customer;/a\
+          \t\t\t\tPROVISIONING_PROFILE_SPECIFIER = "Azimah Customer App Store";\
+          ' Runner.xcodeproj/project.pbxproj
+
+          echo "Project configured for manual signing"
+
+      - name: Archive and Export IPA
+        run: |
+          cd ios
+
+          # Archive the app (project file has manual signing configured)
+          xcodebuild -workspace Runner.xcworkspace \
+            -scheme Runner \
+            -configuration Release \
+            -archivePath build/Runner.xcarchive \
+            -allowProvisioningUpdates \
+            DEVELOPMENT_TEAM=WQ6RCH36G9 \
+            archive
+
+          # Export IPA
+          xcodebuild -exportArchive \
+            -archivePath build/Runner.xcarchive \
+            -exportPath build \
+            -exportOptionsPlist ../ios/ExportOptions.plist
+
+      - name: Upload to TestFlight
+        env:
+          API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
+        run: |
+          # Create private_keys directory and save API key file
+          mkdir -p ~/.appstoreconnect/private_keys
+          echo "$API_KEY_CONTENT" | base64 --decode > ~/.appstoreconnect/private_keys/AuthKey_${API_KEY_ID}.p8
+          chmod 600 ~/.appstoreconnect/private_keys/AuthKey_${API_KEY_ID}.p8
+
+          # Upload to TestFlight
+          xcrun altool --upload-app \
+            --type ios \
+            --file ios/build/*.ipa \
+            --apiKey $API_KEY_ID \
+            --apiIssuer $ISSUER_ID
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ios-build
+          path: ios/build/*.ipa

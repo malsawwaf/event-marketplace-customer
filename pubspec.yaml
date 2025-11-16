@@ -4,14 +4,14 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.2.0 <4.0.0'
+  sdk: ^3.5.0
 
 dependencies:
   flutter:
     sdk: flutter
-  
+
   # Supabase
-  supabase_flutter: ^2.0.0
+  supabase_flutter: ^2.8.0  # Upgraded for iOS 18 stability
   
   # State Management
   provider: ^6.1.0
@@ -27,7 +27,7 @@ dependencies:
   geocoding: ^2.1.1
   
   # Images & Media
-  image_picker: ^1.0.4
+  image_picker: ^1.1.2
   
   # Authentication
   google_sign_in: ^6.1.5
@@ -39,7 +39,7 @@ dependencies:
   firebase_analytics: ^10.7.4
   
   # Utilities
-  intl: ^0.18.1
+  intl: any
   url_launcher: ^6.2.1
   share_plus: ^7.2.1
   flutter_rating_bar: ^4.0.1
@@ -51,7 +51,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^3.0.0
+  flutter_lints: ^4.0.0
 
 flutter:
   uses-material-design: true
