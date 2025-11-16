@@ -133,12 +133,13 @@ jobs:
           echo "$API_KEY_CONTENT" | base64 --decode > ~/.appstoreconnect/private_keys/AuthKey_${API_KEY_ID}.p8
           chmod 600 ~/.appstoreconnect/private_keys/AuthKey_${API_KEY_ID}.p8
 
-          # Upload to TestFlight
+          # Upload to TestFlight with verbose logging
           xcrun altool --upload-app \
             --type ios \
             --file ios/build/*.ipa \
             --apiKey $API_KEY_ID \
-            --apiIssuer $ISSUER_ID
+            --apiIssuer $ISSUER_ID \
+            --verbose
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
