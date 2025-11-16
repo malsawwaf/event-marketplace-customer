@@ -94,21 +94,27 @@ import PaymobSDK
 
 // MARK: - PaymobSDKDelegate Methods
 extension AppDelegate {
-    public func transactionRejected() {
+    @objc public func transactionRejected() {
         print("PaymobSDK: Transaction Rejected")
         self.sdkResult?("Rejected")
         self.sdkResult = nil
     }
 
-    public func transactionAccepted(transactionDetails: Any?) {
+    @objc public func transactionAccepted(transactionDetails: Any?) {
         print("PaymobSDK: Transaction Successful")
         self.sdkResult?("Successfull")
         self.sdkResult = nil
     }
 
-    public func transactionPending() {
+    @objc public func transactionPending() {
         print("PaymobSDK: Transaction Pending")
         self.sdkResult?("Pending")
+        self.sdkResult = nil
+    }
+
+    @objc public func userDidCancel() {
+        print("PaymobSDK: User Cancelled")
+        self.sdkResult?("Cancelled")
         self.sdkResult = nil
     }
 }
