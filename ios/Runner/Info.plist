@@ -11,7 +11,9 @@
     <!-- Location -->
     <key>NSLocationWhenInUseUsageDescription</key>
     <string>We need your location to show nearby providers and for delivery</string>
-    
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>We need your location to show nearby providers and for delivery, even when the app is in the background</string>
+
     <!-- Google Sign-In -->
     <key>CFBundleURLTypes</key>
     <array>
