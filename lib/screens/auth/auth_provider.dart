@@ -103,7 +103,7 @@ class AuthProvider with ChangeNotifier {
       // Step 2: Verify this user is NOT a provider
       final userId = response.user?.id;
       if (userId != null) {
-        final providerCheck = await _authService.supabase
+        final providerCheck = await Supabase.instance.client
             .from('providers')
             .select('id')
             .eq('user_id', userId)
