@@ -649,7 +649,12 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
       onChanged: (value) {
         setState(() {
           if (value != null) {
-            _selectedAddonOptions[groupId] = {value};
+            // If tapping the already selected option, deselect it
+            if (selectedOptions.contains(value)) {
+              _selectedAddonOptions[groupId] = {};
+            } else {
+              _selectedAddonOptions[groupId] = {value};
+            }
           } else {
             _selectedAddonOptions[groupId] = {};
           }
