@@ -47,3 +47,6 @@ app.*.map.json
 /android/.gradle
 /android/app/.cxx
 **/build/
+
+# Generated localization files
+lib/l10n/*.dart
