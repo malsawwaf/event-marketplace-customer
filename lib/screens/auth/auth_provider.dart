@@ -92,14 +92,38 @@ class AuthProvider with ChangeNotifier {
       _error = null;
       notifyListeners();
 
+      // Step 1: Authenticate with Supabase
       final response = await _authService.signInWithEmail(
         email: email,
         password: password,
       );
 
       _user = response.user;
+
+      // Step 2: Verify this user is NOT a provider
+      final userId = response.user?.id;
+      if (userId != null) {
+        final providerCheck = await _authService.supabase
+            .from('providers')
+            .select('id')
+            .eq('user_id', userId)
+            .maybeSingle();
+
+        // Step 3: If provider record exists, reject the login
+        if (providerCheck != null) {
+          // This is a provider account, not a customer
+          await _authService.signOut();
+          _user = null;
+          _error = 'Access denied. This account is registered as a provider. Please use the Provider App.';
+          _isLoading = false;
+          notifyListeners();
+          return false;
+        }
+      }
+
+      // Step 4: Customer verified (not a provider), load profile
       await _loadCustomerProfile();
-      
+
       _isLoading = false;
       notifyListeners();
       return true;
