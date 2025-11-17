@@ -6,6 +6,7 @@ import '../../services/provider_service.dart';
 import '../../services/favourites_service.dart';
 import '../../widgets/provider_card_widget.dart';
 import 'provider_detail_screen.dart';
+import '../../l10n/app_localizations.dart';
 
 class MainHomeScreen extends StatefulWidget {
   final VoidCallback? onCartUpdate;
@@ -110,9 +111,11 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Azimah Tech'),
+        title: Text(l10n.appName),
         backgroundColor: AppTheme.primaryNavy,
         foregroundColor: Colors.white,
         elevation: 0,
@@ -131,7 +134,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
                       child: TextField(
                         controller: _searchController,
                         decoration: InputDecoration(
-                          hintText: 'Search providers, services...',
+                          hintText: l10n.searchPlaceholder,
                           prefixIcon: const Icon(Icons.search),
                           suffixIcon: _searchController.text.isNotEmpty
                               ? IconButton(
@@ -218,9 +221,9 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
                               children: [
                                 Icon(Icons.star, color: Colors.amber[700]),
                                 const SizedBox(width: 8),
-                                const Text(
-                                  'Featured Providers',
-                                  style: TextStyle(
+                                Text(
+                                  l10n.popularProviders,
+                                  style: const TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -285,8 +288,8 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
                       child: Text(
                         _selectedCategory != null ||
                                 _searchController.text.isNotEmpty
-                            ? 'Search Results (${_allProviders.length})'
-                            : 'All Providers',
+                            ? '${l10n.search} ${l10n.search} (${_allProviders.length})'
+                            : l10n.providers,
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -308,7 +311,7 @@ class _MainHomeScreenState extends State<MainHomeScreen> {
                                 ),
                                 const SizedBox(height: 16),
                                 Text(
-                                  'No providers found',
+                                  l10n.noProviders,
                                   style: TextStyle(
                                     fontSize: 18,
                                     color: Colors.grey[600],

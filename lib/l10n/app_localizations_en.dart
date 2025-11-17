@@ -535,4 +535,431 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get setAsDefault => 'Set as Default';
+
+  // Auth Screen Additions
+  @override
+  String get signInToContinue => 'Sign in to continue';
+
+  @override
+  String get enterYourEmail => 'Enter your email';
+
+  @override
+  String get pleaseEnterYourEmail => 'Please enter your email';
+
+  @override
+  String get pleaseEnterValidEmail => 'Please enter a valid email';
+
+  @override
+  String get enterYourPassword => 'Enter your password';
+
+  @override
+  String get pleaseEnterYourPassword => 'Please enter your password';
+
+  @override
+  String get signIn => 'Sign In';
+
+  @override
+  String get or => 'Or';
+
+  @override
+  String get loginFailed => 'Login failed';
+
+  @override
+  String get signUpToGetStarted => 'Sign up to get started';
+
+  @override
+  String get createPassword => 'Create a password';
+
+  @override
+  String get pleaseMeetAllPasswordRequirements => 'Please meet all password requirements';
+
+  @override
+  String get pleaseAgreeToTermsAndPrivacy => 'Please agree to Terms & Privacy Policy';
+
+  @override
+  String get registrationFailed => 'Registration failed';
+
+  @override
+  String get atLeast8Characters => 'At least 8 characters';
+
+  @override
+  String get containsNumber => 'Contains a number';
+
+  @override
+  String get containsSpecialCharacter => 'Contains a special character';
+
+  @override
+  String get reEnterYourPassword => 'Re-enter your password';
+
+  @override
+  String get iAgreeToThe => 'I agree to the';
+
+  @override
+  String get and => 'and';
+
+  @override
+  String get alreadyHaveAccount => 'Already have an account?';
+
+  @override
+  String get enterYourFirstName => 'Enter your first name';
+
+  @override
+  String get enterYourLastName => 'Enter your last name';
+
+  @override
+  String get phoneHint => '05xxxxxxxx';
+
+  @override
+  String get completeYourProfile => 'Complete Your Profile';
+
+  @override
+  String get almostThere => 'Almost there!';
+
+  @override
+  String get letsGetStarted => 'Let\'s get started';
+
+  @override
+  String get profileCompletedSuccessfully => 'Profile completed successfully';
+
+  @override
+  String get errorCompletingProfile => 'Error completing profile';
+
+  @override
+  String get resetYourPassword => 'Reset Your Password';
+
+  @override
+  String get enterEmailToResetPassword => 'Enter your email to reset password';
+
+  @override
+  String get sendResetLink => 'Send Reset Link';
+
+  @override
+  String get checkYourEmail => 'Check Your Email';
+
+  @override
+  String get resetLinkSentTo => 'Password reset link sent to';
+
+  @override
+  String get didNotReceiveEmail => 'Didn\'t receive the email?';
+
+  @override
+  String get resendLink => 'Resend Link';
+
+  @override
+  String get backToSignIn => 'Back to Sign In';
+
+  @override
+  String get errorSendingResetLink => 'Error sending reset link';
+
+  @override
+  String get resetLinkSentSuccessfully => 'Reset link sent successfully';
+
+  @override
+  String get welcomeToAzimahTech => 'Welcome to Azimah Tech';
+
+  @override
+  String get yourEventMarketplace => 'Your Event Marketplace';
+
+  @override
+  String get selectAddress => 'Select Address';
+
+  @override
+  String get selectedAddress => 'Selected Address';
+
+  @override
+  String get pleaseSelectAddress => 'Please select an address';
+
+  @override
+  String get noProviders => 'No providers available';
+
+  @override
+  String get rating => 'Rating';
+
+  @override
+  String get viewMenu => 'View Menu';
+
+  @override
+  String get menu => 'Menu';
+
+  @override
+  String get information => 'Information';
+
+  @override
+  String get openingHours => 'Opening Hours';
+
+  @override
+  String get location => 'Location';
+
+  @override
+  String get contact => 'Contact';
+
+  @override
+  String get minimumOrder => 'Minimum Order';
+
+  @override
+  String get deliveryFee => 'Delivery Fee';
+
+  @override
+  String get estimatedDelivery => 'Estimated Delivery';
+
+  @override
+  String get addons => 'Add-ons';
+
+  @override
+  String get select => 'Select';
+
+  @override
+  String get updateCart => 'Update Cart';
+
+  @override
+  String get emptyCart => 'Empty Cart';
+
+  @override
+  String get yourCartIsEmpty => 'Your cart is empty';
+
+  @override
+  String get startShopping => 'Start Shopping';
+
+  @override
+  String get orderSummary => 'Order Summary';
+
+  @override
+  String get deliveryFeeLabel => 'Delivery Fee';
+
+  @override
+  String get taxLabel => 'Tax';
+
+  @override
+  String get discount => 'Discount';
+
+  @override
+  String get proceedToCheckout => 'Proceed to Checkout';
+
+  @override
+  String get selectDeliveryAddress => 'Select Delivery Address';
+
+  @override
+  String get selectEventDate => 'Select Event Date';
+
+  @override
+  String get eventDateAndTime => 'Event Date & Time';
+
+  @override
+  String get specialInstructions => 'Special Instructions';
+
+  @override
+  String get paymentMethod => 'Payment Method';
+
+  @override
+  String get cashOnDelivery => 'Cash on Delivery';
+
+  @override
+  String get creditCard => 'Credit Card';
+
+  @override
+  String get applyCoupon => 'Apply Coupon';
+
+  @override
+  String get couponCode => 'Coupon Code';
+
+  @override
+  String get apply => 'Apply';
+
+  @override
+  String get placeOrder => 'Place Order';
+
+  @override
+  String get processing => 'Processing...';
+
+  @override
+  String get orderPlacedSuccessfully => 'Order placed successfully';
+
+  @override
+  String get thankYouForYourOrder => 'Thank you for your order!';
+
+  @override
+  String get weArePreparingYourOrder => 'We are preparing your order';
+
+  @override
+  String get viewOrderDetails => 'View Order Details';
+
+  @override
+  String get backToHome => 'Back to Home';
+
+  @override
+  String get activeOrders => 'Active Orders';
+
+  @override
+  String get pastOrders => 'Past Orders';
+
+  @override
+  String get reorder => 'Reorder';
+
+  @override
+  String get cancelOrder => 'Cancel Order';
+
+  @override
+  String get trackOrder => 'Track Order';
+
+  @override
+  String get orderItems => 'Order Items';
+
+  @override
+  String get deliveryInformation => 'Delivery Information';
+
+  @override
+  String get paymentInformation => 'Payment Information';
+
+  @override
+  String get orderTimeline => 'Order Timeline';
+
+  @override
+  String get placed => 'Placed';
+
+  @override
+  String get accepted => 'Accepted';
+
+  @override
+  String get inPreparation => 'In Preparation';
+
+  @override
+  String get outForDelivery => 'Out for Delivery';
+
+  @override
+  String get completed => 'Completed';
+
+  @override
+  String get writeReview => 'Write Review';
+
+  @override
+  String get rateYourExperience => 'Rate Your Experience';
+
+  @override
+  String get howWasYourOrder => 'How was your order?';
+
+  @override
+  String get rateProvider => 'Rate Provider';
+
+  @override
+  String get rateItems => 'Rate Items';
+
+  @override
+  String get yourReview => 'Your Review';
+
+  @override
+  String get writeYourReview => 'Write your review here...';
+
+  @override
+  String get submitReview => 'Submit Review';
+
+  @override
+  String get thankYouForReview => 'Thank you for your review!';
+
+  @override
+  String get searchForItems => 'Search for items, providers...';
+
+  @override
+  String get recentSearches => 'Recent Searches';
+
+  @override
+  String get popularSearches => 'Popular Searches';
+
+  @override
+  String get noResults => 'No results found';
+
+  @override
+  String get tryDifferentKeywords => 'Try different keywords';
+
+  @override
+  String get filter => 'Filter';
+
+  @override
+  String get sortBy => 'Sort By';
+
+  @override
+  String get priceRange => 'Price Range';
+
+  @override
+  String get category => 'Category';
+
+  @override
+  String get applyFilters => 'Apply Filters';
+
+  @override
+  String get clearAll => 'Clear All';
+
+  @override
+  String get noCategories => 'No categories available';
+
+  @override
+  String get viewAll => 'View All';
+
+  @override
+  String get featured => 'Featured';
+
+  @override
+  String get newArrivals => 'New Arrivals';
+
+  @override
+  String get bestSelling => 'Best Selling';
+
+  @override
+  String get onSale => 'On Sale';
+
+  @override
+  String get addNew => 'Add New';
+
+  @override
+  String get editAddress => 'Edit Address';
+
+  @override
+  String get addressNickname => 'Address Nickname';
+
+  @override
+  String get street => 'Street';
+
+  @override
+  String get city => 'City';
+
+  @override
+  String get state => 'State';
+
+  @override
+  String get zipCode => 'Zip Code';
+
+  @override
+  String get country => 'Country';
+
+  @override
+  String get makeDefault => 'Make Default';
+
+  @override
+  String get saveAddress => 'Save Address';
+
+  @override
+  String get pleaseEnterAddressNickname => 'Please enter address nickname';
+
+  @override
+  String get pleaseEnterStreet => 'Please enter street';
+
+  @override
+  String get pleaseEnterCity => 'Please enter city';
+
+  @override
+  String get addressSavedSuccessfully => 'Address saved successfully';
+
+  @override
+  String get errorSavingAddress => 'Error saving address';
+
+  @override
+  String get loadingPayment => 'Loading payment...';
+
+  @override
+  String get paymentCompleted => 'Payment completed';
+
+  @override
+  String get paymentFailed => 'Payment failed';
+
+  @override
+  String get paymentCancelled => 'Payment cancelled';
 }

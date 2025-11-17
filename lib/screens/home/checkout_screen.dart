@@ -5,6 +5,7 @@ import '../../services/address_service.dart';
 import '../../services/paymob_intention_service.dart';
 import '../../services/paymob_sdk_service.dart';
 import '../../config/app_theme.dart';
+import '../../l10n/app_localizations.dart';
 import 'address_selection_screen.dart';
 import 'order_confirmation_screen.dart';
 
@@ -225,10 +226,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   Future<void> _applyCoupon() async {
+    final l10n = AppLocalizations.of(context);
     final couponCode = _couponController.text.trim().toUpperCase();
     if (couponCode.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a coupon code')),
+        SnackBar(content: Text(l10n.couponCode)),
       );
       return;
     }
@@ -236,7 +238,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     try {
       final response = await _supabase
           .from('coupons')
-          .select()
+          .select('*, code_ar, description_ar')
           .eq('code', couponCode)
           .eq('is_active', true)
           .or('provider_id.eq.${widget.providerId},provider_id.is.null')
@@ -326,16 +328,17 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   Future<void> _placeOrder() async {
+    final l10n = AppLocalizations.of(context);
     if (_selectedAddress == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a delivery address')),
+        SnackBar(content: Text(l10n.selectDeliveryAddress)),
       );
       return;
     }
 
     if (!_validateDates()) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select event dates for all items')),
+        SnackBar(content: Text(l10n.selectEventDate)),
       );
       return;
     }
@@ -640,17 +643,20 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+
     if (_isLoading) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Checkout')),
+        appBar: AppBar(title: Text(l10n.checkout)),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
 
     if (_cartData == null || _cartData!['items'] == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Checkout')),
-        body: const Center(child: Text('Cart not found')),
+        appBar: AppBar(title: Text(l10n.checkout)),
+        body: Center(child: Text(l10n.cartEmpty)),
       );
     }
 
@@ -659,7 +665,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     final totals = _calculateTotals();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Checkout')),
+      appBar: AppBar(title: Text(l10n.checkout)),
       body: Column(
         children: [
           Expanded(
@@ -687,7 +693,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   Widget _buildProviderSection(Map<String, dynamic> provider) {
-    final companyName = provider['company_name_en'] as String;
+    final l10n = AppLocalizations.of(context);
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    final companyNameEn = provider['company_name_en'] as String;
+    final companyNameAr = provider['company_name_ar'] as String?;
+    final companyName = isArabic && companyNameAr != null ? companyNameAr : companyNameEn;
     final photoUrl = provider['profile_photo_url'] as String?;
 
     return Card(
@@ -705,12 +715,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Ordering from',
-                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                  Text(
+                    l10n.providers,
+                    style: const TextStyle(fontSize: 12, color: Colors.grey),
                   ),
                   Text(
                     companyName,
+                    textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -726,6 +737,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   Widget _buildAddressSection() {
+    final l10n = AppLocalizations.of(context);
     final addressService = AddressService();
 
     return Card(
@@ -738,9 +750,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               children: [
                 Icon(Icons.location_on, color: AppTheme.primaryNavy),
                 const SizedBox(width: 8),
-                const Text(
-                  'Delivery Address',
-                  style: TextStyle(
+                Text(
+                  l10n.deliveryAddress,
+                  style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                   ),
@@ -760,9 +772,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               ),
               const SizedBox(height: 12),
             ] else ...[
-              const Text(
-                'No address selected',
-                style: TextStyle(color: Colors.grey),
+              Text(
+                l10n.selectAddress,
+                style: const TextStyle(color: Colors.grey),
               ),
               const SizedBox(height: 12),
             ],
@@ -771,7 +783,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               child: OutlinedButton.icon(
                 onPressed: _selectAddress,
                 icon: Icon(_selectedAddress != null ? Icons.edit : Icons.add),
-                label: Text(_selectedAddress != null ? 'Change Address' : 'Add Address'),
+                label: Text(_selectedAddress != null ? l10n.editAddress : l10n.addAddress),
               ),
             ),
           ],
@@ -781,6 +793,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   Widget _buildOrderItemsSection(List<dynamic> items) {
+    final l10n = AppLocalizations.of(context);
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -792,7 +805,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 Icon(Icons.shopping_bag, color: AppTheme.primaryNavy),
                 const SizedBox(width: 8),
                 Text(
-                  'Order Items (${items.length})',
+                  '${l10n.orderItems} (${items.length})',
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
@@ -809,12 +822,16 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   Widget _buildExpandableItemCard(Map<String, dynamic> cartItem) {
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     final item = cartItem['items'] as Map<String, dynamic>;
     final cartItemId = cartItem['id'] as String;
     final quantity = cartItem['quantity'] as int;
     final addons = cartItem['addons'] as List<dynamic>?;
 
-    final name = item['name'] as String;
+    final nameEn = item['name'] as String;
+    final nameAr = item['name_ar'] as String?;
+    final name = isArabic && nameAr != null ? nameAr : nameEn;
+
     final price = (item['price'] as num).toDouble();
     final pricingType = item['pricing_type'] as String;
 
@@ -886,6 +903,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       children: [
                         Text(
                           name,
+                          textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
@@ -1205,6 +1223,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   Widget _buildCouponSection() {
+    final l10n = AppLocalizations.of(context);
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -1215,9 +1234,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               children: [
                 Icon(Icons.discount, color: AppTheme.primaryNavy),
                 const SizedBox(width: 8),
-                const Text(
-                  'Coupon Code',
-                  style: TextStyle(
+                Text(
+                  l10n.couponCode,
+                  style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                   ),
@@ -1268,9 +1287,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   Expanded(
                     child: TextField(
                       controller: _couponController,
-                      decoration: const InputDecoration(
-                        hintText: 'Enter coupon code',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        hintText: l10n.couponCode,
+                        border: const OutlineInputBorder(),
                         isDense: true,
                       ),
                       textCapitalization: TextCapitalization.characters,
@@ -1279,7 +1298,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   const SizedBox(width: 8),
                   ElevatedButton(
                     onPressed: _applyCoupon,
-                    child: const Text('Apply'),
+                    child: Text(l10n.apply),
                   ),
                 ],
               ),
@@ -1291,6 +1310,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   Widget _buildPaymentMethodSection() {
+    final l10n = AppLocalizations.of(context);
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -1301,9 +1321,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               children: [
                 Icon(Icons.payment, color: AppTheme.primaryNavy),
                 const SizedBox(width: 8),
-                const Text(
-                  'Payment Method',
-                  style: TextStyle(
+                Text(
+                  l10n.paymentMethod,
+                  style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                   ),
@@ -1312,8 +1332,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             ),
             const SizedBox(height: 12),
             RadioListTile<String>(
-              title: const Text('Cash on Delivery'),
-              subtitle: const Text('Pay when order is delivered'),
+              title: Text(l10n.cashOnDelivery),
+              subtitle: Text(l10n.cashOnDelivery),
               value: 'cash',
               groupValue: _paymentMethod,
               onChanged: (value) => setState(() => _paymentMethod = value!),
@@ -1321,8 +1341,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               contentPadding: EdgeInsets.zero,
             ),
             RadioListTile<String>(
-              title: const Text('Card Payment'),
-              subtitle: const Text('Pay securely online via Paymob'),
+              title: Text(l10n.creditCard),
+              subtitle: Text(l10n.creditCard),
               value: 'card',
               groupValue: _paymentMethod,
               onChanged: (value) => setState(() => _paymentMethod = value!),
@@ -1336,29 +1356,30 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   Widget _buildOrderSummary(Map<String, double> totals) {
+    final l10n = AppLocalizations.of(context);
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Order Summary',
-              style: TextStyle(
+            Text(
+              l10n.orderSummary,
+              style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
               ),
             ),
             const SizedBox(height: 12),
-            _buildSummaryRow('Subtotal', totals['subtotal']!),
-            _buildSummaryRow('VAT (15%)', totals['vat']!),
+            _buildSummaryRow(l10n.subtotal, totals['subtotal']!),
+            _buildSummaryRow(l10n.taxLabel, totals['vat']!),
             if (totals['delivery_fee']! > 0)
-              _buildSummaryRow('Delivery Fee', totals['delivery_fee']!),
+              _buildSummaryRow(l10n.deliveryFeeLabel, totals['delivery_fee']!),
             if (totals['discount']! > 0)
-              _buildSummaryRow('Discount', -totals['discount']!, color: Colors.green),
+              _buildSummaryRow(l10n.discount, -totals['discount']!, color: Colors.green),
             const Divider(height: 24, thickness: 2),
             _buildSummaryRow(
-              'Total',
+              l10n.total,
               totals['total']!,
               isBold: true,
               fontSize: 18,
@@ -1403,14 +1424,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   Widget _buildPlaceOrderButton(double total) {
+    final l10n = AppLocalizations.of(context);
     final allDatesValid = _validateDates();
     final canPlaceOrder = !_isPlacingOrder && _selectedAddress != null && allDatesValid;
 
-    String buttonText = 'Place Order - ${total.toStringAsFixed(2)} SAR';
+    String buttonText = '${l10n.placeOrder} - ${total.toStringAsFixed(2)} SAR';
     if (_selectedAddress == null) {
-      buttonText = 'Select Address First';
+      buttonText = l10n.selectAddress;
     } else if (!allDatesValid) {
-      buttonText = 'Select Event Dates';
+      buttonText = l10n.selectEventDate;
     }
 
     return Container(

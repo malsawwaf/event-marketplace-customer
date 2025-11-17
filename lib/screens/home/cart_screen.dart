@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:async';
 import '../../services/cart_service.dart';
 import '../../config/app_theme.dart';
+import '../../l10n/app_localizations.dart';
 import 'checkout_screen.dart';
 
 class CartScreen extends StatefulWidget {
@@ -55,29 +56,31 @@ class _CartScreenState extends State<CartScreen> with AutomaticKeepAliveClientMi
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading cart: $e')),
+          SnackBar(content: Text('${l10n.error}: $e')),
         );
       }
     }
   }
 
   Future<void> _removeItem(String cartItemId) async {
+    final l10n = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Remove Item'),
-        content: const Text('Are you sure you want to remove this item from cart?'),
+        title: Text(l10n.removeFromCart),
+        content: Text(l10n.confirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Remove'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -89,17 +92,19 @@ class _CartScreenState extends State<CartScreen> with AutomaticKeepAliveClientMi
 
     try {
       await cartService.removeItemFromCart(cartItemId);
-      
+
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Item removed from cart')),
+          SnackBar(content: Text(l10n.removeFromCart)),
         );
         _loadCarts();
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error removing item: $e')),
+          SnackBar(content: Text('${l10n.error}: $e')),
         );
       }
     }
@@ -168,17 +173,18 @@ class _CartScreenState extends State<CartScreen> with AutomaticKeepAliveClientMi
   @override
   Widget build(BuildContext context) {
     super.build(context); // Required for AutomaticKeepAliveClientMixin
+    final l10n = AppLocalizations.of(context);
 
     if (_isLoading) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Shopping Cart')),
+        appBar: AppBar(title: Text(l10n.cart)),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
 
     if (_carts.isEmpty) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Shopping Cart')),
+        appBar: AppBar(title: Text(l10n.cart)),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -190,7 +196,7 @@ class _CartScreenState extends State<CartScreen> with AutomaticKeepAliveClientMi
               ),
               const SizedBox(height: 16),
               Text(
-                'Your cart is empty',
+                l10n.cartEmpty,
                 style: TextStyle(
                   fontSize: 18,
                   color: Colors.grey[600],
@@ -198,7 +204,7 @@ class _CartScreenState extends State<CartScreen> with AutomaticKeepAliveClientMi
               ),
               const SizedBox(height: 8),
               Text(
-                'Add items to get started',
+                l10n.continueShopping,
                 style: TextStyle(
                   fontSize: 14,
                   color: Colors.grey[500],
@@ -212,7 +218,7 @@ class _CartScreenState extends State<CartScreen> with AutomaticKeepAliveClientMi
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Shopping Cart'),
+        title: Text(l10n.cart),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -233,9 +239,13 @@ class _CartScreenState extends State<CartScreen> with AutomaticKeepAliveClientMi
   }
 
   Widget _buildProviderCart(Map<String, dynamic> cart) {
+    final l10n = AppLocalizations.of(context);
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     final provider = cart['providers'] as Map<String, dynamic>;
     final items = cart['items'] as List<dynamic>;
-    final companyName = provider['company_name_en'] as String;
+    final companyNameEn = provider['company_name_en'] as String;
+    final companyNameAr = provider['company_name_ar'] as String?;
+    final companyName = isArabic && companyNameAr != null ? companyNameAr : companyNameEn;
     final photoUrl = provider['profile_photo_url'] as String?;
 
     final cartService = CartService();
@@ -266,6 +276,7 @@ class _CartScreenState extends State<CartScreen> with AutomaticKeepAliveClientMi
                 Expanded(
                   child: Text(
                     companyName,
+                    textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -285,15 +296,15 @@ class _CartScreenState extends State<CartScreen> with AutomaticKeepAliveClientMi
             child: Column(
               children: [
                 const Divider(),
-                _buildTotalRow('Subtotal', totals['subtotal']!),
-                _buildTotalRow('VAT (15%)', totals['vat']!),
+                _buildTotalRow(l10n.subtotal, totals['subtotal']!),
+                _buildTotalRow(l10n.taxLabel, totals['vat']!),
                 if (totals['delivery_fee']! > 0)
-                  _buildTotalRow('Delivery Fee', totals['delivery_fee']!),
+                  _buildTotalRow(l10n.deliveryFeeLabel, totals['delivery_fee']!),
                 if (totals['discount']! > 0)
-                  _buildTotalRow('Discount', -totals['discount']!, color: Colors.green),
+                  _buildTotalRow(l10n.discount, -totals['discount']!, color: Colors.green),
                 const Divider(thickness: 2),
                 _buildTotalRow(
-                  'Total',
+                  l10n.total,
                   totals['total']!,
                   isBold: true,
                   fontSize: 18,
@@ -346,9 +357,9 @@ class _CartScreenState extends State<CartScreen> with AutomaticKeepAliveClientMi
                       backgroundColor: AppTheme.primaryNavy,
                       padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
-                    child: const Text(
-                      'Proceed to Checkout',
-                      style: TextStyle(
+                    child: Text(
+                      l10n.proceedToCheckout,
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
@@ -365,6 +376,7 @@ class _CartScreenState extends State<CartScreen> with AutomaticKeepAliveClientMi
   }
 
   Widget _buildCartItem(Map<String, dynamic> cartItem) {
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     final item = cartItem['items'] as Map<String, dynamic>;
     final cartItemId = cartItem['id'] as String;
     final quantity = cartItem['quantity'] as int;
@@ -372,7 +384,10 @@ class _CartScreenState extends State<CartScreen> with AutomaticKeepAliveClientMi
     final reservation = cartItem['reservation'] as Map<String, dynamic>?;
     final notes = cartItem['notes'] as String?;
 
-    final name = item['name'] as String;
+    final nameEn = item['name'] as String;
+    final nameAr = item['name_ar'] as String?;
+    final name = isArabic && nameAr != null ? nameAr : nameEn;
+
     final price = (item['price'] as num).toDouble();
     final pricingType = item['pricing_type'] as String;
     final photoUrls = item['photo_urls'] as List<dynamic>?;
@@ -450,6 +465,7 @@ class _CartScreenState extends State<CartScreen> with AutomaticKeepAliveClientMi
                   children: [
                     Text(
                       name,
+                      textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,

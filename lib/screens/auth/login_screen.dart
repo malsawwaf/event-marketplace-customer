@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../config/app_theme.dart';
+import '../../l10n/app_localizations.dart';
 import 'auth_provider.dart';
 import 'register_screen.dart';
 import 'forgot_password_screen.dart';
@@ -59,9 +60,10 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } else {
       // Show error
+      final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(authProvider.error ?? 'Login failed'),
+          content: Text(authProvider.error ?? l10n.loginFailed),
           backgroundColor: Colors.red,
         ),
       );
@@ -70,6 +72,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       backgroundColor: AppTheme.lightBackground,
       body: SafeArea(
@@ -99,7 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 32),
                 // Welcome text
                 Text(
-                  'Welcome Back!',
+                  l10n.welcomeBack,
                   style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
@@ -109,7 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Sign in to continue',
+                  l10n.signInToContinue,
                   style: TextStyle(
                     fontSize: 16,
                     color: AppTheme.textSecondary,
@@ -122,8 +126,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
-                    labelText: 'Email',
-                    hintText: 'Enter your email',
+                    labelText: l10n.email,
+                    hintText: l10n.enterYourEmail,
                     prefixIcon: Icon(Icons.email_outlined, color: AppTheme.primaryNavy),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -135,10 +139,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your email';
+                      return l10n.pleaseEnterYourEmail;
                     }
                     if (!value.contains('@')) {
-                      return 'Please enter a valid email';
+                      return l10n.pleaseEnterValidEmail;
                     }
                     return null;
                   },
@@ -149,8 +153,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   controller: _passwordController,
                   obscureText: _obscurePassword,
                   decoration: InputDecoration(
-                    labelText: 'Password',
-                    hintText: 'Enter your password',
+                    labelText: l10n.password,
+                    hintText: l10n.enterYourPassword,
                     prefixIcon: Icon(Icons.lock_outlined, color: AppTheme.primaryNavy),
                     suffixIcon: IconButton(
                       icon: Icon(
@@ -175,7 +179,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your password';
+                      return l10n.pleaseEnterYourPassword;
                     }
                     return null;
                   },
@@ -195,7 +199,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: TextButton.styleFrom(
                       foregroundColor: AppTheme.primaryNavy,
                     ),
-                    child: const Text('Forgot Password?'),
+                    child: Text(l10n.forgotPassword),
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -223,9 +227,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                     AlwaysStoppedAnimation<Color>(Colors.white),
                               ),
                             )
-                          : const Text(
-                              'Sign In',
-                              style: TextStyle(
+                          : Text(
+                              l10n.signIn,
+                              style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -241,7 +245,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
-                        'Or',
+                        l10n.or,
                         style: TextStyle(
                           color: AppTheme.textSecondary,
                           fontWeight: FontWeight.w500,
@@ -269,9 +273,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     foregroundColor: AppTheme.primaryNavy,
                   ),
-                  child: const Text(
-                    'Create Account',
-                    style: TextStyle(
+                  child: Text(
+                    l10n.createAccount,
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),

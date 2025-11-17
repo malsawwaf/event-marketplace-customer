@@ -4,6 +4,7 @@ import '../../utils/categories.dart';
 import '../../utils/cities.dart';
 import '../../services/location_service.dart';
 import 'category_providers_screen.dart';
+import '../../l10n/app_localizations.dart';
 
 class CategoriesScreen extends StatefulWidget {
   const CategoriesScreen({Key? key}) : super(key: key);
@@ -44,10 +45,12 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       backgroundColor: AppTheme.lightBackground,
       appBar: AppBar(
-        title: const Text('Azimah Tech'),
+        title: Text(l10n.appName),
         centerTitle: true,
         backgroundColor: AppTheme.primaryNavy,
         foregroundColor: Colors.white,
@@ -62,7 +65,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
               const SizedBox(height: 20),
               // Header
               Text(
-                'Choose a Category',
+                l10n.categories,
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
@@ -72,7 +75,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Select the type of event service you need',
+                l10n.allCategories,
                 style: TextStyle(
                   fontSize: 16,
                   color: AppTheme.textSecondary,
@@ -113,7 +116,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                   ),
                                   const SizedBox(width: 12),
                                   Text(
-                                    'Detecting your location...',
+                                    l10n.loading,
                                     style: TextStyle(
                                       color: AppTheme.textSecondary,
                                       fontSize: 14,
@@ -170,8 +173,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                       onTap: () {
                         if (_selectedCity == null) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Please wait while we detect your city...'),
+                            SnackBar(
+                              content: Text(l10n.pleaseSelectAddress),
                             ),
                           );
                           return;
@@ -207,8 +210,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                       onTap: () {
                         if (_selectedCity == null) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Please wait while we detect your city...'),
+                            SnackBar(
+                              content: Text(l10n.pleaseSelectAddress),
                             ),
                           );
                           return;
@@ -244,8 +247,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                       onTap: () {
                         if (_selectedCity == null) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Please wait while we detect your city...'),
+                            SnackBar(
+                              content: Text(l10n.pleaseSelectAddress),
                             ),
                           );
                           return;

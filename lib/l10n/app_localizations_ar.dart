@@ -535,4 +535,431 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get setAsDefault => 'تعيين كافتراضي';
+
+  // Auth Screen Additions
+  @override
+  String get signInToContinue => 'سجل الدخول للمتابعة';
+
+  @override
+  String get enterYourEmail => 'أدخل بريدك الإلكتروني';
+
+  @override
+  String get pleaseEnterYourEmail => 'الرجاء إدخال بريدك الإلكتروني';
+
+  @override
+  String get pleaseEnterValidEmail => 'الرجاء إدخال بريد إلكتروني صحيح';
+
+  @override
+  String get enterYourPassword => 'أدخل كلمة المرور';
+
+  @override
+  String get pleaseEnterYourPassword => 'الرجاء إدخال كلمة المرور';
+
+  @override
+  String get signIn => 'تسجيل الدخول';
+
+  @override
+  String get or => 'أو';
+
+  @override
+  String get loginFailed => 'فشل تسجيل الدخول';
+
+  @override
+  String get signUpToGetStarted => 'سجل للبدء';
+
+  @override
+  String get createPassword => 'إنشاء كلمة مرور';
+
+  @override
+  String get pleaseMeetAllPasswordRequirements => 'يرجى استيفاء جميع متطلبات كلمة المرور';
+
+  @override
+  String get pleaseAgreeToTermsAndPrivacy => 'يرجى الموافقة على الشروط وسياسة الخصوصية';
+
+  @override
+  String get registrationFailed => 'فشل إنشاء الحساب';
+
+  @override
+  String get atLeast8Characters => 'على الأقل 8 أحرف';
+
+  @override
+  String get containsNumber => 'يحتوي على رقم';
+
+  @override
+  String get containsSpecialCharacter => 'يحتوي على رمز خاص';
+
+  @override
+  String get reEnterYourPassword => 'أعد إدخال كلمة المرور';
+
+  @override
+  String get iAgreeToThe => 'أوافق على';
+
+  @override
+  String get and => 'و';
+
+  @override
+  String get alreadyHaveAccount => 'لديك حساب بالفعل؟';
+
+  @override
+  String get enterYourFirstName => 'أدخل اسمك الأول';
+
+  @override
+  String get enterYourLastName => 'أدخل اسم العائلة';
+
+  @override
+  String get phoneHint => '05xxxxxxxx';
+
+  @override
+  String get completeYourProfile => 'أكمل ملفك الشخصي';
+
+  @override
+  String get almostThere => 'أوشكت على الانتهاء!';
+
+  @override
+  String get letsGetStarted => 'لنبدأ';
+
+  @override
+  String get profileCompletedSuccessfully => 'تم إكمال الملف الشخصي بنجاح';
+
+  @override
+  String get errorCompletingProfile => 'خطأ في إكمال الملف الشخصي';
+
+  @override
+  String get resetYourPassword => 'إعادة تعيين كلمة المرور';
+
+  @override
+  String get enterEmailToResetPassword => 'أدخل بريدك الإلكتروني لإعادة تعيين كلمة المرور';
+
+  @override
+  String get sendResetLink => 'إرسال رابط إعادة التعيين';
+
+  @override
+  String get checkYourEmail => 'تحقق من بريدك الإلكتروني';
+
+  @override
+  String get resetLinkSentTo => 'تم إرسال رابط إعادة تعيين كلمة المرور إلى';
+
+  @override
+  String get didNotReceiveEmail => 'لم تستلم البريد الإلكتروني؟';
+
+  @override
+  String get resendLink => 'إعادة إرسال الرابط';
+
+  @override
+  String get backToSignIn => 'العودة إلى تسجيل الدخول';
+
+  @override
+  String get errorSendingResetLink => 'خطأ في إرسال رابط إعادة التعيين';
+
+  @override
+  String get resetLinkSentSuccessfully => 'تم إرسال رابط إعادة التعيين بنجاح';
+
+  @override
+  String get welcomeToAzimahTech => 'مرحباً بك في أزيمة تك';
+
+  @override
+  String get yourEventMarketplace => 'سوق المناسبات الخاص بك';
+
+  @override
+  String get selectAddress => 'اختر العنوان';
+
+  @override
+  String get selectedAddress => 'العنوان المختار';
+
+  @override
+  String get pleaseSelectAddress => 'يرجى اختيار عنوان';
+
+  @override
+  String get noProviders => 'لا يوجد مقدمو خدمات متاحون';
+
+  @override
+  String get rating => 'التقييم';
+
+  @override
+  String get viewMenu => 'عرض القائمة';
+
+  @override
+  String get menu => 'القائمة';
+
+  @override
+  String get information => 'المعلومات';
+
+  @override
+  String get openingHours => 'ساعات العمل';
+
+  @override
+  String get location => 'الموقع';
+
+  @override
+  String get contact => 'التواصل';
+
+  @override
+  String get minimumOrder => 'الحد الأدنى للطلب';
+
+  @override
+  String get deliveryFee => 'رسوم التوصيل';
+
+  @override
+  String get estimatedDelivery => 'التوصيل المقدر';
+
+  @override
+  String get addons => 'الإضافات';
+
+  @override
+  String get select => 'اختر';
+
+  @override
+  String get updateCart => 'تحديث السلة';
+
+  @override
+  String get emptyCart => 'إفراغ السلة';
+
+  @override
+  String get yourCartIsEmpty => 'سلتك فارغة';
+
+  @override
+  String get startShopping => 'ابدأ التسوق';
+
+  @override
+  String get orderSummary => 'ملخص الطلب';
+
+  @override
+  String get deliveryFeeLabel => 'رسوم التوصيل';
+
+  @override
+  String get taxLabel => 'الضريبة';
+
+  @override
+  String get discount => 'الخصم';
+
+  @override
+  String get proceedToCheckout => 'متابعة إلى الدفع';
+
+  @override
+  String get selectDeliveryAddress => 'اختر عنوان التوصيل';
+
+  @override
+  String get selectEventDate => 'اختر تاريخ المناسبة';
+
+  @override
+  String get eventDateAndTime => 'تاريخ ووقت المناسبة';
+
+  @override
+  String get specialInstructions => 'تعليمات خاصة';
+
+  @override
+  String get paymentMethod => 'طريقة الدفع';
+
+  @override
+  String get cashOnDelivery => 'الدفع عند الاستلام';
+
+  @override
+  String get creditCard => 'بطاقة ائتمان';
+
+  @override
+  String get applyCoupon => 'تطبيق كوبون';
+
+  @override
+  String get couponCode => 'رمز الكوبون';
+
+  @override
+  String get apply => 'تطبيق';
+
+  @override
+  String get placeOrder => 'تأكيد الطلب';
+
+  @override
+  String get processing => 'جارٍ المعالجة...';
+
+  @override
+  String get orderPlacedSuccessfully => 'تم تأكيد الطلب بنجاح';
+
+  @override
+  String get thankYouForYourOrder => 'شكراً لطلبك!';
+
+  @override
+  String get weArePreparingYourOrder => 'نحن نحضر طلبك';
+
+  @override
+  String get viewOrderDetails => 'عرض تفاصيل الطلب';
+
+  @override
+  String get backToHome => 'العودة إلى الرئيسية';
+
+  @override
+  String get activeOrders => 'الطلبات النشطة';
+
+  @override
+  String get pastOrders => 'الطلبات السابقة';
+
+  @override
+  String get reorder => 'إعادة الطلب';
+
+  @override
+  String get cancelOrder => 'إلغاء الطلب';
+
+  @override
+  String get trackOrder => 'تتبع الطلب';
+
+  @override
+  String get orderItems => 'عناصر الطلب';
+
+  @override
+  String get deliveryInformation => 'معلومات التوصيل';
+
+  @override
+  String get paymentInformation => 'معلومات الدفع';
+
+  @override
+  String get orderTimeline => 'الجدول الزمني للطلب';
+
+  @override
+  String get placed => 'تم الطلب';
+
+  @override
+  String get accepted => 'مقبول';
+
+  @override
+  String get inPreparation => 'قيد التحضير';
+
+  @override
+  String get outForDelivery => 'خارج للتوصيل';
+
+  @override
+  String get completed => 'مكتمل';
+
+  @override
+  String get writeReview => 'كتابة مراجعة';
+
+  @override
+  String get rateYourExperience => 'قيّم تجربتك';
+
+  @override
+  String get howWasYourOrder => 'كيف كان طلبك؟';
+
+  @override
+  String get rateProvider => 'قيّم مقدم الخدمة';
+
+  @override
+  String get rateItems => 'قيّم المنتجات';
+
+  @override
+  String get yourReview => 'مراجعتك';
+
+  @override
+  String get writeYourReview => 'اكتب مراجعتك هنا...';
+
+  @override
+  String get submitReview => 'إرسال المراجعة';
+
+  @override
+  String get thankYouForReview => 'شكراً لمراجعتك!';
+
+  @override
+  String get searchForItems => 'ابحث عن المنتجات، مقدمي الخدمات...';
+
+  @override
+  String get recentSearches => 'عمليات البحث الأخيرة';
+
+  @override
+  String get popularSearches => 'عمليات البحث الشائعة';
+
+  @override
+  String get noResults => 'لا توجد نتائج';
+
+  @override
+  String get tryDifferentKeywords => 'جرب كلمات مفتاحية مختلفة';
+
+  @override
+  String get filter => 'تصفية';
+
+  @override
+  String get sortBy => 'ترتيب حسب';
+
+  @override
+  String get priceRange => 'نطاق السعر';
+
+  @override
+  String get category => 'الفئة';
+
+  @override
+  String get applyFilters => 'تطبيق الفلاتر';
+
+  @override
+  String get clearAll => 'مسح الكل';
+
+  @override
+  String get noCategories => 'لا توجد فئات متاحة';
+
+  @override
+  String get viewAll => 'عرض الكل';
+
+  @override
+  String get featured => 'مميز';
+
+  @override
+  String get newArrivals => 'وصل حديثاً';
+
+  @override
+  String get bestSelling => 'الأكثر مبيعاً';
+
+  @override
+  String get onSale => 'تخفيضات';
+
+  @override
+  String get addNew => 'إضافة جديد';
+
+  @override
+  String get editAddress => 'تعديل العنوان';
+
+  @override
+  String get addressNickname => 'اسم العنوان';
+
+  @override
+  String get street => 'الشارع';
+
+  @override
+  String get city => 'المدينة';
+
+  @override
+  String get state => 'المنطقة';
+
+  @override
+  String get zipCode => 'الرمز البريدي';
+
+  @override
+  String get country => 'البلد';
+
+  @override
+  String get makeDefault => 'جعله افتراضي';
+
+  @override
+  String get saveAddress => 'حفظ العنوان';
+
+  @override
+  String get pleaseEnterAddressNickname => 'يرجى إدخال اسم العنوان';
+
+  @override
+  String get pleaseEnterStreet => 'يرجى إدخال الشارع';
+
+  @override
+  String get pleaseEnterCity => 'يرجى إدخال المدينة';
+
+  @override
+  String get addressSavedSuccessfully => 'تم حفظ العنوان بنجاح';
+
+  @override
+  String get errorSavingAddress => 'خطأ في حفظ العنوان';
+
+  @override
+  String get loadingPayment => 'جار تحميل الدفع...';
+
+  @override
+  String get paymentCompleted => 'تم الدفع';
+
+  @override
+  String get paymentFailed => 'فشل الدفع';
+
+  @override
+  String get paymentCancelled => 'تم إلغاء الدفع';
 }

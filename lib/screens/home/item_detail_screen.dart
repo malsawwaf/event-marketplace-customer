@@ -5,6 +5,7 @@ import '../../services/stock_service.dart';
 import '../../services/cart_service.dart';
 import '../../services/favourites_service.dart';
 import '../../config/app_theme.dart';
+import '../../l10n/app_localizations.dart';
 
 class ItemDetailScreen extends StatefulWidget {
   final String itemId;
@@ -81,10 +82,11 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
   }
 
   Future<void> _toggleFavorite() async {
+    final l10n = AppLocalizations.of(context);
     final customerId = _supabase.auth.currentUser?.id;
     if (customerId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please login to add favorites')),
+        SnackBar(content: Text(l10n.addToFavorites)),
       );
       return;
     }
@@ -94,28 +96,32 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
       final newStatus = await favoritesService.toggleItemFavorite(customerId, widget.itemId);
       
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         setState(() => _isFavorited = newStatus);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(newStatus ? 'Added to favorites' : 'Removed from favorites'),
+            content: Text(newStatus ? l10n.addToFavorites : l10n.removeFromFavorites),
             duration: const Duration(seconds: 1),
           ),
         );
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to update favorite')),
+          SnackBar(content: Text(l10n.errorSavingData)),
         );
       }
     }
   }
 
   Future<void> _addToCart() async {
+    final l10n = AppLocalizations.of(context);
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     final customerId = _supabase.auth.currentUser?.id;
     if (customerId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please login to add to cart')),
+        SnackBar(content: Text(l10n.addToCart)),
       );
       return;
     }
@@ -126,7 +132,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
       for (final group in addonGroups) {
         final groupMap = Map<String, dynamic>.from(group);
         final groupId = groupMap['id'] as String;
-        final groupName = groupMap['name'] as String;
+        final groupName = isArabic && groupMap['name_ar'] != null ? groupMap['name_ar'] as String : groupMap['name'] as String;
         final isRequired = groupMap['is_required'] as bool? ?? false;
         final selectionType = groupMap['selection_type'] as String? ?? 'single';
         final minSelection = groupMap['min_selection'] as int? ?? 1;
@@ -138,7 +144,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
         // Check if required group has no selections
         if (isRequired && selectedCount == 0) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Please select from "$groupName"')),
+            SnackBar(content: Text('${l10n.selectOptions} "$groupName"')),
           );
           return;
         }
@@ -147,13 +153,13 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
         if (selectionType == 'multiple' && selectedCount > 0) {
           if (selectedCount < minSelection) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Please select at least $minSelection option(s) from "$groupName"')),
+              SnackBar(content: Text('${l10n.select} $minSelection ${l10n.optional} "$groupName"')),
             );
             return;
           }
           if (maxSelection != null && selectedCount > maxSelection) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Please select at most $maxSelection option(s) from "$groupName"')),
+              SnackBar(content: Text('${l10n.select} $maxSelection ${l10n.optional} "$groupName"')),
             );
             return;
           }
@@ -190,17 +196,18 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
       );
 
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         setState(() => _isAddingToCart = false);
-        
+
         // Show success and navigate back
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Added to cart successfully!'),
+          SnackBar(
+            content: Text(l10n.addToCart),
             backgroundColor: Colors.green,
-            duration: Duration(seconds: 2),
+            duration: const Duration(seconds: 2),
           ),
         );
-        
+
         Navigator.pop(context, true); // Return true to indicate cart was updated
       }
     } catch (e) {
@@ -215,22 +222,31 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+
     if (_isLoading) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Item Details')),
-        body: const Center(child: CircularProgressIndicator()),
+        appBar: AppBar(title: Text(l10n.itemDetails)),
+        body: Center(child: CircularProgressIndicator()),
       );
     }
 
     if (_itemData == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Item Details')),
-        body: const Center(child: Text('Item not found')),
+        appBar: AppBar(title: Text(l10n.itemDetails)),
+        body: Center(child: Text(l10n.noItems)),
       );
     }
 
-    final name = _itemData!['name'] as String;
-    final description = _itemData!['description'] as String? ?? '';
+    final nameEn = _itemData!['name'] as String;
+    final nameAr = _itemData!['name_ar'] as String?;
+    final name = isArabic && nameAr != null ? nameAr : nameEn;
+
+    final descriptionEn = _itemData!['description'] as String? ?? '';
+    final descriptionAr = _itemData!['description_ar'] as String?;
+    final description = isArabic && descriptionAr != null ? descriptionAr : descriptionEn;
+
     final price = (_itemData!['price'] as num).toDouble();
     final pricingType = _itemData!['pricing_type'] as String;
     final stockQuantity = _itemData!['stock_quantity'] as int;
@@ -244,7 +260,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(name),
+        title: Text(name, textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr),
         actions: [
           IconButton(
             icon: Icon(
@@ -277,6 +293,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                             Expanded(
                               child: Text(
                                 name,
+                                textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
                                 style: const TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold,
@@ -313,15 +330,18 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
 
                         // Description
                         if (description.isNotEmpty) ...[
-                          const Text(
-                            'Description',
-                            style: TextStyle(
+                          Text(
+                            l10n.itemDetails,
+                            style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           const SizedBox(height: 8),
-                          Text(description),
+                          Text(
+                            description,
+                            textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+                          ),
                           const SizedBox(height: 16),
                         ],
 
@@ -337,10 +357,10 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
 
                         // Notes
                         TextField(
-                          decoration: const InputDecoration(
-                            labelText: 'Special Notes (Optional)',
-                            border: OutlineInputBorder(),
-                            hintText: 'Add any special requests...',
+                          decoration: InputDecoration(
+                            labelText: l10n.specialInstructions,
+                            border: const OutlineInputBorder(),
+                            hintText: l10n.specialInstructions,
                           ),
                           maxLines: 3,
                           onChanged: (value) => _notes = value.isEmpty ? null : value,
@@ -416,21 +436,22 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
   }
 
   Widget _buildStockStatus(int stockQuantity) {
+    final l10n = AppLocalizations.of(context);
     Color statusColor;
     String statusText;
     IconData statusIcon;
 
     if (stockQuantity == 0) {
       statusColor = Colors.red;
-      statusText = 'Out of Stock';
+      statusText = l10n.outOfStock;
       statusIcon = Icons.cancel;
     } else if (stockQuantity < 5) {
       statusColor = Colors.orange;
-      statusText = 'Low Stock ($_availableStock available)';
+      statusText = '${l10n.inStock} ($_availableStock ${l10n.items})';
       statusIcon = Icons.warning;
     } else {
       statusColor = Colors.green;
-      statusText = 'In Stock ($_availableStock available)';
+      statusText = '${l10n.inStock} ($_availableStock ${l10n.items})';
       statusIcon = Icons.check_circle;
     }
 
@@ -450,7 +471,11 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
   }
 
   Widget _buildProviderInfo(Map<String, dynamic> provider) {
-    final companyName = provider['company_name_en'] as String;
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    final companyNameEn = provider['company_name_en'] as String;
+    final companyNameAr = provider['company_name_ar'] as String?;
+    final companyName = isArabic && companyNameAr != null ? companyNameAr : companyNameEn;
+
     final city = provider['city'] as String? ?? '';
     final country = provider['country'] as String? ?? '';
     final photoUrl = provider['profile_photo_url'] as String?;
@@ -476,6 +501,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                 children: [
                   Text(
                     companyName,
+                    textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -509,6 +535,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
   }
 
   Widget _buildAddonGroupsSection(List<dynamic> groups) {
+    final l10n = AppLocalizations.of(context);
     // Separate required and optional groups
     final List<Map<String, dynamic>> requiredGroups = [];
     final List<Map<String, dynamic>> optionalGroups = [];
@@ -529,9 +556,9 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
       children: [
         // Required Add-on Groups
         if (requiredGroups.isNotEmpty) ...[
-          const Text(
-            'Required Options',
-            style: TextStyle(
+          Text(
+            l10n.required,
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
               color: Colors.red,
@@ -544,9 +571,9 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
 
         // Optional Add-on Groups
         if (optionalGroups.isNotEmpty) ...[
-          const Text(
-            'Optional Extras',
-            style: TextStyle(
+          Text(
+            l10n.optional,
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
@@ -559,9 +586,17 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
   }
 
   Widget _buildAddonGroup(Map<String, dynamic> group) {
+    final l10n = AppLocalizations.of(context);
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     final groupId = group['id'] as String;
-    final groupName = group['name'] as String;
-    final groupDescription = group['description'] as String?;
+    final groupNameEn = group['name'] as String;
+    final groupNameAr = group['name_ar'] as String?;
+    final groupName = isArabic && groupNameAr != null ? groupNameAr : groupNameEn;
+
+    final groupDescriptionEn = group['description'] as String?;
+    final groupDescriptionAr = group['description_ar'] as String?;
+    final groupDescription = isArabic && groupDescriptionAr != null ? groupDescriptionAr : groupDescriptionEn;
+
     final selectionType = group['selection_type'] as String? ?? 'single';
     final minSelection = group['min_selection'] as int? ?? 1;
     final maxSelection = group['max_selection'] as int?;
@@ -574,12 +609,12 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
     String selectionInfo = '';
     if (selectionType == 'multiple') {
       if (maxSelection != null) {
-        selectionInfo = ' (Select $minSelection-$maxSelection)';
+        selectionInfo = ' (${l10n.select} $minSelection-$maxSelection)';
       } else {
-        selectionInfo = minSelection > 1 ? ' (Select at least $minSelection)' : ' (Select multiple)';
+        selectionInfo = minSelection > 1 ? ' (${l10n.select} $minSelection)' : ' (${l10n.select})';
       }
     } else {
-      selectionInfo = ' (Choose one)';
+      selectionInfo = ' (${l10n.select})';
     }
 
     return Card(
@@ -594,6 +629,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                 Expanded(
                   child: Text(
                     groupName + selectionInfo,
+                    textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -606,6 +642,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
               const SizedBox(height: 4),
               Text(
                 groupDescription,
+                textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
                 style: TextStyle(
                   fontSize: 13,
                   color: Colors.grey[600],
@@ -625,22 +662,36 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
   }
 
   Widget _buildRadioOption(String groupId, dynamic option) {
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     final optionMap = Map<String, dynamic>.from(option);
     final optionId = optionMap['id'] as String;
-    final optionName = optionMap['name'] as String;
-    final optionDescription = optionMap['description'] as String?;
+    final optionNameEn = optionMap['name'] as String;
+    final optionNameAr = optionMap['name_ar'] as String?;
+    final optionName = isArabic && optionNameAr != null ? optionNameAr : optionNameEn;
+
+    final optionDescriptionEn = optionMap['description'] as String?;
+    final optionDescriptionAr = optionMap['description_ar'] as String?;
+    final optionDescription = isArabic && optionDescriptionAr != null ? optionDescriptionAr : optionDescriptionEn;
+
     final price = (optionMap['additional_price'] as num?)?.toDouble() ?? 0.0;
 
     final selectedOptions = _selectedAddonOptions[groupId] ?? {};
     final isSelected = selectedOptions.contains(optionId);
 
     return RadioListTile<String>(
-      title: Text(optionName),
+      title: Text(
+        optionName,
+        textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+      ),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (optionDescription != null && optionDescription.isNotEmpty)
-            Text(optionDescription, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+            Text(
+              optionDescription,
+              textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+              style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+            ),
           if (price > 0) Text('+$price SAR', style: const TextStyle(fontWeight: FontWeight.w500)),
         ],
       ),
@@ -666,10 +717,17 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
   }
 
   Widget _buildCheckboxOption(String groupId, dynamic option, int? maxSelection) {
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     final optionMap = Map<String, dynamic>.from(option);
     final optionId = optionMap['id'] as String;
-    final optionName = optionMap['name'] as String;
-    final optionDescription = optionMap['description'] as String?;
+    final optionNameEn = optionMap['name'] as String;
+    final optionNameAr = optionMap['name_ar'] as String?;
+    final optionName = isArabic && optionNameAr != null ? optionNameAr : optionNameEn;
+
+    final optionDescriptionEn = optionMap['description'] as String?;
+    final optionDescriptionAr = optionMap['description_ar'] as String?;
+    final optionDescription = isArabic && optionDescriptionAr != null ? optionDescriptionAr : optionDescriptionEn;
+
     final price = (optionMap['additional_price'] as num?)?.toDouble() ?? 0.0;
 
     final selectedOptions = _selectedAddonOptions[groupId] ?? {};
@@ -677,12 +735,19 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
     final isMaxReached = maxSelection != null && selectedOptions.length >= maxSelection;
 
     return CheckboxListTile(
-      title: Text(optionName),
+      title: Text(
+        optionName,
+        textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+      ),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (optionDescription != null && optionDescription.isNotEmpty)
-            Text(optionDescription, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+            Text(
+              optionDescription,
+              textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+              style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+            ),
           if (price > 0) Text('+$price SAR', style: const TextStyle(fontWeight: FontWeight.w500)),
         ],
       ),
@@ -705,6 +770,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
   }
 
   Widget _buildQuantitySelector(int minQuantity, int? maxQuantity) {
+    final l10n = AppLocalizations.of(context);
     final effectiveMax = maxQuantity ?? _availableStock;
 
     return Card(
@@ -713,9 +779,9 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
-              'Quantity',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            Text(
+              l10n.quantity,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             Row(
               children: [
@@ -754,6 +820,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
   }
 
   Widget _buildAddToCartButton() {
+    final l10n = AppLocalizations.of(context);
     final canAddToCart = _availableStock > 0;
 
     return Container(
@@ -788,7 +855,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                     ),
                   )
                 : Text(
-                    canAddToCart ? 'Add to Cart' : 'Out of Stock',
+                    canAddToCart ? l10n.addToCart : l10n.outOfStock,
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,

@@ -73,11 +73,13 @@ class ItemsService {
           .from('items')
           .select('''
             *,
-            item_categories(id, name),
+            item_categories(id, name, name_ar),
             item_addon_groups(
               id,
               name,
+              name_ar,
               description,
+              description_ar,
               is_required,
               selection_type,
               min_selection,
@@ -86,13 +88,15 @@ class ItemsService {
               item_addon_options(
                 id,
                 name,
+                name_ar,
                 description,
+                description_ar,
                 photo_url,
                 additional_price,
                 display_order
               )
             ),
-            providers!inner(company_name_en, company_name_ar, profile_photo_url, store_location, price_range)
+            providers!inner(company_name_en, company_name_ar, profile_photo_url, store_location, store_location_ar, price_range, city, country)
           ''')
           .eq('id', itemId)
           .eq('is_enabled', true)

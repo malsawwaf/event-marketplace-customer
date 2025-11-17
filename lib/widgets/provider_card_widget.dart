@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/favourites_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../l10n/app_localizations.dart';
 
 class ProviderCardWidget extends StatefulWidget {
   final Map<String, dynamic> provider;
@@ -54,8 +55,9 @@ class _ProviderCardWidgetState extends State<ProviderCardWidget> {
     final customerId = supabase.auth.currentUser?.id;
 
     if (customerId == null) {
+      final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please login to add favorites')),
+        SnackBar(content: Text(l10n.loginFailed)),
       );
       return;
     }
@@ -75,12 +77,13 @@ class _ProviderCardWidgetState extends State<ProviderCardWidget> {
           _isLoadingFavorite = false;
         });
 
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
               newStatus
-                  ? 'Added to favorites'
-                  : 'Removed from favorites',
+                  ? l10n.addToFavorites
+                  : l10n.removeFromFavorites,
             ),
             duration: const Duration(seconds: 1),
           ),
@@ -89,8 +92,9 @@ class _ProviderCardWidgetState extends State<ProviderCardWidget> {
     } catch (e) {
       if (mounted) {
         setState(() => _isLoadingFavorite = false);
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to update favorite')),
+          SnackBar(content: Text(l10n.error)),
         );
       }
     }
@@ -98,8 +102,15 @@ class _ProviderCardWidgetState extends State<ProviderCardWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final companyName = widget.provider['company_name_en'] as String? ?? 'Unknown';
-    final location = widget.provider['store_location'] as String? ?? '';
+    final l10n = AppLocalizations.of(context);
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+
+    final companyName = isArabic && widget.provider['company_name_ar'] != null
+        ? widget.provider['company_name_ar'] as String
+        : widget.provider['company_name_en'] as String? ?? 'Unknown';
+    final location = isArabic && widget.provider['store_location_ar'] != null
+        ? widget.provider['store_location_ar'] as String
+        : widget.provider['store_location'] as String? ?? '';
     final photoUrl = widget.provider['profile_photo_url'] as String?;
     final priceRange = widget.provider['price_range'] as String? ?? 'moderate';
     final averageRating = (widget.provider['average_rating'] as num?)?.toDouble() ?? 0.0;
@@ -185,14 +196,14 @@ class _ProviderCardWidgetState extends State<ProviderCardWidget> {
                         color: Colors.orange,
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Row(
+                      child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.star, size: 14, color: Colors.white),
-                          SizedBox(width: 4),
+                          const Icon(Icons.star, size: 14, color: Colors.white),
+                          const SizedBox(width: 4),
                           Text(
-                            'Featured',
-                            style: TextStyle(
+                            l10n.featured,
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
@@ -260,6 +271,7 @@ class _ProviderCardWidgetState extends State<ProviderCardWidget> {
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
+                    textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
                   ),
                   const SizedBox(height: 4),
                   // Location
@@ -276,6 +288,7 @@ class _ProviderCardWidgetState extends State<ProviderCardWidget> {
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
+                          textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
                         ),
                       ),
                     ],

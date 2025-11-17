@@ -5,6 +5,7 @@ import '../../services/provider_service.dart';
 import '../../utils/cities.dart';
 import '../../widgets/provider_card_widget.dart';
 import 'provider_detail_screen.dart';
+import '../../l10n/app_localizations.dart';
 
 class CategoryProvidersScreen extends StatefulWidget {
   final String category;
@@ -133,6 +134,8 @@ class _CategoryProvidersScreenState extends State<CategoryProvidersScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       backgroundColor: AppTheme.lightBackground,
       appBar: AppBar(
@@ -166,7 +169,7 @@ class _CategoryProvidersScreenState extends State<CategoryProvidersScreen> {
                 ),
                 const SizedBox(width: 8),
                 Tooltip(
-                  message: 'Change city from home screen',
+                  message: l10n.city,
                   child: Icon(
                     Icons.info_outline,
                     color: Colors.white.withOpacity(0.7),
@@ -195,7 +198,7 @@ class _CategoryProvidersScreenState extends State<CategoryProvidersScreen> {
                             ),
                             const SizedBox(height: 16),
                             Text(
-                              'No providers found',
+                              l10n.noProviders,
                               style: TextStyle(
                                 fontSize: 18,
                                 color: Colors.grey[600],
@@ -217,14 +220,14 @@ class _CategoryProvidersScreenState extends State<CategoryProvidersScreen> {
                                 // Navigate back to home screen to change city
                                 Navigator.of(context).pop();
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Change city from the home screen'),
-                                    duration: Duration(seconds: 2),
+                                  SnackBar(
+                                    content: Text(l10n.city),
+                                    duration: const Duration(seconds: 2),
                                   ),
                                 );
                               },
                               icon: const Icon(Icons.arrow_back),
-                              label: const Text('Change City'),
+                              label: Text(l10n.city),
                               style: OutlinedButton.styleFrom(
                                 foregroundColor: AppTheme.primaryNavy,
                                 side: BorderSide(color: AppTheme.primaryNavy),
@@ -256,7 +259,7 @@ class _CategoryProvidersScreenState extends State<CategoryProvidersScreen> {
                                       ),
                                       const SizedBox(width: 8),
                                       Text(
-                                        'Featured Providers',
+                                        l10n.featured,
                                         style: TextStyle(
                                           fontSize: 20,
                                           fontWeight: FontWeight.bold,
@@ -301,7 +304,7 @@ class _CategoryProvidersScreenState extends State<CategoryProvidersScreen> {
                               Padding(
                                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
                                 child: Text(
-                                  'All Providers',
+                                  l10n.providers,
                                   style: TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
@@ -314,7 +317,7 @@ class _CategoryProvidersScreenState extends State<CategoryProvidersScreen> {
                                 child: Row(
                                   children: [
                                     Text(
-                                      'Sort by:',
+                                      l10n.sortBy,
                                       style: TextStyle(
                                         fontSize: 14,
                                         color: AppTheme.textSecondary,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../config/app_theme.dart';
+import '../../l10n/app_localizations.dart';
 import 'auth_provider.dart';
 import 'profile_completion_screen.dart';
 
@@ -16,7 +17,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  
+
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _agreedToTerms = false;
@@ -64,10 +65,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Future<void> _handleRegister() async {
     if (!_formKey.currentState!.validate()) return;
 
+    final l10n = AppLocalizations.of(context);
+
     if (!_isPasswordValid) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please meet all password requirements'),
+        SnackBar(
+          content: Text(l10n.pleaseMeetAllPasswordRequirements),
           backgroundColor: Colors.red,
         ),
       );
@@ -76,8 +79,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     if (!_passwordsMatch) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Passwords do not match'),
+        SnackBar(
+          content: Text(l10n.passwordsDoNotMatch),
           backgroundColor: Colors.red,
         ),
       );
@@ -86,8 +89,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     if (!_agreedToTerms) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please agree to Terms & Privacy Policy'),
+        SnackBar(
+          content: Text(l10n.pleaseAgreeToTermsAndPrivacy),
           backgroundColor: Colors.red,
         ),
       );
@@ -111,7 +114,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       // Show error
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(authProvider.error ?? 'Registration failed'),
+          content: Text(authProvider.error ?? l10n.registrationFailed),
           backgroundColor: Colors.red,
         ),
       );
@@ -120,6 +123,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       backgroundColor: AppTheme.lightBackground,
       appBar: AppBar(
@@ -153,7 +158,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 24),
                 // Title
                 Text(
-                  'Create Account',
+                  l10n.createAccount,
                   style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
@@ -163,7 +168,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Sign up to get started',
+                  l10n.signUpToGetStarted,
                   style: TextStyle(
                     fontSize: 16,
                     color: AppTheme.textSecondary,
@@ -176,8 +181,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
-                    labelText: 'Email',
-                    hintText: 'Enter your email',
+                    labelText: l10n.email,
+                    hintText: l10n.enterYourEmail,
                     prefixIcon: Icon(Icons.email_outlined, color: AppTheme.primaryNavy),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -189,10 +194,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your email';
+                      return l10n.pleaseEnterYourEmail;
                     }
                     if (!value.contains('@')) {
-                      return 'Please enter a valid email';
+                      return l10n.pleaseEnterValidEmail;
                     }
                     return null;
                   },
@@ -203,8 +208,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   controller: _passwordController,
                   obscureText: _obscurePassword,
                   decoration: InputDecoration(
-                    labelText: 'Password',
-                    hintText: 'Create a password',
+                    labelText: l10n.password,
+                    hintText: l10n.createPassword,
                     prefixIcon: Icon(Icons.lock_outlined, color: AppTheme.primaryNavy),
                     suffixIcon: IconButton(
                       icon: Icon(
@@ -231,15 +236,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 12),
                 // Password requirements checklist
                 _buildPasswordRequirement(
-                  'At least 8 characters',
+                  l10n.atLeast8Characters,
                   _hasMinLength,
                 ),
                 _buildPasswordRequirement(
-                  'Contains a number',
+                  l10n.containsNumber,
                   _hasNumber,
                 ),
                 _buildPasswordRequirement(
-                  'Contains a special character',
+                  l10n.containsSpecialCharacter,
                   _hasSpecialChar,
                 ),
                 const SizedBox(height: 16),
@@ -248,8 +253,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   controller: _confirmPasswordController,
                   obscureText: _obscureConfirmPassword,
                   decoration: InputDecoration(
-                    labelText: 'Confirm Password',
-                    hintText: 'Re-enter your password',
+                    labelText: l10n.confirmPassword,
+                    hintText: l10n.reEnterYourPassword,
                     prefixIcon: Icon(Icons.lock_outlined, color: AppTheme.primaryNavy),
                     suffixIcon: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -311,17 +316,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               color: AppTheme.textSecondary,
                             ),
                             children: [
-                              const TextSpan(text: 'I agree to the '),
+                              TextSpan(text: l10n.iAgreeToThe),
                               TextSpan(
-                                text: 'Terms of Service',
+                                text: ' ${l10n.termsOfService}',
                                 style: TextStyle(
                                   color: AppTheme.primaryNavy,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              const TextSpan(text: ' and '),
+                              TextSpan(text: ' ${l10n.and} '),
                               TextSpan(
-                                text: 'Privacy Policy',
+                                text: l10n.privacyPolicy,
                                 style: TextStyle(
                                   color: AppTheme.primaryNavy,
                                   fontWeight: FontWeight.bold,
@@ -359,9 +364,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     AlwaysStoppedAnimation<Color>(Colors.white),
                               ),
                             )
-                          : const Text(
-                              'Create Account',
-                              style: TextStyle(
+                          : Text(
+                              l10n.createAccount,
+                              style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -375,7 +380,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Already have an account? ',
+                      '${l10n.alreadyHaveAccount} ',
                       style: TextStyle(color: AppTheme.textSecondary),
                     ),
                     TextButton(
@@ -385,9 +390,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       style: TextButton.styleFrom(
                         foregroundColor: AppTheme.primaryNavy,
                       ),
-                      child: const Text(
-                        'Sign In',
-                        style: TextStyle(
+                      child: Text(
+                        l10n.signIn,
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                         ),
                       ),

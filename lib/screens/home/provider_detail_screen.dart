@@ -8,6 +8,7 @@ import '../../services/reviews_service.dart';
 import '../../utils/categories.dart';
 import '../../widgets/item_card.dart';
 import '../../widgets/review_card.dart';
+import '../../l10n/app_localizations.dart';
 
 class ProviderDetailScreen extends StatefulWidget {
   final String providerId;
@@ -108,10 +109,11 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
   }
 
   Future<void> _toggleFavorite() async {
+    final l10n = AppLocalizations.of(context);
     final customerId = _supabase.auth.currentUser?.id;
     if (customerId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please login to add favorites')),
+        SnackBar(content: Text(l10n.loginFailed)),
       );
       return;
     }
@@ -121,7 +123,7 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
         customerId,
         widget.providerId,
       );
-      
+
       setState(() {
         _isFavorite = newStatus;
       });
@@ -129,20 +131,23 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            newStatus ? 'Added to favorites' : 'Removed from favorites',
+            newStatus ? l10n.addToFavorites : l10n.removeFromFavorites,
           ),
           duration: const Duration(seconds: 1),
         ),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to update favorite')),
+        SnackBar(content: Text(l10n.error)),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+
     if (_isLoading) {
       return Scaffold(
         appBar: AppBar(
@@ -159,15 +164,15 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
           backgroundColor: AppTheme.primaryNavy,
           foregroundColor: Colors.white,
         ),
-        body: const Center(
-          child: Text('Provider not found'),
+        body: Center(
+          child: Text(l10n.noProviders),
         ),
       );
     }
 
-    final businessName = _provider!['company_name_en'] ?? 
-                        _provider!['company_name_ar'] ?? 
-                        'Unknown Business';
+    final businessName = isArabic && _provider!['company_name_ar'] != null
+        ? _provider!['company_name_ar']
+        : _provider!['company_name_en'] ?? 'Unknown Business';
     final category = _provider!['category'] ?? '';
     final categoryInfo = EventCategories.getById(category);
     final description = _provider!['store_description'] ?? 'No description available';
@@ -248,6 +253,7 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
                               ),
+                              textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
                             ),
                           ),
                           if (categoryInfo != null)
@@ -297,7 +303,7 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            '($reviewCount reviews)',
+                            '($reviewCount ${l10n.reviews})',
                             style: TextStyle(
                               fontSize: 16,
                               color: Colors.grey[600],
@@ -325,9 +331,9 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
                         ),
                       const SizedBox(height: 24),
                       // Description
-                      const Text(
-                        'About',
-                        style: TextStyle(
+                      Text(
+                        l10n.about,
+                        style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
