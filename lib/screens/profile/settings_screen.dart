@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../config/supabase_config.dart';
 import '../../config/app_theme.dart';
+import '../../services/language_service.dart';
+import '../../l10n/app_localizations.dart';
 import '../auth/auth_provider.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -16,7 +18,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _notificationsEnabled = true;
   bool _emailNotifications = true;
   bool _smsNotifications = false;
-  String _selectedLanguage = 'en'; // 'en' or 'ar'
 
   @override
   Widget build(BuildContext context) {
@@ -70,30 +71,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
           // Language Section
           _buildSectionHeader('Language'),
-          RadioListTile<String>(
-            secondary: const Icon(Icons.language),
-            title: const Text('English'),
-            value: 'en',
-            groupValue: _selectedLanguage,
-            onChanged: (value) {
-              setState(() => _selectedLanguage = value!);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Language change will take effect on app restart'),
-                ),
-              );
-            },
-          ),
-          RadioListTile<String>(
-            secondary: const Icon(Icons.language),
-            title: const Text('العربية'),
-            value: 'ar',
-            groupValue: _selectedLanguage,
-            onChanged: (value) {
-              setState(() => _selectedLanguage = value!);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Language change will take effect on app restart'),
+          Consumer<LanguageService>(
+            builder: (context, languageService, child) {
+              final l10n = AppLocalizations.of(context);
+              return ListTile(
+                leading: const Icon(Icons.language),
+                title: Text(l10n.language),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      languageService.isArabic ? l10n.arabic : l10n.english,
+                      style: TextStyle(color: Colors.grey[600]),
+                    ),
+                    const SizedBox(width: 8),
+                    Switch(
+                      value: languageService.isArabic,
+                      onChanged: (value) async {
+                        await languageService.toggleLanguage();
+                      },
+                    ),
+                  ],
                 ),
               );
             },
