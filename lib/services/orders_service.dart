@@ -22,7 +22,7 @@ class OrdersService {
               items (
                 id,
                 name,
-                category,
+                category_id,
                 photo_urls
               ),
               order_item_addons (*)
@@ -59,7 +59,7 @@ class OrdersService {
               items (
                 id,
                 name,
-                category,
+                category_id,
                 photo_urls
               ),
               order_item_addons (*)
@@ -95,7 +95,7 @@ class OrdersService {
               items (
                 id,
                 name,
-                category,
+                category_id,
                 photo_urls,
                 pricing_type
               ),
