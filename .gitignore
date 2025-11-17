@@ -49,4 +49,4 @@ app.*.map.json
 **/build/
 
 # Generated localization files
-lib/l10n/*.dart
+lib/generated/
