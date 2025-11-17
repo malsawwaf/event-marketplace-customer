@@ -150,6 +150,81 @@ abstract class AppLocalizations {
   String get somethingWentWrong;
   String get tryAgain;
   String get noInternetConnection;
+
+  // Profile Screen
+  String get areYouSureLogout;
+  String get manageAddresses;
+  String get addOrEditDeliveryAddresses;
+  String get settings;
+  String get appPreferencesAndSecurity;
+  String get helpAndSupport;
+  String get getHelpOrContactUs;
+  String get helpAndSupportComingSoon;
+  String get about;
+  String get appVersionAndInformation;
+  String get aboutAzimahTech;
+  String get version;
+  String get azimahTechEventMarketplace;
+  String get browseAndBookEventServices;
+  String get copyrightAzimahTech;
+
+  // Settings Screen
+  String get account;
+  String get changePassword;
+  String get notifications;
+  String get pushNotifications;
+  String get receiveOrderUpdates;
+  String get emailNotifications;
+  String get receiveUpdatesViaEmail;
+  String get smsNotifications;
+  String get receiveUpdatesViaSMS;
+  String get aboutApp;
+  String get privacyPolicy;
+  String get privacyPolicyComingSoon;
+  String get termsOfService;
+  String get termsOfServiceComingSoon;
+  String get currentPassword;
+  String get pleaseEnterCurrentPassword;
+  String get newPassword;
+  String get pleaseEnterNewPassword;
+  String get passwordMustBeAtLeast6Characters;
+  String get confirmNewPassword;
+  String get passwordsDoNotMatch;
+  String get change;
+  String get passwordChangedSuccessfully;
+  String get userNotFound;
+
+  // Edit Profile Screen
+  String get errorLoadingProfile;
+  String get selectPhotoSource;
+  String get errorPickingImage;
+  String get errorUploadingImage;
+  String get userNotAuthenticated;
+  String get profileUpdatedSuccessfully;
+  String get errorUpdatingProfile;
+  String get tapToChangePhoto;
+  String get phoneNumber;
+  String get pleaseEnterYourFirstName;
+  String get pleaseEnterYourLastName;
+  String get pleaseEnterYourPhoneNumber;
+  String get pleaseEnterValidPhoneNumber;
+  String get saveChanges;
+
+  // Addresses Screen
+  String get myAddresses;
+  String get errorLoadingAddresses;
+  String get deleteAddress;
+  String get areYouSureDeleteAddress;
+  String get addressDeletedSuccessfully;
+  String get errorDeletingAddress;
+  String get defaultAddressUpdated;
+  String get errorSettingDefaultAddress;
+  String get addAddress;
+  String get noAddressesSaved;
+  String get addAnAddressToGetStarted;
+  String get addressLabel;
+  String get defaultLabel;
+  String get setAsDefault;
 }
 
 class _AppLocalizationsDelegate

@@ -21,29 +21,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: Text(l10n.settings),
         backgroundColor: AppTheme.primaryNavy,
         foregroundColor: Colors.white,
       ),
       body: ListView(
         children: [
           // Account Section
-          _buildSectionHeader('Account'),
+          _buildSectionHeader(l10n.account),
           _buildListTile(
             icon: Icons.lock_outline,
-            title: 'Change Password',
+            title: l10n.changePassword,
             onTap: () => _showChangePasswordDialog(),
           ),
           const Divider(),
 
           // Notifications Section
-          _buildSectionHeader('Notifications'),
+          _buildSectionHeader(l10n.notifications),
           SwitchListTile(
             secondary: const Icon(Icons.notifications_outlined),
-            title: const Text('Push Notifications'),
-            subtitle: const Text('Receive order updates'),
+            title: Text(l10n.pushNotifications),
+            subtitle: Text(l10n.receiveOrderUpdates),
             value: _notificationsEnabled,
             onChanged: (value) {
               setState(() => _notificationsEnabled = value);
@@ -51,8 +53,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           SwitchListTile(
             secondary: const Icon(Icons.email_outlined),
-            title: const Text('Email Notifications'),
-            subtitle: const Text('Receive updates via email'),
+            title: Text(l10n.emailNotifications),
+            subtitle: Text(l10n.receiveUpdatesViaEmail),
             value: _emailNotifications,
             onChanged: (value) {
               setState(() => _emailNotifications = value);
@@ -60,8 +62,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           SwitchListTile(
             secondary: const Icon(Icons.sms_outlined),
-            title: const Text('SMS Notifications'),
-            subtitle: const Text('Receive updates via SMS'),
+            title: Text(l10n.smsNotifications),
+            subtitle: Text(l10n.receiveUpdatesViaSMS),
             value: _smsNotifications,
             onChanged: (value) {
               setState(() => _smsNotifications = value);
@@ -70,7 +72,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           const Divider(),
 
           // Language Section
-          _buildSectionHeader('Language'),
+          _buildSectionHeader(l10n.language),
           Consumer<LanguageService>(
             builder: (context, languageService, child) {
               final l10n = AppLocalizations.of(context);
@@ -99,28 +101,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
           const Divider(),
 
           // About Section
-          _buildSectionHeader('About'),
+          _buildSectionHeader(l10n.about),
           _buildListTile(
             icon: Icons.info_outline,
-            title: 'About App',
-            subtitle: 'Version 1.0.0',
+            title: l10n.aboutApp,
+            subtitle: '${l10n.version} 1.0.0',
             onTap: () => _showAboutDialog(),
           ),
           _buildListTile(
             icon: Icons.privacy_tip_outlined,
-            title: 'Privacy Policy',
+            title: l10n.privacyPolicy,
             onTap: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Privacy Policy - Coming Soon')),
+                SnackBar(content: Text(l10n.privacyPolicyComingSoon)),
               );
             },
           ),
           _buildListTile(
             icon: Icons.description_outlined,
-            title: 'Terms of Service',
+            title: l10n.termsOfService,
             onTap: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Terms of Service - Coming Soon')),
+                SnackBar(content: Text(l10n.termsOfServiceComingSoon)),
               );
             },
           ),
@@ -164,13 +166,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final newPasswordController = TextEditingController();
     final confirmPasswordController = TextEditingController();
     final formKey = GlobalKey<FormState>();
+    final l10n = AppLocalizations.of(context);
     bool isLoading = false;
 
     showDialog(
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: const Text('Change Password'),
+          title: Text(l10n.changePassword),
           content: Form(
             key: formKey,
             child: Column(
@@ -178,14 +181,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
               children: [
                 TextFormField(
                   controller: currentPasswordController,
-                  decoration: const InputDecoration(
-                    labelText: 'Current Password',
-                    prefixIcon: Icon(Icons.lock_outline),
+                  decoration: InputDecoration(
+                    labelText: l10n.currentPassword,
+                    prefixIcon: const Icon(Icons.lock_outline),
                   ),
                   obscureText: true,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter current password';
+                      return l10n.pleaseEnterCurrentPassword;
                     }
                     return null;
                   },
@@ -193,17 +196,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: newPasswordController,
-                  decoration: const InputDecoration(
-                    labelText: 'New Password',
-                    prefixIcon: Icon(Icons.lock_outline),
+                  decoration: InputDecoration(
+                    labelText: l10n.newPassword,
+                    prefixIcon: const Icon(Icons.lock_outline),
                   ),
                   obscureText: true,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter new password';
+                      return l10n.pleaseEnterNewPassword;
                     }
                     if (value.length < 6) {
-                      return 'Password must be at least 6 characters';
+                      return l10n.passwordMustBeAtLeast6Characters;
                     }
                     return null;
                   },
@@ -211,14 +214,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: confirmPasswordController,
-                  decoration: const InputDecoration(
-                    labelText: 'Confirm Password',
-                    prefixIcon: Icon(Icons.lock_outline),
+                  decoration: InputDecoration(
+                    labelText: l10n.confirmNewPassword,
+                    prefixIcon: const Icon(Icons.lock_outline),
                   ),
                   obscureText: true,
                   validator: (value) {
                     if (value != newPasswordController.text) {
-                      return 'Passwords do not match';
+                      return l10n.passwordsDoNotMatch;
                     }
                     return null;
                   },
@@ -229,7 +232,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           actions: [
             TextButton(
               onPressed: isLoading ? null : () => Navigator.pop(context),
-              child: const Text('Cancel'),
+              child: Text(l10n.cancel),
             ),
             ElevatedButton(
               onPressed: isLoading
@@ -242,7 +245,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       try {
                         // First verify current password by attempting to sign in
                         final email = supabase.auth.currentUser?.email;
-                        if (email == null) throw Exception('User not found');
+                        if (email == null) throw Exception(l10n.userNotFound);
 
                         await supabase.auth.signInWithPassword(
                           email: email,
@@ -259,8 +262,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         if (context.mounted) {
                           Navigator.pop(context);
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Password changed successfully'),
+                            SnackBar(
+                              content: Text(l10n.passwordChangedSuccessfully),
                               backgroundColor: Colors.green,
                             ),
                           );
@@ -269,7 +272,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('Error: ${e.toString()}'),
+                              content: Text('${l10n.error}: ${e.toString()}'),
                               backgroundColor: Colors.red,
                             ),
                           );
@@ -284,7 +287,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       width: 16,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Text('Change'),
+                  : Text(l10n.change),
             ),
           ],
         ),
@@ -293,27 +296,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   void _showAboutDialog() {
+    final l10n = AppLocalizations.of(context);
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('About Azimah Tech'),
-        content: const Column(
+        title: Text(l10n.aboutAzimahTech),
+        content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Version: 1.0.0'),
-            SizedBox(height: 8),
-            Text('Azimah Tech - Event Marketplace'),
-            SizedBox(height: 8),
-            Text('Browse and book event services'),
-            SizedBox(height: 16),
-            Text('© 2025 Azimah Tech'),
+            Text('${l10n.version}: 1.0.0'),
+            const SizedBox(height: 8),
+            Text(l10n.azimahTechEventMarketplace),
+            const SizedBox(height: 8),
+            Text(l10n.browseAndBookEventServices),
+            const SizedBox(height: 16),
+            Text(l10n.copyrightAzimahTech),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: Text(l10n.close),
           ),
         ],
       ),

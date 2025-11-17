@@ -330,4 +330,209 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get noInternetConnection => 'لا يوجد اتصال بالإنترنت';
+
+  // Profile Screen
+  @override
+  String get areYouSureLogout => 'هل أنت متأكد من تسجيل الخروج؟';
+
+  @override
+  String get manageAddresses => 'إدارة العناوين';
+
+  @override
+  String get addOrEditDeliveryAddresses => 'إضافة أو تعديل عناوين التوصيل';
+
+  @override
+  String get settings => 'الإعدادات';
+
+  @override
+  String get appPreferencesAndSecurity => 'تفضيلات التطبيق والأمان';
+
+  @override
+  String get helpAndSupport => 'المساعدة والدعم';
+
+  @override
+  String get getHelpOrContactUs => 'احصل على المساعدة أو اتصل بنا';
+
+  @override
+  String get helpAndSupportComingSoon => 'المساعدة والدعم - قريباً';
+
+  @override
+  String get about => 'حول';
+
+  @override
+  String get appVersionAndInformation => 'إصدار التطبيق والمعلومات';
+
+  @override
+  String get aboutAzimahTech => 'حول أزيمة تك';
+
+  @override
+  String get version => 'الإصدار';
+
+  @override
+  String get azimahTechEventMarketplace => 'أزيمة تك - سوق المناسبات';
+
+  @override
+  String get browseAndBookEventServices => 'تصفح وحجز خدمات المناسبات';
+
+  @override
+  String get copyrightAzimahTech => '© 2025 أزيمة تك';
+
+  // Settings Screen
+  @override
+  String get account => 'الحساب';
+
+  @override
+  String get changePassword => 'تغيير كلمة المرور';
+
+  @override
+  String get notifications => 'الإشعارات';
+
+  @override
+  String get pushNotifications => 'الإشعارات الفورية';
+
+  @override
+  String get receiveOrderUpdates => 'استقبال تحديثات الطلبات';
+
+  @override
+  String get emailNotifications => 'إشعارات البريد الإلكتروني';
+
+  @override
+  String get receiveUpdatesViaEmail => 'استقبال التحديثات عبر البريد الإلكتروني';
+
+  @override
+  String get smsNotifications => 'إشعارات الرسائل النصية';
+
+  @override
+  String get receiveUpdatesViaSMS => 'استقبال التحديثات عبر الرسائل النصية';
+
+  @override
+  String get aboutApp => 'حول التطبيق';
+
+  @override
+  String get privacyPolicy => 'سياسة الخصوصية';
+
+  @override
+  String get privacyPolicyComingSoon => 'سياسة الخصوصية - قريباً';
+
+  @override
+  String get termsOfService => 'شروط الخدمة';
+
+  @override
+  String get termsOfServiceComingSoon => 'شروط الخدمة - قريباً';
+
+  @override
+  String get currentPassword => 'كلمة المرور الحالية';
+
+  @override
+  String get pleaseEnterCurrentPassword => 'الرجاء إدخال كلمة المرور الحالية';
+
+  @override
+  String get newPassword => 'كلمة المرور الجديدة';
+
+  @override
+  String get pleaseEnterNewPassword => 'الرجاء إدخال كلمة المرور الجديدة';
+
+  @override
+  String get passwordMustBeAtLeast6Characters => 'يجب أن تكون كلمة المرور 6 أحرف على الأقل';
+
+  @override
+  String get confirmNewPassword => 'تأكيد كلمة المرور';
+
+  @override
+  String get passwordsDoNotMatch => 'كلمات المرور غير متطابقة';
+
+  @override
+  String get change => 'تغيير';
+
+  @override
+  String get passwordChangedSuccessfully => 'تم تغيير كلمة المرور بنجاح';
+
+  @override
+  String get userNotFound => 'المستخدم غير موجود';
+
+  // Edit Profile Screen
+  @override
+  String get errorLoadingProfile => 'خطأ في تحميل الملف الشخصي';
+
+  @override
+  String get selectPhotoSource => 'اختر مصدر الصورة';
+
+  @override
+  String get errorPickingImage => 'خطأ في اختيار الصورة';
+
+  @override
+  String get errorUploadingImage => 'خطأ في رفع الصورة';
+
+  @override
+  String get userNotAuthenticated => 'المستخدم غير مصادق عليه';
+
+  @override
+  String get profileUpdatedSuccessfully => 'تم تحديث الملف الشخصي بنجاح';
+
+  @override
+  String get errorUpdatingProfile => 'خطأ في تحديث الملف الشخصي';
+
+  @override
+  String get tapToChangePhoto => 'اضغط لتغيير الصورة';
+
+  @override
+  String get phoneNumber => 'رقم الهاتف';
+
+  @override
+  String get pleaseEnterYourFirstName => 'الرجاء إدخال اسمك الأول';
+
+  @override
+  String get pleaseEnterYourLastName => 'الرجاء إدخال اسم العائلة';
+
+  @override
+  String get pleaseEnterYourPhoneNumber => 'الرجاء إدخال رقم هاتفك';
+
+  @override
+  String get pleaseEnterValidPhoneNumber => 'الرجاء إدخال رقم هاتف صحيح';
+
+  @override
+  String get saveChanges => 'حفظ التغييرات';
+
+  // Addresses Screen
+  @override
+  String get myAddresses => 'عناويني';
+
+  @override
+  String get errorLoadingAddresses => 'خطأ في تحميل العناوين';
+
+  @override
+  String get deleteAddress => 'حذف العنوان';
+
+  @override
+  String get areYouSureDeleteAddress => 'هل أنت متأكد من حذف هذا العنوان؟';
+
+  @override
+  String get addressDeletedSuccessfully => 'تم حذف العنوان بنجاح';
+
+  @override
+  String get errorDeletingAddress => 'خطأ في حذف العنوان';
+
+  @override
+  String get defaultAddressUpdated => 'تم تحديث العنوان الافتراضي';
+
+  @override
+  String get errorSettingDefaultAddress => 'خطأ في تعيين العنوان الافتراضي';
+
+  @override
+  String get addAddress => 'إضافة عنوان';
+
+  @override
+  String get noAddressesSaved => 'لا توجد عناوين محفوظة';
+
+  @override
+  String get addAnAddressToGetStarted => 'أضف عنواناً للبدء';
+
+  @override
+  String get addressLabel => 'العنوان';
+
+  @override
+  String get defaultLabel => 'افتراضي';
+
+  @override
+  String get setAsDefault => 'تعيين كافتراضي';
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../services/address_service.dart';
 import '../../config/supabase_config.dart';
 import '../../config/app_theme.dart';
+import '../../l10n/app_localizations.dart';
 import 'add_edit_address_screen.dart';
 
 class AddressesScreen extends StatefulWidget {
@@ -32,8 +33,9 @@ class _AddressesScreenState extends State<AddressesScreen> {
       setState(() => _addresses = addresses);
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading addresses: $e')),
+          SnackBar(content: Text('${l10n.errorLoadingAddresses}: $e')),
         );
       }
     } finally {
@@ -42,22 +44,24 @@ class _AddressesScreenState extends State<AddressesScreen> {
   }
 
   Future<void> _deleteAddress(String addressId) async {
+    final l10n = AppLocalizations.of(context);
+
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Address'),
-        content: const Text('Are you sure you want to delete this address?'),
+        title: Text(l10n.deleteAddress),
+        content: Text(l10n.areYouSureDeleteAddress),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
             ),
-            child: const Text('Delete'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -70,8 +74,8 @@ class _AddressesScreenState extends State<AddressesScreen> {
       _loadAddresses();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Address deleted successfully'),
+          SnackBar(
+            content: Text(l10n.addressDeletedSuccessfully),
             backgroundColor: Colors.green,
           ),
         );
@@ -80,7 +84,7 @@ class _AddressesScreenState extends State<AddressesScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error deleting address: $e'),
+            content: Text('${l10n.errorDeletingAddress}: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -96,18 +100,20 @@ class _AddressesScreenState extends State<AddressesScreen> {
       await _addressService.setDefaultAddress(userId, addressId);
       _loadAddresses();
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Default address updated'),
+          SnackBar(
+            content: Text(l10n.defaultAddressUpdated),
             backgroundColor: Colors.green,
           ),
         );
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error setting default address: $e'),
+            content: Text('${l10n.errorSettingDefaultAddress}: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -117,9 +123,11 @@ class _AddressesScreenState extends State<AddressesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Addresses'),
+        title: Text(l10n.myAddresses),
         backgroundColor: AppTheme.primaryNavy,
         foregroundColor: Colors.white,
       ),
@@ -139,7 +147,7 @@ class _AddressesScreenState extends State<AddressesScreen> {
           _loadAddresses();
         },
         icon: const Icon(Icons.add),
-        label: const Text('Add Address'),
+        label: Text(l10n.addAddress),
         backgroundColor: AppTheme.primaryNavy,
         foregroundColor: Colors.white,
       ),
@@ -147,6 +155,8 @@ class _AddressesScreenState extends State<AddressesScreen> {
   }
 
   Widget _buildEmptyState() {
+    final l10n = AppLocalizations.of(context);
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -158,7 +168,7 @@ class _AddressesScreenState extends State<AddressesScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            'No addresses saved',
+            l10n.noAddressesSaved,
             style: TextStyle(
               fontSize: 18,
               color: Colors.grey[600],
@@ -166,7 +176,7 @@ class _AddressesScreenState extends State<AddressesScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Add an address to get started',
+            l10n.addAnAddressToGetStarted,
             style: TextStyle(
               fontSize: 14,
               color: Colors.grey[500],
@@ -178,6 +188,8 @@ class _AddressesScreenState extends State<AddressesScreen> {
   }
 
   Widget _buildAddressList() {
+    final l10n = AppLocalizations.of(context);
+
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: _addresses.length,
@@ -199,7 +211,7 @@ class _AddressesScreenState extends State<AddressesScreen> {
             title: Row(
               children: [
                 Text(
-                  address['label'] ?? 'Address',
+                  address['label'] ?? l10n.addressLabel,
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                   ),
@@ -215,9 +227,9 @@ class _AddressesScreenState extends State<AddressesScreen> {
                       color: AppTheme.primaryNavy,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Text(
-                      'DEFAULT',
-                      style: TextStyle(
+                    child: Text(
+                      l10n.defaultLabel,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
@@ -261,34 +273,34 @@ class _AddressesScreenState extends State<AddressesScreen> {
                 }
               },
               itemBuilder: (context) => [
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'edit',
                   child: Row(
                     children: [
-                      Icon(Icons.edit, size: 20),
-                      SizedBox(width: 8),
-                      Text('Edit'),
+                      const Icon(Icons.edit, size: 20),
+                      const SizedBox(width: 8),
+                      Text(l10n.edit),
                     ],
                   ),
                 ),
                 if (!isDefault)
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 'default',
                     child: Row(
                       children: [
-                        Icon(Icons.check_circle, size: 20),
-                        SizedBox(width: 8),
-                        Text('Set as Default'),
+                        const Icon(Icons.check_circle, size: 20),
+                        const SizedBox(width: 8),
+                        Text(l10n.setAsDefault),
                       ],
                     ),
                   ),
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'delete',
                   child: Row(
                     children: [
-                      Icon(Icons.delete, size: 20, color: Colors.red),
-                      SizedBox(width: 8),
-                      Text('Delete', style: TextStyle(color: Colors.red)),
+                      const Icon(Icons.delete, size: 20, color: Colors.red),
+                      const SizedBox(width: 8),
+                      Text(l10n.delete, style: const TextStyle(color: Colors.red)),
                     ],
                   ),
                 ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../config/app_theme.dart';
+import '../../l10n/app_localizations.dart';
 import '../auth/auth_provider.dart';
 import '../auth/login_screen.dart';
 import '../profile/edit_profile_screen.dart';
@@ -15,10 +16,11 @@ class ProfileScreen extends StatelessWidget {
     final authProvider = context.watch<AuthProvider>();
     final profile = authProvider.customerProfile;
     final user = authProvider.user;
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile'),
+        title: Text(l10n.profile),
         backgroundColor: AppTheme.primaryNavy,
         foregroundColor: Colors.white,
         actions: [
@@ -28,19 +30,19 @@ class ProfileScreen extends StatelessWidget {
               final confirm = await showDialog<bool>(
                 context: context,
                 builder: (context) => AlertDialog(
-                  title: const Text('Logout'),
-                  content: const Text('Are you sure you want to logout?'),
+                  title: Text(l10n.logout),
+                  content: Text(l10n.areYouSureLogout),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(context, false),
-                      child: const Text('Cancel'),
+                      child: Text(l10n.cancel),
                     ),
                     ElevatedButton(
                       onPressed: () => Navigator.pop(context, true),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
                       ),
-                      child: const Text('Logout'),
+                      child: Text(l10n.logout),
                     ),
                   ],
                 ),
@@ -115,9 +117,10 @@ class ProfileScreen extends StatelessWidget {
                   // Profile Options
                   _buildProfileOption(
                     context,
+                    l10n: l10n,
                     icon: Icons.edit,
-                    title: 'Edit Profile',
-                    subtitle: 'Update your personal information',
+                    title: l10n.editProfile,
+                    subtitle: l10n.updateProfile,
                     onTap: () async {
                       await Navigator.push(
                         context,
@@ -127,12 +130,13 @@ class ProfileScreen extends StatelessWidget {
                       );
                     },
                   ),
-                  
+
                   _buildProfileOption(
                     context,
+                    l10n: l10n,
                     icon: Icons.location_on,
-                    title: 'Manage Addresses',
-                    subtitle: 'Add or edit delivery addresses',
+                    title: l10n.manageAddresses,
+                    subtitle: l10n.addOrEditDeliveryAddresses,
                     onTap: () {
                       Navigator.push(
                         context,
@@ -142,12 +146,13 @@ class ProfileScreen extends StatelessWidget {
                       );
                     },
                   ),
-                  
+
                   _buildProfileOption(
                     context,
+                    l10n: l10n,
                     icon: Icons.settings,
-                    title: 'Settings',
-                    subtitle: 'App preferences and security',
+                    title: l10n.settings,
+                    subtitle: l10n.appPreferencesAndSecurity,
                     onTap: () {
                       Navigator.push(
                         context,
@@ -157,48 +162,50 @@ class ProfileScreen extends StatelessWidget {
                       );
                     },
                   ),
-                  
+
                   _buildProfileOption(
                     context,
+                    l10n: l10n,
                     icon: Icons.help_outline,
-                    title: 'Help & Support',
-                    subtitle: 'Get help or contact us',
+                    title: l10n.helpAndSupport,
+                    subtitle: l10n.getHelpOrContactUs,
                     onTap: () {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Help & Support - Coming Soon'),
+                        SnackBar(
+                          content: Text(l10n.helpAndSupportComingSoon),
                         ),
                       );
                     },
                   ),
-                  
+
                   _buildProfileOption(
                     context,
+                    l10n: l10n,
                     icon: Icons.info_outline,
-                    title: 'About',
-                    subtitle: 'App version and information',
+                    title: l10n.about,
+                    subtitle: l10n.appVersionAndInformation,
                     onTap: () {
                       showDialog(
                         context: context,
                         builder: (context) => AlertDialog(
-                          title: const Text('About Azimah Tech'),
-                          content: const Column(
+                          title: Text(l10n.aboutAzimahTech),
+                          content: Column(
                             mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Version: 1.0.0'),
-                              SizedBox(height: 8),
-                              Text('Azimah Tech - Event Marketplace'),
-                              SizedBox(height: 8),
-                              Text('Browse and book event services'),
-                              SizedBox(height: 16),
-                              Text('© 2025 Azimah Tech'),
+                              Text('${l10n.version}: 1.0.0'),
+                              const SizedBox(height: 8),
+                              Text(l10n.azimahTechEventMarketplace),
+                              const SizedBox(height: 8),
+                              Text(l10n.browseAndBookEventServices),
+                              const SizedBox(height: 16),
+                              Text(l10n.copyrightAzimahTech),
                             ],
                           ),
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.pop(context),
-                              child: const Text('Close'),
+                              child: Text(l10n.close),
                             ),
                           ],
                         ),
@@ -213,6 +220,7 @@ class ProfileScreen extends StatelessWidget {
 
   Widget _buildProfileOption(
     BuildContext context, {
+    required AppLocalizations l10n,
     required IconData icon,
     required String title,
     required String subtitle,

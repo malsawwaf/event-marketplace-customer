@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'dart:io';
 import '../../config/supabase_config.dart';
 import '../../config/app_theme.dart';
+import '../../l10n/app_localizations.dart';
 import '../auth/auth_provider.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -43,7 +44,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     try {
       final authProvider = context.read<AuthProvider>();
       final profile = authProvider.customerProfile;
-      
+
       if (profile != null) {
         _firstNameController.text = profile['first_name'] ?? '';
         _lastNameController.text = profile['last_name'] ?? '';
@@ -52,8 +53,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading profile: $e')),
+          SnackBar(content: Text('${l10n.errorLoadingProfile}: $e')),
         );
       }
     } finally {
@@ -63,22 +65,23 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
-    
+    final l10n = AppLocalizations.of(context);
+
     final source = await showDialog<ImageSource>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Select Photo Source'),
+        title: Text(l10n.selectPhotoSource),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
               leading: const Icon(Icons.photo_library),
-              title: const Text('Choose from Gallery'),
+              title: Text(l10n.chooseFromGallery),
               onTap: () => Navigator.pop(context, ImageSource.gallery),
             ),
             ListTile(
               leading: const Icon(Icons.camera_alt),
-              title: const Text('Take Photo'),
+              title: Text(l10n.takePhoto),
               onTap: () => Navigator.pop(context, ImageSource.camera),
             ),
           ],
@@ -95,7 +98,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         maxHeight: 512,
         imageQuality: 75,
       );
-      
+
       if (pickedFile != null) {
         setState(() {
           _selectedImage = File(pickedFile.path);
@@ -104,7 +107,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error picking image: $e')),
+          SnackBar(content: Text('${l10n.errorPickingImage}: $e')),
         );
       }
     }
@@ -131,8 +134,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       return url;
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error uploading image: $e')),
+          SnackBar(content: Text('${l10n.errorUploadingImage}: $e')),
         );
       }
       return null;
@@ -145,8 +149,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     setState(() => _isSaving = true);
 
     try {
+      final l10n = AppLocalizations.of(context);
       final userId = supabase.auth.currentUser?.id;
-      if (userId == null) throw Exception('User not authenticated');
+      if (userId == null) throw Exception(l10n.userNotAuthenticated);
 
       // Upload image if selected
       final imageUrl = await _uploadImage();
@@ -173,8 +178,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Profile updated successfully'),
+          SnackBar(
+            content: Text(l10n.profileUpdatedSuccessfully),
             backgroundColor: Colors.green,
           ),
         );
@@ -182,9 +187,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error updating profile: $e'),
+            content: Text('${l10n.errorUpdatingProfile}: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -196,10 +202,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     if (_isLoading) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Edit Profile'),
+          title: Text(l10n.editProfile),
           backgroundColor: AppTheme.primaryNavy,
           foregroundColor: Colors.white,
         ),
@@ -209,7 +217,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Profile'),
+        title: Text(l10n.editProfile),
         backgroundColor: AppTheme.primaryNavy,
         foregroundColor: Colors.white,
       ),
@@ -261,7 +269,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Tap to change photo',
+                l10n.tapToChangePhoto,
                 style: TextStyle(
                   fontSize: 12,
                   color: Colors.grey[600],
@@ -273,7 +281,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               TextFormField(
                 controller: _firstNameController,
                 decoration: InputDecoration(
-                  labelText: 'First Name',
+                  labelText: l10n.firstName,
                   prefixIcon: const Icon(Icons.person_outline),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -281,7 +289,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return 'Please enter your first name';
+                    return l10n.pleaseEnterYourFirstName;
                   }
                   return null;
                 },
@@ -292,7 +300,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               TextFormField(
                 controller: _lastNameController,
                 decoration: InputDecoration(
-                  labelText: 'Last Name',
+                  labelText: l10n.lastName,
                   prefixIcon: const Icon(Icons.person_outline),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -300,7 +308,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return 'Please enter your last name';
+                    return l10n.pleaseEnterYourLastName;
                   }
                   return null;
                 },
@@ -311,7 +319,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               TextFormField(
                 controller: _phoneController,
                 decoration: InputDecoration(
-                  labelText: 'Phone Number',
+                  labelText: l10n.phoneNumber,
                   prefixIcon: const Icon(Icons.phone_outlined),
                   prefixText: '+966 ',
                   border: OutlineInputBorder(
@@ -321,10 +329,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 keyboardType: TextInputType.phone,
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return 'Please enter your phone number';
+                    return l10n.pleaseEnterYourPhoneNumber;
                   }
                   if (value.trim().length < 9) {
-                    return 'Please enter a valid phone number';
+                    return l10n.pleaseEnterValidPhoneNumber;
                   }
                   return null;
                 },
@@ -353,9 +361,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             strokeWidth: 2,
                           ),
                         )
-                      : const Text(
-                          'Save Changes',
-                          style: TextStyle(
+                      : Text(
+                          l10n.saveChanges,
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),

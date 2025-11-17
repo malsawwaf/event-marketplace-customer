@@ -330,4 +330,209 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noInternetConnection => 'No internet connection';
+
+  // Profile Screen
+  @override
+  String get areYouSureLogout => 'Are you sure you want to logout?';
+
+  @override
+  String get manageAddresses => 'Manage Addresses';
+
+  @override
+  String get addOrEditDeliveryAddresses => 'Add or edit delivery addresses';
+
+  @override
+  String get settings => 'Settings';
+
+  @override
+  String get appPreferencesAndSecurity => 'App preferences and security';
+
+  @override
+  String get helpAndSupport => 'Help & Support';
+
+  @override
+  String get getHelpOrContactUs => 'Get help or contact us';
+
+  @override
+  String get helpAndSupportComingSoon => 'Help & Support - Coming Soon';
+
+  @override
+  String get about => 'About';
+
+  @override
+  String get appVersionAndInformation => 'App version and information';
+
+  @override
+  String get aboutAzimahTech => 'About Azimah Tech';
+
+  @override
+  String get version => 'Version';
+
+  @override
+  String get azimahTechEventMarketplace => 'Azimah Tech - Event Marketplace';
+
+  @override
+  String get browseAndBookEventServices => 'Browse and book event services';
+
+  @override
+  String get copyrightAzimahTech => '© 2025 Azimah Tech';
+
+  // Settings Screen
+  @override
+  String get account => 'Account';
+
+  @override
+  String get changePassword => 'Change Password';
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get pushNotifications => 'Push Notifications';
+
+  @override
+  String get receiveOrderUpdates => 'Receive order updates';
+
+  @override
+  String get emailNotifications => 'Email Notifications';
+
+  @override
+  String get receiveUpdatesViaEmail => 'Receive updates via email';
+
+  @override
+  String get smsNotifications => 'SMS Notifications';
+
+  @override
+  String get receiveUpdatesViaSMS => 'Receive updates via SMS';
+
+  @override
+  String get aboutApp => 'About App';
+
+  @override
+  String get privacyPolicy => 'Privacy Policy';
+
+  @override
+  String get privacyPolicyComingSoon => 'Privacy Policy - Coming Soon';
+
+  @override
+  String get termsOfService => 'Terms of Service';
+
+  @override
+  String get termsOfServiceComingSoon => 'Terms of Service - Coming Soon';
+
+  @override
+  String get currentPassword => 'Current Password';
+
+  @override
+  String get pleaseEnterCurrentPassword => 'Please enter current password';
+
+  @override
+  String get newPassword => 'New Password';
+
+  @override
+  String get pleaseEnterNewPassword => 'Please enter new password';
+
+  @override
+  String get passwordMustBeAtLeast6Characters => 'Password must be at least 6 characters';
+
+  @override
+  String get confirmNewPassword => 'Confirm Password';
+
+  @override
+  String get passwordsDoNotMatch => 'Passwords do not match';
+
+  @override
+  String get change => 'Change';
+
+  @override
+  String get passwordChangedSuccessfully => 'Password changed successfully';
+
+  @override
+  String get userNotFound => 'User not found';
+
+  // Edit Profile Screen
+  @override
+  String get errorLoadingProfile => 'Error loading profile';
+
+  @override
+  String get selectPhotoSource => 'Select Photo Source';
+
+  @override
+  String get errorPickingImage => 'Error picking image';
+
+  @override
+  String get errorUploadingImage => 'Error uploading image';
+
+  @override
+  String get userNotAuthenticated => 'User not authenticated';
+
+  @override
+  String get profileUpdatedSuccessfully => 'Profile updated successfully';
+
+  @override
+  String get errorUpdatingProfile => 'Error updating profile';
+
+  @override
+  String get tapToChangePhoto => 'Tap to change photo';
+
+  @override
+  String get phoneNumber => 'Phone Number';
+
+  @override
+  String get pleaseEnterYourFirstName => 'Please enter your first name';
+
+  @override
+  String get pleaseEnterYourLastName => 'Please enter your last name';
+
+  @override
+  String get pleaseEnterYourPhoneNumber => 'Please enter your phone number';
+
+  @override
+  String get pleaseEnterValidPhoneNumber => 'Please enter a valid phone number';
+
+  @override
+  String get saveChanges => 'Save Changes';
+
+  // Addresses Screen
+  @override
+  String get myAddresses => 'My Addresses';
+
+  @override
+  String get errorLoadingAddresses => 'Error loading addresses';
+
+  @override
+  String get deleteAddress => 'Delete Address';
+
+  @override
+  String get areYouSureDeleteAddress => 'Are you sure you want to delete this address?';
+
+  @override
+  String get addressDeletedSuccessfully => 'Address deleted successfully';
+
+  @override
+  String get errorDeletingAddress => 'Error deleting address';
+
+  @override
+  String get defaultAddressUpdated => 'Default address updated';
+
+  @override
+  String get errorSettingDefaultAddress => 'Error setting default address';
+
+  @override
+  String get addAddress => 'Add Address';
+
+  @override
+  String get noAddressesSaved => 'No addresses saved';
+
+  @override
+  String get addAnAddressToGetStarted => 'Add an address to get started';
+
+  @override
+  String get addressLabel => 'Address';
+
+  @override
+  String get defaultLabel => 'DEFAULT';
+
+  @override
+  String get setAsDefault => 'Set as Default';
 }
