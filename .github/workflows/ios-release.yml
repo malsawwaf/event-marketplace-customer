@@ -28,9 +28,6 @@ jobs:
       - name: Get Flutter dependencies
         run: flutter pub get
 
-      - name: Generate localizations
-        run: flutter gen-l10n
-
       - name: Import Code Signing Certificate
         env:
           CERT_BASE64: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE }}
