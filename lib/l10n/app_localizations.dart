@@ -275,7 +275,6 @@ abstract class AppLocalizations {
   String get rating;
   String get viewMenu;
   String get menu;
-  String get about;
   String get information;
   String get openingHours;
   String get location;
@@ -284,15 +283,12 @@ abstract class AppLocalizations {
   String get deliveryFee;
   String get estimatedDelivery;
   String get addons;
-  String get required;
-  String get optional;
   String get select;
   String get updateCart;
   String get emptyCart;
   String get yourCartIsEmpty;
   String get startShopping;
   String get orderSummary;
-  String get items;
   String get deliveryFeeLabel;
   String get taxLabel;
   String get discount;
@@ -310,12 +306,10 @@ abstract class AppLocalizations {
   String get placeOrder;
   String get processing;
   String get orderPlacedSuccessfully;
-  String get orderNumber;
   String get thankYouForYourOrder;
   String get weArePreparingYourOrder;
   String get viewOrderDetails;
   String get backToHome;
-  String get myOrders;
   String get activeOrders;
   String get pastOrders;
   String get reorder;
