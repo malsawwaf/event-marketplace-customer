@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../services/address_service.dart';
 import '../../config/supabase_config.dart';
 import '../../config/app_theme.dart';
+import '../../l10n/app_localizations.dart';
 
 class AddEditAddressScreen extends StatefulWidget {
   final Map<String, dynamic>? address;
@@ -91,13 +92,10 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
       }
 
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              widget.address == null
-                  ? 'Address added successfully'
-                  : 'Address updated successfully',
-            ),
+            content: Text(l10n.addressSavedSuccessfully),
             backgroundColor: Colors.green,
           ),
         );
@@ -105,9 +103,10 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error saving address: $e'),
+            content: Text('${l10n.error}: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -119,11 +118,12 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final isEditing = widget.address != null;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(isEditing ? 'Edit Address' : 'Add Address'),
+        title: Text(isEditing ? l10n.editAddress : l10n.addAddress),
         backgroundColor: AppTheme.primaryNavy,
         foregroundColor: Colors.white,
       ),
@@ -136,7 +136,7 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
             children: [
               // Label (Home, Work, Other)
               Text(
-                'Address Label',
+                l10n.addressLabel,
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -157,7 +157,7 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
               TextFormField(
                 controller: _labelController,
                 decoration: InputDecoration(
-                  labelText: 'Custom Label (optional)',
+                  labelText: '${l10n.addressLabel} (${l10n.optional})',
                   prefixIcon: const Icon(Icons.label_outline),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -170,7 +170,7 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
               TextFormField(
                 controller: _cityController,
                 decoration: InputDecoration(
-                  labelText: 'City',
+                  labelText: l10n.city,
                   prefixIcon: const Icon(Icons.location_city),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -178,7 +178,7 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return 'Please enter city';
+                    return l10n.pleaseEnterCity;
                   }
                   return null;
                 },
@@ -189,7 +189,7 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
               TextFormField(
                 controller: _districtController,
                 decoration: InputDecoration(
-                  labelText: 'District',
+                  labelText: l10n.state,
                   prefixIcon: const Icon(Icons.map_outlined),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -197,7 +197,7 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return 'Please enter district';
+                    return l10n.pleaseEnterCity;
                   }
                   return null;
                 },
@@ -208,7 +208,7 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
               TextFormField(
                 controller: _fullAddressController,
                 decoration: InputDecoration(
-                  labelText: 'Full Address',
+                  labelText: l10n.address,
                   prefixIcon: const Icon(Icons.home_outlined),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -218,7 +218,7 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
                 maxLines: 3,
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return 'Please enter full address';
+                    return l10n.pleaseEnterCity;
                   }
                   return null;
                 },
@@ -244,17 +244,17 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Map Location Picker',
+                        '${l10n.location} Picker',
                         style: TextStyle(
                           color: Colors.grey[600],
                         ),
                       ),
                       const SizedBox(height: 4),
-                      Text(
+                      const Text(
                         '(Coming Soon)',
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.grey[500],
+                          color: Colors.grey,
                         ),
                       ),
                     ],
@@ -269,7 +269,7 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
                 onChanged: (value) {
                   setState(() => _isDefault = value ?? false);
                 },
-                title: const Text('Set as default address'),
+                title: Text(l10n.setAsDefault),
                 subtitle: const Text('This will be selected automatically'),
                 controlAffinity: ListTileControlAffinity.leading,
                 contentPadding: EdgeInsets.zero,
@@ -299,7 +299,7 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
                           ),
                         )
                       : Text(
-                          isEditing ? 'Update Address' : 'Save Address',
+                          isEditing ? l10n.editAddress : l10n.saveAddress,
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../services/address_service.dart';
 import '../../config/app_theme.dart';
+import '../../l10n/app_localizations.dart';
 
 class AddEditAddressScreen extends StatefulWidget {
   final Map<String, dynamic>? existingAddress;
@@ -68,8 +69,9 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
 
     final customerId = _supabase.auth.currentUser?.id;
     if (customerId == null) {
+      final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please login to save address')),
+        SnackBar(content: Text(l10n.userNotAuthenticated)),
       );
       return;
     }
@@ -111,13 +113,10 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
       }
 
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              widget.existingAddress != null
-                  ? 'Address updated successfully'
-                  : 'Address added successfully',
-            ),
+            content: Text(l10n.addressSavedSuccessfully),
             backgroundColor: Colors.green,
           ),
         );
@@ -126,8 +125,9 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
     } catch (e) {
       if (mounted) {
         setState(() => _isSaving = false);
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
+          SnackBar(content: Text('${l10n.error}: ${e.toString()}')),
         );
       }
     }
@@ -135,11 +135,12 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final isEditing = widget.existingAddress != null;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(isEditing ? 'Edit Address' : 'Add New Address'),
+        title: Text(isEditing ? l10n.editAddress : l10n.addAddress),
         backgroundColor: AppTheme.primaryNavy,
         foregroundColor: Colors.white,
       ),
@@ -151,15 +152,15 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
             // Label
             TextFormField(
               controller: _labelController,
-              decoration: const InputDecoration(
-                labelText: 'Address Label',
+              decoration: InputDecoration(
+                labelText: l10n.addressLabel,
                 hintText: 'e.g., Home, Office, Villa',
-                prefixIcon: Icon(Icons.label),
-                border: OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.label),
+                border: const OutlineInputBorder(),
               ),
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return 'Please enter address label';
+                  return l10n.pleaseEnterAddressNickname;
                 }
                 if (value.trim().length < 3) {
                   return 'Label must be at least 3 characters';
@@ -172,14 +173,14 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
             // City
             TextFormField(
               controller: _cityController,
-              decoration: const InputDecoration(
-                labelText: 'City',
-                prefixIcon: Icon(Icons.location_city),
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.city,
+                prefixIcon: const Icon(Icons.location_city),
+                border: const OutlineInputBorder(),
               ),
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return 'Please enter city';
+                  return l10n.pleaseEnterCity;
                 }
                 return null;
               },
@@ -189,14 +190,14 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
             // District
             TextFormField(
               controller: _districtController,
-              decoration: const InputDecoration(
-                labelText: 'District',
-                prefixIcon: Icon(Icons.map),
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.state,
+                prefixIcon: const Icon(Icons.map),
+                border: const OutlineInputBorder(),
               ),
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return 'Please enter district';
+                  return l10n.pleaseEnterCity;
                 }
                 return null;
               },
@@ -206,11 +207,11 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
             // Address Details
             TextFormField(
               controller: _detailsController,
-              decoration: const InputDecoration(
-                labelText: 'Address Details (Optional)',
+              decoration: InputDecoration(
+                labelText: '${l10n.address} (${l10n.optional})',
                 hintText: 'Building, Street, Floor, etc.',
-                prefixIcon: Icon(Icons.home),
-                border: OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.home),
+                border: const OutlineInputBorder(),
               ),
               maxLines: 3,
             ),
@@ -227,9 +228,9 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
                       children: [
                         Icon(Icons.location_on, color: AppTheme.primaryNavy),
                         const SizedBox(width: 8),
-                        const Text(
-                          'Location',
-                          style: TextStyle(
+                        Text(
+                          l10n.location,
+                          style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
                           ),
@@ -246,13 +247,13 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
                       onPressed: () {
                         // TODO: Integrate Google Maps location picker
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Map picker coming soon! Using Jeddah default location.'),
+                          SnackBar(
+                            content: Text('${l10n.location} picker coming soon! Using Jeddah default location.'),
                           ),
                         );
                       },
                       icon: const Icon(Icons.map),
-                      label: const Text('Pick Location on Map'),
+                      label: Text('${l10n.select} ${l10n.location}'),
                     ),
                   ],
                 ),
@@ -262,7 +263,7 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
 
             // Set as Default
             SwitchListTile(
-              title: const Text('Set as default address'),
+              title: Text(l10n.setAsDefault),
               subtitle: const Text('Use this address for all orders'),
               value: _isDefault,
               onChanged: (value) => setState(() => _isDefault = value),
@@ -289,7 +290,7 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
                         ),
                       )
                     : Text(
-                        isEditing ? 'Update Address' : 'Save Address',
+                        isEditing ? l10n.editAddress : l10n.saveAddress,
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,

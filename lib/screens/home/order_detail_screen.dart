@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../services/orders_service.dart';
 import '../../services/reviews_service.dart';
 import '../../config/app_theme.dart';
@@ -64,8 +65,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading order: $e')),
+          SnackBar(content: Text('${l10n.error}: $e')),
         );
       }
     }
@@ -87,10 +89,12 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     if (_isLoading) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Order Details'),
+          title: Text(l10n.orderDetails),
           backgroundColor: AppTheme.primaryNavy,
           foregroundColor: Colors.white,
         ),
@@ -101,11 +105,11 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     if (_order == null) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Order Details'),
+          title: Text(l10n.orderDetails),
           backgroundColor: AppTheme.primaryNavy,
           foregroundColor: Colors.white,
         ),
-        body: const Center(child: Text('Order not found')),
+        body: Center(child: Text(l10n.error)),
       );
     }
 
@@ -113,6 +117,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     final orderNumber = _order!['order_number'] as String;
     final provider = _order!['providers'] as Map<String, dynamic>;
     final orderItems = _order!['order_items'] as List;
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
     final acceptanceDeadline = _order!['acceptance_deadline'] != null
         ? DateTime.parse(_order!['acceptance_deadline'])
@@ -130,7 +135,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             IconButton(
               onPressed: _showCancelDialog,
               icon: const Icon(Icons.cancel_outlined),
-              tooltip: 'Cancel Order',
+              tooltip: l10n.cancelOrder,
             ),
         ],
       ),
@@ -915,17 +920,17 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   }
 
   void _showCancelDialog() {
+    final l10n = AppLocalizations.of(context)!;
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Cancel Order'),
-        content: const Text(
-          'Are you sure you want to cancel this order? Stock will be returned and this action cannot be undone.',
-        ),
+        title: Text(l10n.cancelOrder),
+        content: Text(l10n.cancelOrder),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Keep Order'),
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -935,7 +940,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
             ),
-            child: const Text('Cancel Order'),
+            child: Text(l10n.cancelOrder),
           ),
         ],
       ),
@@ -949,9 +954,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
       await _ordersService.cancelOrder(widget.orderId);
 
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Order cancelled successfully'),
+          SnackBar(
+            content: Text('${l10n.cancelOrder} ${l10n.success.toLowerCase()}'),
             backgroundColor: Colors.green,
           ),
         );
@@ -961,9 +967,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     } catch (e) {
       if (mounted) {
         setState(() => _isCancelling = false);
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error cancelling order: $e'),
+            content: Text('${l10n.error}: $e'),
             backgroundColor: Colors.red,
           ),
         );

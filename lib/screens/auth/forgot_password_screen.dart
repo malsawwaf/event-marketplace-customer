@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../l10n/app_localizations.dart';
 import 'auth_provider.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
@@ -37,7 +38,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(authProvider.error ?? 'Failed to send reset email'),
+          content: Text(authProvider.error ?? AppLocalizations.of(context).errorSendingResetLink),
           backgroundColor: Colors.red,
         ),
       );
@@ -78,7 +79,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           const SizedBox(height: 24),
           // Title
           Text(
-            'Forgot Password?',
+            AppLocalizations.of(context).resetYourPassword,
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,
@@ -88,7 +89,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Enter your email address and we\'ll send you a link to reset your password',
+            AppLocalizations.of(context).enterEmailToResetPassword,
             style: TextStyle(
               fontSize: 16,
               color: Colors.grey[600],
@@ -101,7 +102,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             controller: _emailController,
             keyboardType: TextInputType.emailAddress,
             decoration: InputDecoration(
-              labelText: 'Email',
+              labelText: AppLocalizations.of(context).email,
               prefixIcon: const Icon(Icons.email_outlined),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -109,10 +110,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Please enter your email';
+                return AppLocalizations.of(context).pleaseEnterYourEmail;
               }
               if (!value.contains('@')) {
-                return 'Please enter a valid email';
+                return AppLocalizations.of(context).pleaseEnterValidEmail;
               }
               return null;
             },
@@ -142,8 +143,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                               AlwaysStoppedAnimation<Color>(Colors.white),
                         ),
                       )
-                    : const Text(
-                        'Send Reset Link',
+                    : Text(
+                        AppLocalizations.of(context).sendResetLink,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -158,7 +159,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             onPressed: () {
               Navigator.of(context).pop();
             },
-            child: const Text('Back to Sign In'),
+            child: Text(AppLocalizations.of(context).backToSignIn),
           ),
         ],
       ),
@@ -179,7 +180,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         const SizedBox(height: 24),
         // Title
         Text(
-          'Check Your Email',
+          AppLocalizations.of(context).checkYourEmail,
           style: TextStyle(
             fontSize: 28,
             fontWeight: FontWeight.bold,
@@ -190,7 +191,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         const SizedBox(height: 16),
         // Message
         Text(
-          'We\'ve sent a password reset link to',
+          AppLocalizations.of(context).resetLinkSentTo,
           style: TextStyle(
             fontSize: 16,
             color: Colors.grey[600],
@@ -224,7 +225,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               ),
               const SizedBox(height: 12),
               Text(
-                'Click the link in the email to reset your password. If you don\'t see the email, check your spam folder.',
+                AppLocalizations.of(context).didNotReceiveEmail,
                 style: TextStyle(
                   fontSize: 14,
                   color: Colors.grey[700],
@@ -248,8 +249,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               borderRadius: BorderRadius.circular(12),
             ),
           ),
-          child: const Text(
-            'Back to Sign In',
+          child: Text(
+            AppLocalizations.of(context).backToSignIn,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -264,7 +265,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               _emailSent = false;
             });
           },
-          child: const Text('Resend Link'),
+          child: Text(AppLocalizations.of(context).resendLink),
         ),
       ],
     );

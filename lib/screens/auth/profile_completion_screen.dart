@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../config/app_theme.dart';
+import '../../l10n/app_localizations.dart';
 import 'auth_provider.dart';
 import '../home/bottom_nav_screen.dart';
 
@@ -47,7 +48,7 @@ class _ProfileCompletionScreenState extends State<ProfileCompletionScreen> {
       // Show error
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(authProvider.error ?? 'Failed to complete profile'),
+          content: Text(authProvider.error ?? AppLocalizations.of(context).errorCompletingProfile),
           backgroundColor: Colors.red,
         ),
       );
@@ -85,7 +86,7 @@ class _ProfileCompletionScreenState extends State<ProfileCompletionScreen> {
                 const SizedBox(height: 24),
                 // Title
                 Text(
-                  'Complete Your Profile',
+                  AppLocalizations.of(context).completeYourProfile,
                   style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
@@ -95,7 +96,7 @@ class _ProfileCompletionScreenState extends State<ProfileCompletionScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Please provide your information to continue',
+                  AppLocalizations.of(context).almostThere,
                   style: TextStyle(
                     fontSize: 16,
                     color: AppTheme.textSecondary,
@@ -108,8 +109,8 @@ class _ProfileCompletionScreenState extends State<ProfileCompletionScreen> {
                   controller: _firstNameController,
                   textCapitalization: TextCapitalization.words,
                   decoration: InputDecoration(
-                    labelText: 'First Name',
-                    hintText: 'Enter your first name',
+                    labelText: AppLocalizations.of(context).firstName,
+                    hintText: AppLocalizations.of(context).enterYourFirstName,
                     prefixIcon: Icon(Icons.person_outlined, color: AppTheme.primaryNavy),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -121,10 +122,10 @@ class _ProfileCompletionScreenState extends State<ProfileCompletionScreen> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your first name';
+                      return AppLocalizations.of(context).pleaseEnterYourFirstName;
                     }
                     if (value.length < 2) {
-                      return 'First name must be at least 2 characters';
+                      return AppLocalizations.of(context).pleaseEnterYourFirstName;
                     }
                     return null;
                   },
@@ -135,8 +136,8 @@ class _ProfileCompletionScreenState extends State<ProfileCompletionScreen> {
                   controller: _lastNameController,
                   textCapitalization: TextCapitalization.words,
                   decoration: InputDecoration(
-                    labelText: 'Last Name',
-                    hintText: 'Enter your last name',
+                    labelText: AppLocalizations.of(context).lastName,
+                    hintText: AppLocalizations.of(context).enterYourLastName,
                     prefixIcon: Icon(Icons.person_outlined, color: AppTheme.primaryNavy),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -148,10 +149,10 @@ class _ProfileCompletionScreenState extends State<ProfileCompletionScreen> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your last name';
+                      return AppLocalizations.of(context).pleaseEnterYourLastName;
                     }
                     if (value.length < 2) {
-                      return 'Last name must be at least 2 characters';
+                      return AppLocalizations.of(context).pleaseEnterYourLastName;
                     }
                     return null;
                   },
@@ -162,8 +163,8 @@ class _ProfileCompletionScreenState extends State<ProfileCompletionScreen> {
                   controller: _phoneController,
                   keyboardType: TextInputType.phone,
                   decoration: InputDecoration(
-                    labelText: 'Phone Number',
-                    hintText: '05xxxxxxxx',
+                    labelText: AppLocalizations.of(context).phoneNumber,
+                    hintText: AppLocalizations.of(context).phoneHint,
                     prefixIcon: Icon(Icons.phone_outlined, color: AppTheme.primaryNavy),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -175,12 +176,12 @@ class _ProfileCompletionScreenState extends State<ProfileCompletionScreen> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your phone number';
+                      return AppLocalizations.of(context).pleaseEnterYourPhoneNumber;
                     }
                     // Basic Saudi phone number validation
                     final phoneRegex = RegExp(r'^05[0-9]{8}$');
                     if (!phoneRegex.hasMatch(value.replaceAll(' ', ''))) {
-                      return 'Please enter a valid Saudi phone number';
+                      return AppLocalizations.of(context).pleaseEnterValidPhoneNumber;
                     }
                     return null;
                   },
@@ -210,8 +211,8 @@ class _ProfileCompletionScreenState extends State<ProfileCompletionScreen> {
                                     AlwaysStoppedAnimation<Color>(Colors.white),
                               ),
                             )
-                          : const Text(
-                              'Continue',
+                          : Text(
+                              AppLocalizations.of(context).next,
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -223,7 +224,7 @@ class _ProfileCompletionScreenState extends State<ProfileCompletionScreen> {
                 const SizedBox(height: 16),
                 // Info text
                 Text(
-                  'You can add your profile photo and delivery address later from your profile',
+                  AppLocalizations.of(context).letsGetStarted,
                   style: TextStyle(
                     fontSize: 14,
                     color: AppTheme.textSecondary,

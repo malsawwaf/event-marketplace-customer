@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:async';
+import '../../l10n/app_localizations.dart';
 import 'categories_screen.dart';
 import 'cart_screen.dart';
 import 'orders_list_screen.dart';
@@ -137,25 +138,25 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
         ),
         bottomNavigationBar: BottomNavigationBar(
           items: [
-            const BottomNavigationBarItem(
+            BottomNavigationBarItem(
               icon: Icon(Icons.home),
-              label: 'Home',
+              label: AppLocalizations.of(context).home,
             ),
             BottomNavigationBarItem(
               icon: _buildCartIcon(),
-              label: 'Cart',
+              label: AppLocalizations.of(context).cart,
             ),
-            const BottomNavigationBarItem(
+            BottomNavigationBarItem(
               icon: Icon(Icons.receipt_long),
-              label: 'Orders',
+              label: AppLocalizations.of(context).orders,
             ),
-            const BottomNavigationBarItem(
+            BottomNavigationBarItem(
               icon: Icon(Icons.favorite),
-              label: 'Favorites',
+              label: AppLocalizations.of(context).favorites,
             ),
-            const BottomNavigationBarItem(
+            BottomNavigationBarItem(
               icon: Icon(Icons.person),
-              label: 'Profile',
+              label: AppLocalizations.of(context).profile,
             ),
           ],
           currentIndex: _selectedIndex,

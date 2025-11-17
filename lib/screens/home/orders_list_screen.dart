@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../services/orders_service.dart';
 import '../../services/reviews_service.dart';
 import '../../config/app_theme.dart';
@@ -67,8 +68,9 @@ class _OrdersListScreenState extends State<OrdersListScreen>
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading orders: $e')),
+          SnackBar(content: Text('${l10n.error}: $e')),
         );
       }
     }
@@ -110,9 +112,11 @@ class _OrdersListScreenState extends State<OrdersListScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Orders'),
+        title: Text(l10n.myOrders),
         backgroundColor: AppTheme.primaryNavy,
         foregroundColor: Colors.white,
         bottom: TabBar(
@@ -123,18 +127,18 @@ class _OrdersListScreenState extends State<OrdersListScreen>
           labelColor: Colors.white,
           unselectedLabelColor: Colors.white.withOpacity(0.6),
           tabs: [
-            Tab(text: 'All (${_allOrders.length})'),
+            Tab(text: '${l10n.myOrders} (${_allOrders.length})'),
             Tab(
-              text: 'Active (${_filterOrdersByStatus('active').length})',
+              text: '${l10n.activeOrders} (${_filterOrdersByStatus('active').length})',
             ),
             Tab(
-              text: 'Pending (${_filterOrdersByStatus('pending').length})',
+              text: '${l10n.pending} (${_filterOrdersByStatus('pending').length})',
             ),
             Tab(
-              text: 'Delivered (${_filterOrdersByStatus('delivered').length})',
+              text: '${l10n.delivered} (${_filterOrdersByStatus('delivered').length})',
             ),
             Tab(
-              text: 'Cancelled (${_filterOrdersByStatus('cancelled').length})',
+              text: '${l10n.cancelled} (${_filterOrdersByStatus('cancelled').length})',
             ),
           ],
         ),
@@ -175,6 +179,8 @@ class _OrdersListScreenState extends State<OrdersListScreen>
   }
 
   Widget _buildOrdersList(List<Map<String, dynamic>> orders) {
+    final l10n = AppLocalizations.of(context)!;
+
     if (orders.isEmpty) {
       return ListView(
         key: const ValueKey('empty_orders'),
@@ -189,7 +195,7 @@ class _OrdersListScreenState extends State<OrdersListScreen>
                   Icon(Icons.shopping_bag_outlined, size: 80, color: Colors.grey[300]),
                   const SizedBox(height: 16),
                   Text(
-                    'No orders yet',
+                    l10n.noOrders,
                     style: TextStyle(
                       fontSize: 18,
                       color: Colors.grey[600],
@@ -198,7 +204,7 @@ class _OrdersListScreenState extends State<OrdersListScreen>
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Your orders will appear here',
+                    l10n.myOrders,
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.grey[500],
@@ -225,6 +231,8 @@ class _OrdersListScreenState extends State<OrdersListScreen>
   }
 
   Widget _buildOrderCard(Map<String, dynamic> order) {
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    final l10n = AppLocalizations.of(context)!;
     final orderId = order['id'] as String;
     final orderNumber = order['order_number'] as String;
     final status = order['status'] as String;
@@ -312,15 +320,18 @@ class _OrdersListScreenState extends State<OrdersListScreen>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          provider['company_name_en'] as String,
+                          isArabic && provider['company_name_ar'] != null
+                              ? provider['company_name_ar'] as String
+                              : provider['company_name_en'] as String,
                           style: const TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 14,
                           ),
+                          textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          '${orderItems.length} item${orderItems.length > 1 ? 's' : ''}',
+                          '${orderItems.length} ${l10n.items}',
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey[600],
@@ -375,7 +386,7 @@ class _OrdersListScreenState extends State<OrdersListScreen>
                   child: OutlinedButton.icon(
                     onPressed: () => _showCancelDialog(orderId),
                     icon: const Icon(Icons.cancel_outlined, size: 18),
-                    label: const Text('Cancel Order'),
+                    label: Text(l10n.cancelOrder),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Colors.red,
                       side: const BorderSide(color: Colors.red),
@@ -435,7 +446,7 @@ class _OrdersListScreenState extends State<OrdersListScreen>
                             }
                           },
                           icon: const Icon(Icons.rate_review, size: 18),
-                          label: const Text('Write Review'),
+                          label: Text(l10n.writeReview),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppTheme.primaryNavy,
                             foregroundColor: Colors.white,
@@ -516,17 +527,17 @@ class _OrdersListScreenState extends State<OrdersListScreen>
   }
 
   void _showCancelDialog(String orderId) {
+    final l10n = AppLocalizations.of(context)!;
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Cancel Order'),
-        content: const Text(
-          'Are you sure you want to cancel this order? This action cannot be undone.',
-        ),
+        title: Text(l10n.cancelOrder),
+        content: Text(l10n.cancelOrder),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Keep Order'),
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -536,7 +547,7 @@ class _OrdersListScreenState extends State<OrdersListScreen>
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
             ),
-            child: const Text('Cancel Order'),
+            child: Text(l10n.cancelOrder),
           ),
         ],
       ),
@@ -560,9 +571,10 @@ class _OrdersListScreenState extends State<OrdersListScreen>
 
       if (mounted) {
         Navigator.pop(context); // Close loading dialog
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Order cancelled successfully'),
+          SnackBar(
+            content: Text('${l10n.cancelOrder} ${l10n.success.toLowerCase()}'),
             backgroundColor: Colors.green,
           ),
         );
@@ -572,9 +584,10 @@ class _OrdersListScreenState extends State<OrdersListScreen>
     } catch (e) {
       if (mounted) {
         Navigator.pop(context); // Close loading dialog
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error cancelling order: $e'),
+            content: Text('${l10n.error}: $e'),
             backgroundColor: Colors.red,
           ),
         );

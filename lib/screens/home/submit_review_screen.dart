@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import '../../services/reviews_service.dart';
 import '../../config/app_theme.dart';
+import '../../l10n/app_localizations.dart';
 
 class SubmitReviewScreen extends StatefulWidget {
   final String orderId;
@@ -52,6 +53,7 @@ class _SubmitReviewScreenState extends State<SubmitReviewScreen> {
   }
 
   Future<void> _pickImage() async {
+  final l10n = AppLocalizations.of(context);
   if (_selectedPhotos.length >= 5) {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Maximum 5 photos allowed')),
@@ -63,18 +65,18 @@ class _SubmitReviewScreenState extends State<SubmitReviewScreen> {
   final source = await showDialog<ImageSource>(
     context: context,
     builder: (context) => AlertDialog(
-      title: const Text('Choose Photo Source'),
+      title: Text(l10n.selectPhotoSource),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           ListTile(
             leading: const Icon(Icons.camera_alt),
-            title: const Text('Camera'),
+            title: Text(l10n.takePhoto),
             onTap: () => Navigator.pop(context, ImageSource.camera),
           ),
           ListTile(
             leading: const Icon(Icons.photo_library),
-            title: const Text('Gallery'),
+            title: Text(l10n.chooseFromGallery),
             onTap: () => Navigator.pop(context, ImageSource.gallery),
           ),
         ],
@@ -160,9 +162,10 @@ class _SubmitReviewScreenState extends State<SubmitReviewScreen> {
       );
 
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Review submitted successfully!'),
+          SnackBar(
+            content: Text(l10n.thankYouForReview),
             backgroundColor: Colors.green,
           ),
         );
@@ -171,9 +174,10 @@ class _SubmitReviewScreenState extends State<SubmitReviewScreen> {
     } catch (e) {
       if (mounted) {
         setState(() => _isSubmitting = false);
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error submitting review: $e'),
+            content: Text('${l10n.error}: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -183,12 +187,13 @@ class _SubmitReviewScreenState extends State<SubmitReviewScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final provider = widget.order['providers'] as Map<String, dynamic>;
     final orderItems = widget.order['order_items'] as List;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Write a Review'),
+        title: Text(l10n.writeReview),
         backgroundColor: AppTheme.primaryNavy,
         foregroundColor: Colors.white,
       ),
@@ -233,9 +238,9 @@ class _SubmitReviewScreenState extends State<SubmitReviewScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'How was your experience with',
-                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                  Text(
+                    l10n.howWasYourOrder,
+                    style: const TextStyle(fontSize: 12, color: Colors.grey),
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -261,9 +266,9 @@ class _SubmitReviewScreenState extends State<SubmitReviewScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Overall Rating',
-              style: TextStyle(
+            Text(
+              l10n.rateProvider,
+              style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
               ),
@@ -309,9 +314,9 @@ class _SubmitReviewScreenState extends State<SubmitReviewScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Rate Items',
-              style: TextStyle(
+            Text(
+              l10n.rateItems,
+              style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
               ),
@@ -399,9 +404,9 @@ class _SubmitReviewScreenState extends State<SubmitReviewScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Write Your Review (Optional)',
-              style: TextStyle(
+            Text(
+              '${l10n.yourReview} (${l10n.optional})',
+              style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
               ),
@@ -411,9 +416,9 @@ class _SubmitReviewScreenState extends State<SubmitReviewScreen> {
               controller: _reviewTextController,
               maxLines: 5,
               maxLength: 1000,
-              decoration: const InputDecoration(
-                hintText: 'Share your experience...',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                hintText: l10n.writeYourReview,
+                border: const OutlineInputBorder(),
               ),
             ),
           ],
@@ -432,9 +437,9 @@ class _SubmitReviewScreenState extends State<SubmitReviewScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Add Photos (Optional)',
-                  style: TextStyle(
+                Text(
+                  'Add Photos (${l10n.optional})',
+                  style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                   ),
@@ -538,9 +543,9 @@ class _SubmitReviewScreenState extends State<SubmitReviewScreen> {
                   color: Colors.white,
                 ),
               )
-            : const Text(
-                'Submit Review',
-                style: TextStyle(
+            : Text(
+                l10n.submitReview,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,

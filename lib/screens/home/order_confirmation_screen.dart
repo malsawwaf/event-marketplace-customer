@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../config/app_theme.dart';
 import '../home/bottom_nav_screen.dart'; // ✅ Import to access bottomNavKey
 
@@ -57,8 +58,9 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading order: $e')),
+          SnackBar(content: Text('${l10n.error}: $e')),
         );
       }
     }
@@ -96,6 +98,9 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+
     if (_isLoading) {
       return Scaffold(
         body: Center(child: CircularProgressIndicator(color: AppTheme.primaryNavy)),
@@ -105,16 +110,18 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
     if (_orderData == null) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Order Confirmation'),
+          title: Text(l10n.orderPlacedSuccessfully),
           backgroundColor: AppTheme.primaryNavy,
           foregroundColor: Colors.white,
         ),
-        body: const Center(child: Text('Order not found')),
+        body: Center(child: Text(l10n.error)),
       );
     }
 
     final provider = _orderData!['providers'] as Map<String, dynamic>;
-    final companyName = provider['company_name_en'] as String;
+    final companyName = isArabic && provider['company_name_ar'] != null
+        ? provider['company_name_ar'] as String
+        : provider['company_name_en'] as String;
     final photoUrl = provider['profile_photo_url'] as String?;
     final timerMinutes = provider['order_acceptance_timer_minutes'] as int? ?? 30;
     final totalAmount = (_orderData!['total_amount'] as num).toDouble();
@@ -149,9 +156,9 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
                     const SizedBox(height: 24),
 
                     // Title
-                    const Text(
-                      'Order Placed Successfully!',
-                      style: TextStyle(
+                    Text(
+                      l10n.orderPlacedSuccessfully,
+                      style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                       ),
@@ -192,9 +199,9 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      const Text(
-                                        'Waiting for confirmation',
-                                        style: TextStyle(
+                                      Text(
+                                        l10n.pending,
+                                        style: const TextStyle(
                                           fontSize: 12,
                                           color: Colors.grey,
                                         ),
@@ -206,6 +213,7 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
                                           fontWeight: FontWeight.bold,
                                           fontSize: 16,
                                         ),
+                                        textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
                                       ),
                                     ],
                                   ),
@@ -262,28 +270,28 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              'Order Details',
-                              style: TextStyle(
+                            Text(
+                              l10n.orderDetails,
+                              style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             const SizedBox(height: 16),
                             _buildDetailRow(
-                              'Total Amount',
+                              l10n.totalAmount,
                               '${totalAmount.toStringAsFixed(2)} SAR',
                               isBold: true,
                             ),
                             const SizedBox(height: 8),
                             _buildDetailRow(
-                              'Payment Method',
-                              paymentMethod == 'cash' ? 'Cash on Delivery' : 'Card Payment',
+                              l10n.paymentMethod,
+                              paymentMethod == 'cash' ? l10n.cashOnDelivery : l10n.creditCard,
                             ),
                             const SizedBox(height: 8),
                             _buildDetailRow(
-                              'Status',
-                              'Pending Acceptance',
+                              l10n.orderStatus,
+                              l10n.pending,
                               valueColor: Colors.orange,
                             ),
                           ],
@@ -362,9 +370,9 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
                         backgroundColor: AppTheme.primaryNavy,
                         foregroundColor: Colors.white,
                       ),
-                      child: const Text(
-                        'View Order Status',
-                        style: TextStyle(
+                      child: Text(
+                        l10n.viewOrderDetails,
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
@@ -382,9 +390,9 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
                         foregroundColor: AppTheme.primaryNavy,
                         side: BorderSide(color: AppTheme.primaryNavy, width: 2),
                       ),
-                      child: const Text(
-                        'Back to Home',
-                        style: TextStyle(
+                      child: Text(
+                        l10n.backToHome,
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../services/favourites_service.dart';
 import '../../config/app_theme.dart';
 import 'provider_detail_screen.dart';
@@ -85,9 +86,10 @@ class _FavoritesScreenState extends State<FavoritesScreen>
       print('❌ Error loading favorites: $e');
       if (mounted) {
         setState(() => _isLoading = false);
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error loading favorites: $e'),
+            content: Text('${l10n.error}: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -99,20 +101,22 @@ class _FavoritesScreenState extends State<FavoritesScreen>
     final customerId = _supabase.auth.currentUser?.id;
     if (customerId == null) return;
 
+    final l10n = AppLocalizations.of(context)!;
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Remove from Favorites'),
-        content: const Text('Remove this provider from your favorites?'),
+        title: Text(l10n.removeFromFavorites),
+        content: Text(l10n.removeFromFavorites),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Remove'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -126,15 +130,17 @@ class _FavoritesScreenState extends State<FavoritesScreen>
       await favoritesService.removeProviderFavorite(customerId, providerId);
 
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Provider removed from favorites')),
+          SnackBar(content: Text('${l10n.providers} ${l10n.removeFromFavorites.toLowerCase()}')),
         );
         _loadFavorites();
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
+          SnackBar(content: Text('${l10n.error}: $e')),
         );
       }
     }
@@ -144,20 +150,22 @@ class _FavoritesScreenState extends State<FavoritesScreen>
     final customerId = _supabase.auth.currentUser?.id;
     if (customerId == null) return;
 
+    final l10n = AppLocalizations.of(context)!;
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Remove from Favorites'),
-        content: const Text('Remove this item from your favorites?'),
+        title: Text(l10n.removeFromFavorites),
+        content: Text(l10n.removeFromFavorites),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Remove'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -171,15 +179,17 @@ class _FavoritesScreenState extends State<FavoritesScreen>
       await favoritesService.removeItemFavorite(customerId, itemId);
 
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Item removed from favorites')),
+          SnackBar(content: Text('${l10n.items} ${l10n.removeFromFavorites.toLowerCase()}')),
         );
         _loadFavorites();
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
+          SnackBar(content: Text('${l10n.error}: $e')),
         );
       }
     }
@@ -187,9 +197,11 @@ class _FavoritesScreenState extends State<FavoritesScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Favorites'),
+        title: Text(l10n.favorites),
         backgroundColor: AppTheme.primaryNavy,
         foregroundColor: Colors.white,
         bottom: TabBar(
@@ -198,10 +210,10 @@ class _FavoritesScreenState extends State<FavoritesScreen>
           indicatorWeight: 3,
           labelColor: Colors.white,
           unselectedLabelColor: Colors.white.withOpacity(0.6),
-          tabs: const [
-            Tab(text: 'All', icon: Icon(Icons.favorite)),
-            Tab(text: 'Providers', icon: Icon(Icons.business)),
-            Tab(text: 'Items', icon: Icon(Icons.inventory_2)),
+          tabs: [
+            Tab(text: l10n.myFavorites, icon: const Icon(Icons.favorite)),
+            Tab(text: l10n.providers, icon: const Icon(Icons.business)),
+            Tab(text: l10n.items, icon: const Icon(Icons.inventory_2)),
           ],
         ),
       ),
@@ -219,8 +231,9 @@ class _FavoritesScreenState extends State<FavoritesScreen>
   }
 
   Widget _buildAllFavoritesTab() {
+    final l10n = AppLocalizations.of(context)!;
     if (_allFavorites.isEmpty) {
-      return _buildEmptyState('No favorites yet', 'Start adding your favorites!');
+      return _buildEmptyState(l10n.noFavorites, l10n.addToFavorites);
     }
 
     return RefreshIndicator(
@@ -242,10 +255,11 @@ class _FavoritesScreenState extends State<FavoritesScreen>
   }
 
   Widget _buildProviderFavoritesTab() {
+    final l10n = AppLocalizations.of(context)!;
     if (_providerFavorites.isEmpty) {
       return _buildEmptyState(
-        'No provider favorites',
-        'Favorite providers to see them here',
+        l10n.noFavorites,
+        l10n.addToFavorites,
       );
     }
 
@@ -265,10 +279,11 @@ class _FavoritesScreenState extends State<FavoritesScreen>
   }
 
   Widget _buildItemFavoritesTab() {
+    final l10n = AppLocalizations.of(context)!;
     if (_itemFavorites.isEmpty) {
       return _buildEmptyState(
-        'No item favorites',
-        'Favorite items to see them here',
+        l10n.noFavorites,
+        l10n.addToFavorites,
       );
     }
 
@@ -323,11 +338,15 @@ class _FavoritesScreenState extends State<FavoritesScreen>
     List<dynamic> items,
     bool isProviderFavorited,
   ) {
-    final companyName = provider['company_name_en'] as String;
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    final companyName = isArabic && provider['company_name_ar'] != null
+        ? provider['company_name_ar'] as String
+        : provider['company_name_en'] as String;
     final location = provider['store_location'] as String;
     final photoUrl = provider['profile_photo_url'] as String?;
     final providerId = provider['id'] as String;
     final averageRating = (provider['average_rating'] as num?)?.toDouble() ?? 0.0;
+    final l10n = AppLocalizations.of(context)!;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
@@ -368,6 +387,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
                           ),
+                          textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
                         ),
                         const SizedBox(height: 4),
                         Row(
@@ -410,7 +430,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Favorited Items (${items.length})',
+                    '${l10n.items} (${items.length})',
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 14,
@@ -431,7 +451,10 @@ class _FavoritesScreenState extends State<FavoritesScreen>
   }
 
   Widget _buildProviderCard(Map<String, dynamic> provider) {
-    final companyName = provider['company_name_en'] as String;
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    final companyName = isArabic && provider['company_name_ar'] != null
+        ? provider['company_name_ar'] as String
+        : provider['company_name_en'] as String;
     final location = provider['store_location'] as String;
     final photoUrl = provider['profile_photo_url'] as String?;
     final description = provider['store_description'] as String?;
@@ -474,6 +497,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),
+                      textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
                     ),
                     const SizedBox(height: 4),
                     Row(
@@ -523,14 +547,20 @@ class _FavoritesScreenState extends State<FavoritesScreen>
   }
 
   Widget _buildItemCard(Map<String, dynamic> item) {
-    final name = item['name'] as String;
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    final l10n = AppLocalizations.of(context)!;
+    final name = isArabic && item['name_ar'] != null
+        ? item['name_ar'] as String
+        : item['name'] as String;
     final price = (item['price'] as num).toDouble();
     final pricingType = item['pricing_type'] as String;
     final photoUrls = item['photo_urls'] as List<dynamic>?;
     final itemId = item['id'] as String;
     final stockQuantity = item['stock_quantity'] as int;
     final provider = item['providers'] as Map<String, dynamic>;
-    final companyName = provider['company_name_en'] as String;
+    final companyName = isArabic && provider['company_name_ar'] != null
+        ? provider['company_name_ar'] as String
+        : provider['company_name_en'] as String;
 
     final photoUrl = (photoUrls != null && photoUrls.isNotEmpty)
         ? photoUrls.first as String
@@ -590,11 +620,13 @@ class _FavoritesScreenState extends State<FavoritesScreen>
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
+                      textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
                     ),
                     const SizedBox(height: 4),
                     Text(
                       companyName,
                       style: const TextStyle(fontSize: 12, color: Colors.grey),
+                      textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
                     ),
                     const SizedBox(height: 4),
                     Text(
@@ -608,10 +640,10 @@ class _FavoritesScreenState extends State<FavoritesScreen>
                     const SizedBox(height: 2),
                     Text(
                       pricingType == 'per_day'
-                          ? 'Per Day'
+                          ? l10n.price
                           : pricingType == 'per_event'
-                              ? 'Per Event'
-                              : 'Purchase',
+                              ? l10n.price
+                              : l10n.price,
                       style: const TextStyle(fontSize: 11, color: Colors.grey),
                     ),
                     if (stockQuantity == 0)
@@ -622,9 +654,9 @@ class _FavoritesScreenState extends State<FavoritesScreen>
                           color: Colors.red[100],
                           borderRadius: BorderRadius.circular(4),
                         ),
-                        child: const Text(
-                          'Out of Stock',
-                          style: TextStyle(
+                        child: Text(
+                          l10n.outOfStock,
+                          style: const TextStyle(
                             fontSize: 10,
                             color: Colors.red,
                             fontWeight: FontWeight.bold,
@@ -646,7 +678,10 @@ class _FavoritesScreenState extends State<FavoritesScreen>
   }
 
   Widget _buildCompactItemCard(Map<String, dynamic> item) {
-    final name = item['name'] as String;
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    final name = isArabic && item['name_ar'] != null
+        ? item['name_ar'] as String
+        : item['name'] as String;
     final price = (item['price'] as num).toDouble();
     final photoUrls = item['photo_urls'] as List<dynamic>?;
     final itemId = item['id'] as String;
@@ -712,6 +747,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
+                    textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
                   ),
                   Text(
                     '$price SAR',

@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../config/app_theme.dart';
+import '../../services/language_service.dart';
+import '../../l10n/app_localizations.dart';
 import 'auth_provider.dart';
 import 'login_screen.dart';
 import 'profile_completion_screen.dart';
 import '../home/bottom_nav_screen.dart'; // ✅ This import gives us access to bottomNavKey
+import '../onboarding/language_selection_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -28,6 +31,19 @@ class _SplashScreenState extends State<SplashScreen> {
       if (!mounted) return;
 
       print('🔵 Splash: Starting navigation check...');
+
+      // Check if language has been selected
+      final languageService = context.read<LanguageService>();
+      print('🔵 Splash: Language selected: ${languageService.languageSelected}');
+
+      if (!languageService.languageSelected) {
+        print('🔵 Splash: Language not selected, navigating to language selection...');
+        // Navigate to language selection screen
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const LanguageSelectionScreen()),
+        );
+        return;
+      }
 
       final authProvider = context.read<AuthProvider>();
       print('🔵 Splash: Auth provider loaded, isAuthenticated: ${authProvider.isAuthenticated}');
@@ -194,7 +210,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 const SizedBox(height: 16),
 
                 Text(
-                  'Loading...',
+                  AppLocalizations.of(context).loading,
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.white.withOpacity(0.9),

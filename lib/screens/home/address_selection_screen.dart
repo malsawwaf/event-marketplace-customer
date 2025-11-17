@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../services/address_service.dart';
 import '../../config/app_theme.dart';
 import 'add_edit_address_screen.dart';
@@ -53,8 +54,9 @@ class _AddressSelectionScreenState extends State<AddressSelectionScreen> {
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading addresses: $e')),
+          SnackBar(content: Text('${l10n.error}: $e')),
         );
       }
     }
@@ -89,20 +91,22 @@ class _AddressSelectionScreenState extends State<AddressSelectionScreen> {
   }
 
   Future<void> _deleteAddress(String addressId) async {
+    final l10n = AppLocalizations.of(context)!;
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Address'),
-        content: const Text('Are you sure you want to delete this address?'),
+        title: Text(l10n.deleteAddress),
+        content: Text(l10n.areYouSureDeleteAddress),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Delete'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -116,15 +120,17 @@ class _AddressSelectionScreenState extends State<AddressSelectionScreen> {
       await addressService.deleteAddress(addressId);
       
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Address deleted')),
+          SnackBar(content: Text(l10n.addressDeletedSuccessfully)),
         );
         _loadAddresses();
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error deleting address: $e')),
+          SnackBar(content: Text('${l10n.error}: $e')),
         );
       }
     }
@@ -132,8 +138,9 @@ class _AddressSelectionScreenState extends State<AddressSelectionScreen> {
 
   void _confirmSelection() {
     if (_selectedAddressId == null) {
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select an address')),
+        SnackBar(content: Text(l10n.pleaseSelectAddress)),
       );
       return;
     }
@@ -147,16 +154,18 @@ class _AddressSelectionScreenState extends State<AddressSelectionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Select Delivery Address'),
+        title: Text(l10n.selectDeliveryAddress),
         backgroundColor: AppTheme.primaryNavy,
         foregroundColor: Colors.white,
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: _addNewAddress,
-            tooltip: 'Add New Address',
+            tooltip: l10n.addAddress,
           ),
         ],
       ),
@@ -183,6 +192,8 @@ class _AddressSelectionScreenState extends State<AddressSelectionScreen> {
   }
 
   Widget _buildEmptyState() {
+    final l10n = AppLocalizations.of(context)!;
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -194,7 +205,7 @@ class _AddressSelectionScreenState extends State<AddressSelectionScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            'No addresses saved',
+            l10n.noAddressesSaved,
             style: TextStyle(
               fontSize: 18,
               color: Colors.grey[600],
@@ -202,7 +213,7 @@ class _AddressSelectionScreenState extends State<AddressSelectionScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Add your first delivery address',
+            l10n.addAnAddressToGetStarted,
             style: TextStyle(
               fontSize: 14,
               color: Colors.grey[500],
@@ -212,7 +223,7 @@ class _AddressSelectionScreenState extends State<AddressSelectionScreen> {
           ElevatedButton.icon(
             onPressed: _addNewAddress,
             icon: const Icon(Icons.add),
-            label: const Text('Add Address'),
+            label: Text(l10n.addAddress),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppTheme.primaryNavy,
               foregroundColor: Colors.white,
@@ -224,6 +235,7 @@ class _AddressSelectionScreenState extends State<AddressSelectionScreen> {
   }
 
   Widget _buildAddressCard(Map<String, dynamic> address) {
+    final l10n = AppLocalizations.of(context)!;
     final addressId = address['id'] as String;
     final label = address['label'] as String;
     final isDefault = address['is_default'] as bool? ?? false;
@@ -283,7 +295,7 @@ class _AddressSelectionScreenState extends State<AddressSelectionScreen> {
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Text(
-                                  'Default',
+                                  l10n.defaultLabel,
                                   style: TextStyle(
                                     fontSize: 10,
                                     color: AppTheme.primaryNavy,
@@ -307,23 +319,23 @@ class _AddressSelectionScreenState extends State<AddressSelectionScreen> {
                   PopupMenuButton(
                     icon: const Icon(Icons.more_vert),
                     itemBuilder: (context) => [
-                      const PopupMenuItem(
+                      PopupMenuItem(
                         value: 'edit',
                         child: Row(
                           children: [
-                            Icon(Icons.edit, size: 20),
-                            SizedBox(width: 8),
-                            Text('Edit'),
+                            const Icon(Icons.edit, size: 20),
+                            const SizedBox(width: 8),
+                            Text(l10n.edit),
                           ],
                         ),
                       ),
-                      const PopupMenuItem(
+                      PopupMenuItem(
                         value: 'delete',
                         child: Row(
                           children: [
-                            Icon(Icons.delete, size: 20, color: Colors.red),
-                            SizedBox(width: 8),
-                            Text('Delete', style: TextStyle(color: Colors.red)),
+                            const Icon(Icons.delete, size: 20, color: Colors.red),
+                            const SizedBox(width: 8),
+                            Text(l10n.delete, style: const TextStyle(color: Colors.red)),
                           ],
                         ),
                       ),
@@ -346,6 +358,8 @@ class _AddressSelectionScreenState extends State<AddressSelectionScreen> {
   }
 
   Widget _buildConfirmButton() {
+    final l10n = AppLocalizations.of(context)!;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -368,9 +382,9 @@ class _AddressSelectionScreenState extends State<AddressSelectionScreen> {
               backgroundColor: AppTheme.primaryNavy,
               disabledBackgroundColor: Colors.grey,
             ),
-            child: const Text(
-              'Confirm Address',
-              style: TextStyle(
+            child: Text(
+              l10n.selectAddress,
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
