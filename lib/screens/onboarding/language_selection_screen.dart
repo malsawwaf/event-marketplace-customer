@@ -233,7 +233,7 @@ class LanguageSelectionScreen extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
-                        color: AppTheme.primaryColor,
+                        color: AppTheme.primaryNavy,
                         fontFamily: isRtl ? 'Cairo' : null,
                       ),
                       textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
@@ -253,7 +253,7 @@ class LanguageSelectionScreen extends StatelessWidget {
               // Arrow
               Icon(
                 Icons.arrow_forward_ios,
-                color: AppTheme.primaryColor,
+                color: AppTheme.primaryNavy,
                 size: 24,
               ),
             ],

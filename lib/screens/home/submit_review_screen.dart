@@ -220,6 +220,7 @@ class _SubmitReviewScreenState extends State<SubmitReviewScreen> {
   }
 
   Widget _buildProviderSection(Map<String, dynamic> provider) {
+    final l10n = AppLocalizations.of(context);
     final companyName = provider['company_name_en'] as String;
     final photoUrl = provider['profile_photo_url'] as String?;
 
@@ -260,6 +261,7 @@ class _SubmitReviewScreenState extends State<SubmitReviewScreen> {
   }
 
   Widget _buildProviderRating() {
+    final l10n = AppLocalizations.of(context);
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -308,6 +310,7 @@ class _SubmitReviewScreenState extends State<SubmitReviewScreen> {
   }
 
   Widget _buildItemRatings(List<dynamic> orderItems) {
+    final l10n = AppLocalizations.of(context);
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -398,6 +401,7 @@ class _SubmitReviewScreenState extends State<SubmitReviewScreen> {
   }
 
   Widget _buildReviewText() {
+    final l10n = AppLocalizations.of(context);
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -428,6 +432,7 @@ class _SubmitReviewScreenState extends State<SubmitReviewScreen> {
   }
 
   Widget _buildPhotoSection() {
+    final l10n = AppLocalizations.of(context);
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -525,6 +530,7 @@ class _SubmitReviewScreenState extends State<SubmitReviewScreen> {
   }
 
   Widget _buildSubmitButton() {
+    final l10n = AppLocalizations.of(context);
     return SizedBox(
       width: double.infinity,
       height: 50,

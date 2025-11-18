@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../../l10n/app_localizations.dart';
 import '../../config/app_theme.dart';
 import '../home/bottom_nav_screen.dart'; // ✅ Import to access bottomNavKey
 
