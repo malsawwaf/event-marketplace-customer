@@ -245,8 +245,8 @@ class _CartScreenState extends State<CartScreen> with AutomaticKeepAliveClientMi
     final provider = cart['providers'] as Map<String, dynamic>;
     final items = cart['items'] as List<dynamic>;
     final companyNameEn = provider['company_name_en'] as String;
-    final tradingNameAr = provider['trading_name_ar'] as String?;
-    final companyName = isArabic && tradingNameAr != null ? tradingNameAr : companyNameEn;
+    final tradingName = provider['trading_name'] as String?;
+    final companyName = isArabic && tradingName != null ? tradingName : companyNameEn;
     final photoUrl = provider['profile_photo_url'] as String?;
 
     final cartService = CartService();

@@ -184,8 +184,8 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
       );
     }
 
-    final businessName = isArabic && _provider!['trading_name_ar'] != null
-        ? _provider!['trading_name_ar']
+    final businessName = isArabic && _provider!['trading_name'] != null
+        ? _provider!['trading_name']
         : _provider!['company_name_en'] ?? 'Unknown Business';
     final category = _provider!['category'] ?? '';
     final categoryInfo = EventCategories.getById(category);

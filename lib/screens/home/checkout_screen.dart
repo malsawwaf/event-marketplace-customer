@@ -703,8 +703,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     final l10n = AppLocalizations.of(context);
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     final companyNameEn = provider['company_name_en'] as String;
-    final tradingNameAr = provider['trading_name_ar'] as String?;
-    final companyName = isArabic && tradingNameAr != null ? tradingNameAr : companyNameEn;
+    final tradingName = provider['trading_name'] as String?;
+    final companyName = isArabic && tradingName != null ? tradingName : companyNameEn;
     final photoUrl = provider['profile_photo_url'] as String?;
 
     return Card(

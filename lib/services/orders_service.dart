@@ -15,7 +15,7 @@ class OrdersService {
             providers (
               id,
               company_name_en,
-              trading_name_ar,
+              trading_name,
               profile_photo_url,
               mobile
             ),
@@ -53,7 +53,7 @@ class OrdersService {
             providers (
               id,
               company_name_en,
-              trading_name_ar,
+              trading_name,
               profile_photo_url,
               mobile
             ),
@@ -89,7 +89,7 @@ class OrdersService {
             providers (
               id,
               company_name_en,
-              trading_name_ar,
+              trading_name,
               profile_photo_url,
               mobile,
               store_location
@@ -254,7 +254,7 @@ class OrdersService {
             providers (
               id,
               company_name_en,
-              trading_name_ar,
+              trading_name,
               profile_photo_url
             ),
             order_items (

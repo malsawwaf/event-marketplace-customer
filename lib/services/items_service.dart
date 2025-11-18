@@ -100,7 +100,7 @@ class ItemsService {
                 display_order
               )
             ),
-            providers!inner(company_name_en, trading_name_ar, profile_photo_url, store_location, store_location_ar, price_range, city, country)
+            providers!inner(company_name_en, trading_name, profile_photo_url, store_location, store_location_ar, price_range, city, country)
           ''')
           .eq('id', itemId)
           .eq('is_enabled', true)
@@ -149,7 +149,7 @@ class ItemsService {
                 display_order
               )
             ),
-            providers!inner(company_name_en, trading_name_ar, profile_photo_url, store_location, average_rating)
+            providers!inner(company_name_en, trading_name, profile_photo_url, store_location, average_rating)
           ''')
           .eq('is_enabled', true)
           .eq('providers.is_active', true);

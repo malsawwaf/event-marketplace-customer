@@ -27,7 +27,7 @@ class ProviderService {
       }
 
       if (searchQuery != null && searchQuery.isNotEmpty) {
-        query = query.or('company_name_en.ilike.%$searchQuery%,trading_name_ar.ilike.%$searchQuery%,store_description.ilike.%$searchQuery%');
+        query = query.or('company_name_en.ilike.%$searchQuery%,trading_name.ilike.%$searchQuery%,store_description.ilike.%$searchQuery%');
       }
 
       // Filter by city (new dedicated field)
@@ -125,7 +125,7 @@ class ProviderService {
 
       if (query != null && query.isNotEmpty) {
         supabaseQuery = supabaseQuery.or(
-          'company_name_en.ilike.%$query%,trading_name_ar.ilike.%$query%,store_description.ilike.%$query%',
+          'company_name_en.ilike.%$query%,trading_name.ilike.%$query%,store_description.ilike.%$query%',
         );
       }
 

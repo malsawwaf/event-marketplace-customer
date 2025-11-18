@@ -256,7 +256,7 @@ class CartService {
             providers!inner(
               id,
               company_name_en,
-              trading_name_ar,
+              trading_name,
               profile_photo_url,
               store_location,
               price_range

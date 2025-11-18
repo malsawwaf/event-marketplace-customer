@@ -222,8 +222,8 @@ class _SubmitReviewScreenState extends State<SubmitReviewScreen> {
   Widget _buildProviderSection(Map<String, dynamic> provider) {
     final l10n = AppLocalizations.of(context);
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
-    final companyName = isArabic && provider['trading_name_ar'] != null
-        ? provider['trading_name_ar'] as String
+    final companyName = isArabic && provider['trading_name'] != null
+        ? provider['trading_name'] as String
         : provider['company_name_en'] as String;
     final photoUrl = provider['profile_photo_url'] as String?;
 
