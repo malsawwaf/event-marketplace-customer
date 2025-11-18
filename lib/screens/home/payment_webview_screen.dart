@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import '../../config/app_theme.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Payment WebView Screen
 /// Displays Paymob payment iframe for card payments
@@ -52,7 +53,7 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
           onWebResourceError: (WebResourceError error) {
             setState(() {
               _isLoading = false;
-              _errorMessage = 'Error loading payment page: ${error.description}';
+              _errorMessage = '${AppLocalizations.of(context).errorLoadingPaymentPage}: ${error.description}';
             });
           },
           onNavigationRequest: (NavigationRequest request) {
@@ -106,25 +107,25 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return WillPopScope(
       onWillPop: () async {
         // Confirm before closing during payment
         final shouldPop = await showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('Cancel Payment?'),
-            content: const Text(
-              'Are you sure you want to cancel this payment? Your order will not be processed.',
-            ),
+            title: Text(l10n.cancelPaymentTitle),
+            content: Text(l10n.cancelPaymentMessage),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('Continue Payment'),
+                child: Text(l10n.continuePayment),
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(true),
                 style: TextButton.styleFrom(foregroundColor: Colors.red),
-                child: const Text('Cancel'),
+                child: Text(l10n.cancel),
               ),
             ],
           ),
@@ -135,7 +136,7 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
           Navigator.of(context).pop({
             'success': false,
             'cancelled': true,
-            'message': 'Payment cancelled by user',
+            'message': l10n.paymentCancelledByUser,
           });
         }
 
@@ -143,7 +144,7 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Payment - ${widget.orderNumber}'),
+          title: Text('${l10n.payment} - ${widget.orderNumber}'),
           backgroundColor: AppTheme.primaryNavy,
           foregroundColor: Colors.white,
           leading: IconButton(
@@ -154,19 +155,17 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
               final shouldPop = await showDialog<bool>(
                 context: context,
                 builder: (context) => AlertDialog(
-                  title: const Text('Cancel Payment?'),
-                  content: const Text(
-                    'Are you sure you want to cancel this payment? Your order will not be processed.',
-                  ),
+                  title: Text(l10n.cancelPaymentTitle),
+                  content: Text(l10n.cancelPaymentMessage),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.of(context).pop(false),
-                      child: const Text('Continue Payment'),
+                      child: Text(l10n.continuePayment),
                     ),
                     TextButton(
                       onPressed: () => Navigator.of(context).pop(true),
                       style: TextButton.styleFrom(foregroundColor: Colors.red),
-                      child: const Text('Cancel'),
+                      child: Text(l10n.cancel),
                     ),
                   ],
                 ),
@@ -176,7 +175,7 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
                 navigator.pop({
                   'success': false,
                   'cancelled': true,
-                  'message': 'Payment cancelled by user',
+                  'message': l10n.paymentCancelledByUser,
                 });
               }
             },
@@ -211,7 +210,7 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
                           });
                           _controller.loadRequest(Uri.parse(widget.paymentUrl));
                         },
-                        child: const Text('Retry'),
+                        child: Text(l10n.retry),
                       ),
                     ],
                   ),
@@ -229,7 +228,7 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
                       CircularProgressIndicator(color: AppTheme.primaryNavy),
                       SizedBox(height: 16),
                       Text(
-                        'Loading secure payment page...',
+                        l10n.loadingSecurePaymentPage,
                         style: TextStyle(fontSize: 16),
                       ),
                     ],

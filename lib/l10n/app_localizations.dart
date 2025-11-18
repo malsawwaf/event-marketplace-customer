@@ -369,6 +369,85 @@ abstract class AppLocalizations {
   String get paymentCompleted;
   String get paymentFailed;
   String get paymentCancelled;
+
+  // Payment WebView Screen
+  String get errorLoadingPaymentPage;
+  String get cancelPaymentTitle;
+  String get cancelPaymentMessage;
+  String get continuePayment;
+  String get loadingSecurePaymentPage;
+  String get retry;
+  String get paymentCancelledByUser;
+  String get payment;
+
+  // Order Detail Screen
+  String get orderPlaced;
+  String get waitingForProviderResponse;
+  String get timeRemaining;
+  String get providerInformation;
+  String get deliveryInformationTitle;
+  String get priceBreakdown;
+  String get vat;
+  String get youReviewedThisOrder;
+  String get writeAReview;
+  String get paymentLabel;
+  String get paymentMethodLabel;
+  String get cardPayment;
+
+  // Order Confirmation Screen
+  String get orderConfirmed;
+  String get yourOrderHasBeenPlaced;
+  String get whatHappensNext;
+  String get providerWillAcceptOrDecline;
+  String get youWillBeNotified;
+  String get trackYourOrderInOrdersTab;
+
+  // Submit Review Screen
+  String get maximumPhotosAllowed;
+  String get excellent;
+  String get veryGood;
+  String get good;
+  String get fair;
+  String get poor;
+  String get addPhotos;
+
+  // Checkout Screen
+  String get invalidOrExpiredCoupon;
+  String get couponHasExpired;
+  String get errorLoadingCheckout;
+  String get perDay;
+  String get perEvent;
+  String get purchase;
+  String get basePrice;
+  String get days;
+  String get daysLabel;
+  String get rentalPeriod;
+  String get includesGracePeriod;
+  String get deliveryDateTime;
+  String get eventDateTime;
+  String get startDateTime;
+  String get endDateTime;
+  String get dateLabel;
+  String get timeLabel;
+  String get saved;
+  String get sar;
+  String get failedToInitiatePayment;
+  String get paymentDeclinedByBank;
+  String get paymentIsPending;
+  String get errorProcessingPayment;
+  String get errorCreatingOrder;
+
+  // Cart Screen
+  String get expired;
+  String get rentalPeriodSetInCheckout;
+  String get reserved;
+
+  // Orders List Screen
+  String get processing2;
+
+  // Additional Order Confirmation Strings
+  String get payWhenOrderIsDelivered;
+  String get completePaymentToProceed;
 }
 
 class _AppLocalizationsDelegate

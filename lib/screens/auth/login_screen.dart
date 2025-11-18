@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../config/app_theme.dart';
 import '../../l10n/app_localizations.dart';
+import '../../services/language_service.dart';
 import 'auth_provider.dart';
 import 'register_screen.dart';
 import 'forgot_password_screen.dart';
@@ -73,9 +74,31 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final languageService = Provider.of<LanguageService>(context);
 
     return Scaffold(
       backgroundColor: AppTheme.lightBackground,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        actions: [
+          // Language toggle button
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: IconButton(
+              icon: Icon(
+                Icons.language,
+                color: AppTheme.primaryNavy,
+                size: 28,
+              ),
+              onPressed: () async {
+                await languageService.toggleLanguage();
+              },
+              tooltip: languageService.isArabic ? l10n.english : l10n.arabic,
+            ),
+          ),
+        ],
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),

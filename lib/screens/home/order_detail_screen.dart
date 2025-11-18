@@ -174,9 +174,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   }
 
   Widget _buildStatusTimeline() {
+    final l10n = AppLocalizations.of(context)!;
     final status = _order!['status'] as String;
     final createdAt = DateTime.parse(_order!['created_at']);
-    
+
     final acceptanceDeadline = _order!['acceptance_deadline'] != null
         ? DateTime.parse(_order!['acceptance_deadline'])
         : null;
@@ -186,12 +187,12 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         : null;
 
     final statuses = [
-      {'key': 'pending', 'label': 'Order Placed', 'icon': Icons.shopping_cart},
-      {'key': 'accepted', 'label': 'Accepted', 'icon': Icons.check_circle},
-      {'key': 'preparing', 'label': 'Preparing', 'icon': Icons.inventory},
-      {'key': 'ready', 'label': 'Ready', 'icon': Icons.done_all},
-      {'key': 'dispatched', 'label': 'Dispatched', 'icon': Icons.local_shipping},
-      {'key': 'delivered', 'label': 'Delivered', 'icon': Icons.home},
+      {'key': 'pending', 'label': l10n.orderPlaced, 'icon': Icons.shopping_cart},
+      {'key': 'accepted', 'label': l10n.accepted, 'icon': Icons.check_circle},
+      {'key': 'preparing', 'label': l10n.preparing, 'icon': Icons.inventory},
+      {'key': 'ready', 'label': l10n.ready, 'icon': Icons.done_all},
+      {'key': 'dispatched', 'label': l10n.dispatched, 'icon': Icons.local_shipping},
+      {'key': 'delivered', 'label': l10n.delivered, 'icon': Icons.home},
     ];
 
     final currentIndex = statuses.indexWhere((s) => s['key'] == status);
@@ -205,9 +206,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Order Status',
-                  style: TextStyle(
+                Text(
+                  l10n.orderStatus,
+                  style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 18,
                   ),
@@ -250,7 +251,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Waiting for provider response',
+                            l10n.waitingForProviderResponse,
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
                               color: Colors.orange[900],
@@ -259,7 +260,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                           const SizedBox(height: 4),
                           Text(
                             timeRemaining.inMinutes > 0
-                                ? 'Time remaining: ${timeRemaining.inMinutes}m ${timeRemaining.inSeconds % 60}s'
+                                ? '${l10n.timeRemaining}: ${timeRemaining.inMinutes}m ${timeRemaining.inSeconds % 60}s'
                                 : 'Processing...',
                             style: TextStyle(
                               fontSize: 12,
@@ -346,6 +347,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   }
 
   Widget _buildProviderSection(Map<String, dynamic> provider) {
+    final l10n = AppLocalizations.of(context)!;
     final companyName = provider['company_name_en'] as String;
     final photoUrl = provider['profile_photo_url'] as String?;
     final mobile = provider['mobile'] as String?;
@@ -356,9 +358,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Provider Information',
-              style: TextStyle(
+            Text(
+              l10n.providerInformation,
+              style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
               ),
@@ -411,6 +413,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   }
 
   Widget _buildDeliverySection() {
+    final l10n = AppLocalizations.of(context)!;
     final deliveryAddress = _order!['delivery_address'] as String;
     final eventDate = _order!['event_date'] != null
         ? DateTime.parse(_order!['event_date'])
@@ -422,9 +425,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Delivery Information',
-              style: TextStyle(
+            Text(
+              l10n.deliveryInformationTitle,
+              style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
               ),
@@ -439,9 +442,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Address',
-                        style: TextStyle(
+                      Text(
+                        l10n.address,
+                        style: const TextStyle(
                           fontSize: 12,
                           color: Colors.grey,
                         ),
@@ -465,9 +468,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Event Date',
-                        style: TextStyle(
+                      Text(
+                        l10n.eventDate,
+                        style: const TextStyle(
                           fontSize: 12,
                           color: Colors.grey,
                         ),
@@ -489,6 +492,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   }
 
   Widget _buildOrderItemsSection(List<dynamic> orderItems) {
+    final l10n = AppLocalizations.of(context)!;
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -496,7 +500,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Order Items (${orderItems.length})',
+              '${l10n.orderItems} (${orderItems.length})',
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
@@ -590,9 +594,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                       const SizedBox(height: 8),
                       const Divider(),
                       const SizedBox(height: 8),
-                      const Text(
-                        'Add-ons:',
-                        style: TextStyle(
+                      Text(
+                        '${l10n.addons}:',
+                        style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                         ),
@@ -656,6 +660,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   }
 
   Widget _buildPricingBreakdown() {
+    final l10n = AppLocalizations.of(context)!;
     final subtotal = (_order!['subtotal'] as num).toDouble();
     final vatAmount = (_order!['vat_amount'] as num).toDouble();
     final deliveryFee = (_order!['delivery_fee'] as num).toDouble();
@@ -669,26 +674,26 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Price Breakdown',
-              style: TextStyle(
+            Text(
+              l10n.priceBreakdown,
+              style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
               ),
             ),
             const SizedBox(height: 12),
-            _buildPriceRow('Subtotal', subtotal),
-            _buildPriceRow('VAT (15%)', vatAmount),
-            if (deliveryFee > 0) _buildPriceRow('Delivery Fee', deliveryFee),
+            _buildPriceRow(l10n.subtotal, subtotal),
+            _buildPriceRow(l10n.vat, vatAmount),
+            if (deliveryFee > 0) _buildPriceRow(l10n.deliveryFeeLabel, deliveryFee),
             if (discountAmount > 0)
               _buildPriceRow(
-                'Discount${couponCode != null ? ' ($couponCode)' : ''}',
+                '${l10n.discount}${couponCode != null ? ' ($couponCode)' : ''}',
                 -discountAmount,
                 color: Colors.green,
               ),
             const Divider(height: 24, thickness: 2),
             _buildPriceRow(
-              'Total',
+              l10n.total,
               totalAmount,
               isBold: true,
               fontSize: 18,
@@ -733,6 +738,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   }
 
   Widget _buildPaymentSection() {
+    final l10n = AppLocalizations.of(context)!;
     final paymentMethod = _order!['payment_method'] as String?;
     final paymentStatus = _order!['payment_status'] as String;
 
@@ -742,9 +748,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Payment',
-              style: TextStyle(
+            Text(
+              l10n.paymentLabel,
+              style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
               ),
@@ -756,13 +762,13 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Payment Method',
-                      style: TextStyle(fontSize: 12, color: Colors.grey),
+                    Text(
+                      l10n.paymentMethodLabel,
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      paymentMethod == 'cash' ? 'Cash on Delivery' : 'Card Payment',
+                      paymentMethod == 'cash' ? l10n.cashOnDelivery : l10n.cardPayment,
                       style: const TextStyle(fontSize: 14),
                     ),
                   ],
@@ -794,6 +800,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   }
 
   Widget _buildCancelButton() {
+    final l10n = AppLocalizations.of(context)!;
     return SizedBox(
       width: double.infinity,
       height: 50,
@@ -806,7 +813,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                 width: 20,
                 child: CircularProgressIndicator(strokeWidth: 2),
               )
-            : const Text('Cancel Order'),
+            : Text(l10n.cancelOrder),
         style: OutlinedButton.styleFrom(
           foregroundColor: Colors.red,
           side: const BorderSide(color: Colors.red, width: 2),
@@ -816,6 +823,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   }
 
   Widget _buildReviewButton() {
+  final l10n = AppLocalizations.of(context)!;
   return FutureBuilder<bool>(
     future: _reviewsService.hasReviewedOrder(
       widget.orderId,
@@ -838,7 +846,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
               Icon(Icons.check_circle, color: Colors.green[700], size: 24),
               const SizedBox(width: 12),
               Text(
-                'You reviewed this order',
+                l10n.youReviewedThisOrder,
                 style: TextStyle(
                   color: Colors.green[700],
                   fontSize: 16,
@@ -871,7 +879,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             }
           },
           icon: const Icon(Icons.rate_review),
-          label: const Text('Write a Review'),
+          label: Text(l10n.writeAReview),
           style: ElevatedButton.styleFrom(
             backgroundColor: AppTheme.primaryNavy,
             foregroundColor: Colors.white,

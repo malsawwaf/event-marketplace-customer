@@ -157,7 +157,7 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
 
                     // Title
                     Text(
-                      l10n.orderPlacedSuccessfully,
+                      l10n.orderConfirmed,
                       style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -316,7 +316,7 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Text(
-                                  'What happens next?',
+                                  l10n.whatHappensNext,
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
@@ -329,24 +329,24 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
                           const SizedBox(height: 12),
                           _buildInfoStep(
                             '1',
-                            'The provider will review your order',
+                            l10n.providerWillAcceptOrDecline,
                           ),
                           const SizedBox(height: 8),
                           _buildInfoStep(
                             '2',
-                            'If accepted, you will receive confirmation',
+                            l10n.youWillBeNotified,
                           ),
                           const SizedBox(height: 8),
                           _buildInfoStep(
                             '3',
                             paymentMethod == 'cash'
-                                ? 'Pay when order is delivered'
-                                : 'Complete payment to proceed',
+                                ? l10n.payWhenOrderIsDelivered
+                                : l10n.completePaymentToProceed,
                           ),
                           const SizedBox(height: 8),
                           _buildInfoStep(
                             '4',
-                            'Track your order in the Orders tab',
+                            l10n.trackYourOrderInOrdersTab,
                           ),
                         ],
                       ),

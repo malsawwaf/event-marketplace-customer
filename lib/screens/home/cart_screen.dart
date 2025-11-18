@@ -148,13 +148,14 @@ class _CartScreenState extends State<CartScreen> with AutomaticKeepAliveClientMi
   }
 
   String _getTimeRemaining(DateTime expiresAt) {
+    final l10n = AppLocalizations.of(context);
     // Ensure both times are in UTC for consistent comparison
     final now = DateTime.now().toUtc();
     final expiresAtUtc = expiresAt.toUtc();
     final difference = expiresAtUtc.difference(now);
 
     if (difference.isNegative) {
-      return 'Expired';
+      return l10n.expired;
     }
 
     final totalMinutes = difference.inMinutes;
@@ -328,7 +329,7 @@ class _CartScreenState extends State<CartScreen> with AutomaticKeepAliveClientMi
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            'Final price for rental items will be calculated based on rental period in checkout',
+                            l10n.rentalPeriodSetInCheckout,
                             style: TextStyle(
                               fontSize: 11,
                               color: Colors.amber[900],
@@ -376,6 +377,7 @@ class _CartScreenState extends State<CartScreen> with AutomaticKeepAliveClientMi
   }
 
   Widget _buildCartItem(Map<String, dynamic> cartItem) {
+    final l10n = AppLocalizations.of(context);
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     final item = cartItem['items'] as Map<String, dynamic>;
     final cartItemId = cartItem['id'] as String;
@@ -494,7 +496,7 @@ class _CartScreenState extends State<CartScreen> with AutomaticKeepAliveClientMi
                             Icon(Icons.info_outline, size: 12, color: Colors.blue[700]),
                             const SizedBox(width: 4),
                             Text(
-                              'Rental period set in checkout',
+                              l10n.rentalPeriodSetInCheckout,
                               style: TextStyle(
                                 fontSize: 11,
                                 color: Colors.blue[700],
@@ -508,7 +510,7 @@ class _CartScreenState extends State<CartScreen> with AutomaticKeepAliveClientMi
                     if (addons != null && addons.isNotEmpty) ...[
                       const SizedBox(height: 4),
                       Text(
-                        'Add-ons: ${addons.map((a) => a['addon_name']).join(', ')}',
+                        '${l10n.addons}: ${addons.map((a) => a['addon_name']).join(', ')}',
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.grey[600],
@@ -614,7 +616,7 @@ class _CartScreenState extends State<CartScreen> with AutomaticKeepAliveClientMi
                   Icon(Icons.timer, size: 14, color: Colors.orange[700]),
                   const SizedBox(width: 4),
                   Text(
-                    'Reserved: ${_getTimeRemaining(expiresAt)}',
+                    '${l10n.reserved}: ${_getTimeRemaining(expiresAt)}',
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.orange[700],

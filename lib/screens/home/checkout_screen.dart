@@ -78,8 +78,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading checkout: $e')),
+          SnackBar(content: Text('${l10n.errorLoadingCheckout}: $e')),
         );
       }
     }
@@ -247,7 +248,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       if (response == null) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Invalid or expired coupon')),
+            SnackBar(content: Text(l10n.invalidOrExpiredCoupon)),
           );
         }
         return;
@@ -260,7 +261,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       if (now.isBefore(validFrom) || now.isAfter(validUntil)) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Coupon has expired')),
+            SnackBar(content: Text(l10n.couponHasExpired)),
           );
         }
         return;
@@ -275,7 +276,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                'Minimum order amount for this coupon is $minOrderAmount SAR',
+                '${l10n.minimumOrderAmount} $minOrderAmount ${l10n.sar}',
               ),
             ),
           );
@@ -305,7 +306,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Coupon applied! You saved ${discount.toStringAsFixed(2)} SAR'),
+            content: Text('${l10n.couponApplied} ${l10n.saved} ${discount.toStringAsFixed(2)} ${l10n.sar}'),
             backgroundColor: Colors.green,
           ),
         );
@@ -313,7 +314,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error applying coupon: $e')),
+          SnackBar(content: Text('${l10n.errorApplyingCoupon}: $e')),
         );
       }
     }
@@ -393,8 +394,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       if (intentionResult['error'] != null) {
         if (mounted) {
           setState(() => _isPlacingOrder = false);
+          final l10n = AppLocalizations.of(context);
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to initiate payment: ${intentionResult['error']}')),
+            SnackBar(content: Text('${l10n.failedToInitiatePayment}: ${intentionResult['error']}')),
           );
         }
         return;
@@ -437,24 +439,27 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         } else if (paymentResult['status'] == 'Cancelled') {
           // User explicitly cancelled - don't verify
           setState(() => _isPlacingOrder = false);
+          final l10n = AppLocalizations.of(context);
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Payment cancelled')),
+            SnackBar(content: Text(l10n.paymentCancelled)),
           );
         } else if (verification?['status'] == 'PENDING' || paymentResult['status'] == 'Pending') {
           // Payment still pending
           setState(() => _isPlacingOrder = false);
+          final l10n = AppLocalizations.of(context);
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Payment is pending verification. Please check your order status.'),
-              duration: Duration(seconds: 5),
+            SnackBar(
+              content: Text(l10n.paymentIsPending),
+              duration: const Duration(seconds: 5),
             ),
           );
         } else {
           // Payment failed or rejected
           setState(() => _isPlacingOrder = false);
+          final l10n = AppLocalizations.of(context);
           final sdkMessage = paymentResult['status'] == 'Rejected'
-              ? 'Payment was declined by your bank.'
-              : (paymentResult['error'] ?? 'Payment failed.');
+              ? l10n.paymentDeclinedByBank
+              : (paymentResult['error'] ?? l10n.paymentFailed);
 
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -468,8 +473,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       print('❌ Error in _processOnlinePayment: $e');
       if (mounted) {
         setState(() => _isPlacingOrder = false);
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error processing payment: $e')),
+          SnackBar(content: Text('${l10n.errorProcessingPayment}: $e')),
         );
       }
     }
@@ -634,8 +640,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     } catch (e) {
       if (mounted) {
         setState(() => _isPlacingOrder = false);
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error creating order: $e')),
+          SnackBar(content: Text('${l10n.errorCreatingOrder}: $e')),
         );
       }
     }
@@ -869,11 +876,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       }
     }
 
-    String pricingLabel = pricingType == 'per_day' 
-        ? 'per day' 
-        : pricingType == 'per_event' 
-            ? 'per event' 
-            : 'purchase';
+    final l10n = AppLocalizations.of(context);
+    String pricingLabel = pricingType == 'per_day'
+        ? l10n.perDay
+        : pricingType == 'per_event'
+            ? l10n.perEvent
+            : l10n.purchase;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -935,16 +943,16 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildDetailRow('Base Price', '$price SAR $pricingLabel'),
-                  _buildDetailRow('Quantity', '×$quantity'),
+                  _buildDetailRow(l10n.basePrice, '$price ${l10n.sar} $pricingLabel'),
+                  _buildDetailRow(l10n.quantity, '×$quantity'),
                   if (pricingType == 'per_day' && days > 1)
-                    _buildDetailRow('Days', '×$days days'),
+                    _buildDetailRow(l10n.days, '×$days ${l10n.daysLabel}'),
                   
                   if (addons != null && addons.isNotEmpty) ...[
                     const SizedBox(height: 8),
-                    const Text(
-                      'Add-ons:',
-                      style: TextStyle(
+                    Text(
+                      '${l10n.addons}:',
+                      style: const TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 12,
                       ),
@@ -956,7 +964,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         padding: const EdgeInsets.only(left: 12, top: 4),
                         child: _buildDetailRow(
                           '+ $addonName',
-                          '$addonPrice SAR',
+                          '$addonPrice ${l10n.sar}',
                         ),
                       );
                     }),
@@ -965,10 +973,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   const SizedBox(height: 12),
                   const Divider(),
                   const SizedBox(height: 8),
-                  
-                  const Text(
-                    'Event Date:',
-                    style: TextStyle(
+
+                  Text(
+                    '${l10n.eventDate}:',
+                    style: const TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 12,
                     ),
@@ -977,9 +985,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   
                   if (pricingType == 'per_day') ...[
                     // Start Date & Time
-                    const Text(
-                      'Start Date & Time:',
-                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                    Text(
+                      l10n.startDateTime,
+                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
                     ),
                     const SizedBox(height: 8),
                     Row(
@@ -1007,7 +1015,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             label: Text(
                               dates?['startDate'] != null
                                   ? '${dates!['startDate']!.day}/${dates['startDate']!.month}/${dates['startDate']!.year}'
-                                  : 'Date',
+                                  : l10n.dateLabel,
                               style: const TextStyle(fontSize: 11),
                             ),
                           ),
@@ -1034,7 +1042,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             label: Text(
                               times?['startTime'] != null
                                   ? times!['startTime']!.format(context)
-                                  : 'Time',
+                                  : l10n.timeLabel,
                               style: const TextStyle(fontSize: 11),
                             ),
                           ),
@@ -1043,9 +1051,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     ),
                     const SizedBox(height: 8),
                     // End Date & Time
-                    const Text(
-                      'End Date & Time:',
-                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                    Text(
+                      l10n.endDateTime,
+                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
                     ),
                     const SizedBox(height: 8),
                     Row(
@@ -1075,7 +1083,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             label: Text(
                               dates?['endDate'] != null
                                   ? '${dates!['endDate']!.day}/${dates['endDate']!.month}/${dates['endDate']!.year}'
-                                  : 'Date',
+                                  : l10n.dateLabel,
                               style: const TextStyle(fontSize: 11),
                             ),
                           ),
@@ -1102,7 +1110,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             label: Text(
                               times?['endTime'] != null
                                   ? times!['endTime']!.format(context)
-                                  : 'Time',
+                                  : l10n.timeLabel,
                               style: const TextStyle(fontSize: 11),
                             ),
                           ),
@@ -1120,7 +1128,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
-                          'Rental Period: $days day${days > 1 ? 's' : ''} (includes 4-hour grace period)',
+                          '${l10n.rentalPeriod}: $days ${days > 1 ? l10n.daysLabel : l10n.dayLabel} ${l10n.includesGracePeriod}',
                           style: TextStyle(
                             fontSize: 11,
                             color: Colors.blue[900],
@@ -1132,7 +1140,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   ] else ...[
                     // Event/Delivery Date & Time
                     Text(
-                      pricingType == 'purchasable' ? 'Delivery Date & Time:' : 'Event Date & Time:',
+                      pricingType == 'purchasable' ? l10n.deliveryDateTime : l10n.eventDateTime,
                       style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
                     ),
                     const SizedBox(height: 8),
@@ -1160,7 +1168,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             label: Text(
                               dates?['eventDate'] != null
                                   ? '${dates!['eventDate']!.day}/${dates['eventDate']!.month}/${dates['eventDate']!.year}'
-                                  : 'Date',
+                                  : l10n.dateLabel,
                               style: const TextStyle(fontSize: 11),
                             ),
                           ),
@@ -1186,7 +1194,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             label: Text(
                               times?['eventTime'] != null
                                   ? times!['eventTime']!.format(context)
-                                  : 'Time',
+                                  : l10n.timeLabel,
                               style: const TextStyle(fontSize: 11),
                             ),
                           ),
@@ -1265,7 +1273,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                           Text(
-                            'Saved ${_discountAmount.toStringAsFixed(2)} SAR',
+                            '${l10n.saved} ${_discountAmount.toStringAsFixed(2)} ${l10n.sar}',
                             style: const TextStyle(
                               fontSize: 12,
                               color: Colors.green,
@@ -1397,6 +1405,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     bool isBold = false,
     double fontSize = 14,
   }) {
+    final l10n = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -1411,7 +1420,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             ),
           ),
           Text(
-            '${amount.toStringAsFixed(2)} SAR',
+            '${amount.toStringAsFixed(2)} ${l10n.sar}',
             style: TextStyle(
               fontSize: fontSize,
               fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
@@ -1428,7 +1437,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     final allDatesValid = _validateDates();
     final canPlaceOrder = !_isPlacingOrder && _selectedAddress != null && allDatesValid;
 
-    String buttonText = '${l10n.placeOrder} - ${total.toStringAsFixed(2)} SAR';
+    String buttonText = '${l10n.placeOrder} - ${total.toStringAsFixed(2)} ${l10n.sar}';
     if (_selectedAddress == null) {
       buttonText = l10n.selectAddress;
     } else if (!allDatesValid) {

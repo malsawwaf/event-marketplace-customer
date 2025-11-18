@@ -366,8 +366,8 @@ class _OrdersListScreenState extends State<OrdersListScreen>
                       Expanded(
                         child: Text(
                           timeRemaining.inMinutes > 0
-                              ? 'Provider will respond in ${timeRemaining.inMinutes}m'
-                              : 'Waiting for response',
+                              ? '${l10n.processing2} ${timeRemaining.inMinutes}m'
+                              : l10n.waitingForProviderResponse,
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.orange[700],

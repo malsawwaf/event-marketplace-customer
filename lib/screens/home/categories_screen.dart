@@ -295,6 +295,9 @@ class _CategoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    final displayTitle = isArabic ? titleAr : title;
+
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(
@@ -335,7 +338,8 @@ class _CategoryCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        title,
+                        displayTitle,
+                        textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,

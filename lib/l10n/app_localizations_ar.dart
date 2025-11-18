@@ -2,7 +2,7 @@ import 'app_localizations.dart';
 
 class AppLocalizationsAr extends AppLocalizations {
   @override
-  String get appName => 'أزيمة تك';
+  String get appName => 'عزيمة تك';
 
   @override
   String get ok => 'موافق';
@@ -962,4 +962,201 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get paymentCancelled => 'تم إلغاء الدفع';
+
+  // Payment WebView Screen
+  @override
+  String get errorLoadingPaymentPage => 'خطأ في تحميل صفحة الدفع';
+
+  @override
+  String get cancelPaymentTitle => 'إلغاء الدفع؟';
+
+  @override
+  String get cancelPaymentMessage => 'هل أنت متأكد من إلغاء هذا الدفع؟ لن تتم معالجة طلبك.';
+
+  @override
+  String get continuePayment => 'متابعة الدفع';
+
+  @override
+  String get loadingSecurePaymentPage => 'جارٍ تحميل صفحة الدفع الآمنة...';
+
+  @override
+  String get retry => 'إعادة المحاولة';
+
+  @override
+  String get paymentCancelledByUser => 'تم إلغاء الدفع من قبل المستخدم';
+
+  @override
+  String get payment => 'الدفع';
+
+  // Order Detail Screen
+  @override
+  String get orderPlaced => 'تم تقديم الطلب';
+
+  @override
+  String get waitingForProviderResponse => 'في انتظار رد المزود';
+
+  @override
+  String get timeRemaining => 'الوقت المتبقي';
+
+  @override
+  String get providerInformation => 'معلومات المزود';
+
+  @override
+  String get deliveryInformationTitle => 'معلومات التوصيل';
+
+  @override
+  String get priceBreakdown => 'تفصيل السعر';
+
+  @override
+  String get vat => 'ضريبة القيمة المضافة (15%)';
+
+  @override
+  String get youReviewedThisOrder => 'لقد قمت بتقييم هذا الطلب';
+
+  @override
+  String get writeAReview => 'اكتب تقييماً';
+
+  @override
+  String get paymentLabel => 'الدفع';
+
+  @override
+  String get paymentMethodLabel => 'طريقة الدفع';
+
+  @override
+  String get cardPayment => 'دفع بالبطاقة';
+
+  // Order Confirmation Screen
+  @override
+  String get orderConfirmed => 'تم تأكيد الطلب!';
+
+  @override
+  String get yourOrderHasBeenPlaced => 'تم تقديم طلبك';
+
+  @override
+  String get whatHappensNext => 'ماذا سيحدث بعد ذلك؟';
+
+  @override
+  String get providerWillAcceptOrDecline => 'سيقوم المزود بقبول أو رفض الطلب';
+
+  @override
+  String get youWillBeNotified => 'سيتم إعلامك';
+
+  @override
+  String get trackYourOrderInOrdersTab => 'تتبع طلبك في تبويب الطلبات';
+
+  // Submit Review Screen
+  @override
+  String get maximumPhotosAllowed => 'الحد الأقصى 5 صور';
+
+  @override
+  String get excellent => 'ممتاز!';
+
+  @override
+  String get veryGood => 'جيد جداً';
+
+  @override
+  String get good => 'جيد';
+
+  @override
+  String get fair => 'مقبول';
+
+  @override
+  String get poor => 'ضعيف';
+
+  @override
+  String get addPhotos => 'إضافة صور';
+
+  // Checkout Screen
+  @override
+  String get invalidOrExpiredCoupon => 'كوبون غير صالح أو منتهي الصلاحية';
+
+  @override
+  String get couponHasExpired => 'انتهت صلاحية الكوبون';
+
+  @override
+  String get errorLoadingCheckout => 'خطأ في تحميل صفحة الدفع';
+
+  @override
+  String get perDay => 'لليوم';
+
+  @override
+  String get perEvent => 'للمناسبة';
+
+  @override
+  String get purchase => 'شراء';
+
+  @override
+  String get basePrice => 'السعر الأساسي';
+
+  @override
+  String get days => 'الأيام';
+
+  @override
+  String get daysLabel => 'أيام';
+
+  @override
+  String get rentalPeriod => 'مدة التأجير';
+
+  @override
+  String get includesGracePeriod => '(تتضمن فترة سماح 4 ساعات)';
+
+  @override
+  String get deliveryDateTime => 'تاريخ ووقت التوصيل:';
+
+  @override
+  String get eventDateTime => 'تاريخ ووقت المناسبة:';
+
+  @override
+  String get startDateTime => 'تاريخ ووقت البداية:';
+
+  @override
+  String get endDateTime => 'تاريخ ووقت النهاية:';
+
+  @override
+  String get dateLabel => 'التاريخ';
+
+  @override
+  String get timeLabel => 'الوقت';
+
+  @override
+  String get saved => 'تم التوفير';
+
+  @override
+  String get sar => 'ريال';
+
+  @override
+  String get failedToInitiatePayment => 'فشل في بدء عملية الدفع';
+
+  @override
+  String get paymentDeclinedByBank => 'تم رفض الدفع من قبل البنك.';
+
+  @override
+  String get paymentIsPending => 'الدفع قيد التحقق. يرجى التحقق من حالة طلبك.';
+
+  @override
+  String get errorProcessingPayment => 'خطأ في معالجة الدفع';
+
+  @override
+  String get errorCreatingOrder => 'خطأ في إنشاء الطلب';
+
+  // Cart Screen
+  @override
+  String get expired => 'منتهي الصلاحية';
+
+  @override
+  String get rentalPeriodSetInCheckout => 'سيتم تحديد مدة التأجير عند الدفع';
+
+  @override
+  String get reserved => 'محجوز';
+
+  // Orders List Screen
+  @override
+  String get processing2 => 'جارٍ المعالجة...';
+
+  // Additional Order Confirmation Strings
+  @override
+  String get payWhenOrderIsDelivered => 'ادفع عند استلام الطلب';
+
+  @override
+  String get completePaymentToProceed => 'أكمل الدفع للمتابعة';
 }

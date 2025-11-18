@@ -56,7 +56,7 @@ class _SubmitReviewScreenState extends State<SubmitReviewScreen> {
   final l10n = AppLocalizations.of(context);
   if (_selectedPhotos.length >= 5) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Maximum 5 photos allowed')),
+      SnackBar(content: Text(l10n.maximumPhotosAllowed)),
     );
     return;
   }
@@ -464,7 +464,7 @@ class _SubmitReviewScreenState extends State<SubmitReviewScreen> {
                 child: OutlinedButton.icon(
                   onPressed: _pickImage,
                   icon: const Icon(Icons.add_photo_alternate),
-                  label: const Text('Add Photos'),
+                  label: Text(l10n.addPhotos),
                 ),
               )
             else
@@ -562,10 +562,11 @@ class _SubmitReviewScreenState extends State<SubmitReviewScreen> {
   }
 
   String _getRatingLabel(double rating) {
-    if (rating == 5) return 'Excellent!';
-    if (rating == 4) return 'Very Good';
-    if (rating == 3) return 'Good';
-    if (rating == 2) return 'Fair';
-    return 'Poor';
+    final l10n = AppLocalizations.of(context);
+    if (rating == 5) return l10n.excellent;
+    if (rating == 4) return l10n.veryGood;
+    if (rating == 3) return l10n.good;
+    if (rating == 2) return l10n.fair;
+    return l10n.poor;
   }
 }

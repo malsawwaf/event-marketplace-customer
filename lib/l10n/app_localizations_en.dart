@@ -962,4 +962,201 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get paymentCancelled => 'Payment cancelled';
+
+  // Payment WebView Screen
+  @override
+  String get errorLoadingPaymentPage => 'Error loading payment page';
+
+  @override
+  String get cancelPaymentTitle => 'Cancel Payment?';
+
+  @override
+  String get cancelPaymentMessage => 'Are you sure you want to cancel this payment? Your order will not be processed.';
+
+  @override
+  String get continuePayment => 'Continue Payment';
+
+  @override
+  String get loadingSecurePaymentPage => 'Loading secure payment page...';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String get paymentCancelledByUser => 'Payment cancelled by user';
+
+  @override
+  String get payment => 'Payment';
+
+  // Order Detail Screen
+  @override
+  String get orderPlaced => 'Order Placed';
+
+  @override
+  String get waitingForProviderResponse => 'Waiting for provider response';
+
+  @override
+  String get timeRemaining => 'Time remaining';
+
+  @override
+  String get providerInformation => 'Provider Information';
+
+  @override
+  String get deliveryInformationTitle => 'Delivery Information';
+
+  @override
+  String get priceBreakdown => 'Price Breakdown';
+
+  @override
+  String get vat => 'VAT (15%)';
+
+  @override
+  String get youReviewedThisOrder => 'You reviewed this order';
+
+  @override
+  String get writeAReview => 'Write a Review';
+
+  @override
+  String get paymentLabel => 'Payment';
+
+  @override
+  String get paymentMethodLabel => 'Payment Method';
+
+  @override
+  String get cardPayment => 'Card Payment';
+
+  // Order Confirmation Screen
+  @override
+  String get orderConfirmed => 'Order Confirmed!';
+
+  @override
+  String get yourOrderHasBeenPlaced => 'Your order has been placed';
+
+  @override
+  String get whatHappensNext => 'What happens next?';
+
+  @override
+  String get providerWillAcceptOrDecline => 'Provider will accept or decline';
+
+  @override
+  String get youWillBeNotified => 'You will be notified';
+
+  @override
+  String get trackYourOrderInOrdersTab => 'Track your order in Orders tab';
+
+  // Submit Review Screen
+  @override
+  String get maximumPhotosAllowed => 'Maximum 5 photos allowed';
+
+  @override
+  String get excellent => 'Excellent!';
+
+  @override
+  String get veryGood => 'Very Good';
+
+  @override
+  String get good => 'Good';
+
+  @override
+  String get fair => 'Fair';
+
+  @override
+  String get poor => 'Poor';
+
+  @override
+  String get addPhotos => 'Add Photos';
+
+  // Checkout Screen
+  @override
+  String get invalidOrExpiredCoupon => 'Invalid or expired coupon';
+
+  @override
+  String get couponHasExpired => 'Coupon has expired';
+
+  @override
+  String get errorLoadingCheckout => 'Error loading checkout';
+
+  @override
+  String get perDay => 'per day';
+
+  @override
+  String get perEvent => 'per event';
+
+  @override
+  String get purchase => 'purchase';
+
+  @override
+  String get basePrice => 'Base Price';
+
+  @override
+  String get days => 'Days';
+
+  @override
+  String get daysLabel => 'days';
+
+  @override
+  String get rentalPeriod => 'Rental Period';
+
+  @override
+  String get includesGracePeriod => '(includes 4-hour grace period)';
+
+  @override
+  String get deliveryDateTime => 'Delivery Date & Time:';
+
+  @override
+  String get eventDateTime => 'Event Date & Time:';
+
+  @override
+  String get startDateTime => 'Start Date & Time:';
+
+  @override
+  String get endDateTime => 'End Date & Time:';
+
+  @override
+  String get dateLabel => 'Date';
+
+  @override
+  String get timeLabel => 'Time';
+
+  @override
+  String get saved => 'Saved';
+
+  @override
+  String get sar => 'SAR';
+
+  @override
+  String get failedToInitiatePayment => 'Failed to initiate payment';
+
+  @override
+  String get paymentDeclinedByBank => 'Payment was declined by your bank.';
+
+  @override
+  String get paymentIsPending => 'Payment is pending verification. Please check your order status.';
+
+  @override
+  String get errorProcessingPayment => 'Error processing payment';
+
+  @override
+  String get errorCreatingOrder => 'Error creating order';
+
+  // Cart Screen
+  @override
+  String get expired => 'Expired';
+
+  @override
+  String get rentalPeriodSetInCheckout => 'Rental period set in checkout';
+
+  @override
+  String get reserved => 'Reserved';
+
+  // Orders List Screen
+  @override
+  String get processing2 => 'Processing...';
+
+  // Additional Order Confirmation Strings
+  @override
+  String get payWhenOrderIsDelivered => 'Pay when order is delivered';
+
+  @override
+  String get completePaymentToProceed => 'Complete payment to proceed';
 }
