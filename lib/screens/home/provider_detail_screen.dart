@@ -143,9 +143,10 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
     }
   }
 
-  String _getCategoryDisplayName(String categoryKey, List<Map<String, dynamic>> items, bool isArabic) {
+  String _getCategoryDisplayName(BuildContext context, String categoryKey, List<Map<String, dynamic>> items) {
     if (items.isEmpty) return categoryKey;
 
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     final firstItem = items.first;
     final categoryData = firstItem['item_categories'] as Map<String, dynamic>?;
 
@@ -444,8 +445,9 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
                 itemBuilder: (context, index) {
                   final category = _groupedItems.keys.elementAt(index);
                   final items = _groupedItems[category]!;
-                  final displayName = _getCategoryDisplayName(category, items, isArabic);
+                  final displayName = _getCategoryDisplayName(context, category, items);
                   final isSelected = category == _selectedCategory;
+                  final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
                   return Padding(
                     padding: const EdgeInsets.only(right: 12),
@@ -520,7 +522,8 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
                   children: _groupedItems.entries.map((entry) {
                     final category = entry.key;
                     final items = entry.value;
-                    final displayName = _getCategoryDisplayName(category, items, isArabic);
+                    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+                    final displayName = _getCategoryDisplayName(context, category, items);
 
                     return Container(
                       key: _categoryKeys[category],
