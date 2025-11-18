@@ -421,7 +421,11 @@ abstract class AppLocalizations {
   String get basePrice;
   String get days;
   String get daysLabel;
+  String get dayLabel;
   String get rentalPeriod;
+  String get minimumOrderAmount;
+  String get couponApplied;
+  String get errorApplyingCoupon;
   String get includesGracePeriod;
   String get deliveryDateTime;
   String get eventDateTime;

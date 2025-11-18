@@ -1095,7 +1095,19 @@ class AppLocalizationsAr extends AppLocalizations {
   String get daysLabel => 'أيام';
 
   @override
+  String get dayLabel => 'يوم';
+
+  @override
   String get rentalPeriod => 'مدة التأجير';
+
+  @override
+  String get minimumOrderAmount => 'الحد الأدنى للطلب';
+
+  @override
+  String get couponApplied => 'تم تطبيق الكوبون!';
+
+  @override
+  String get errorApplyingCoupon => 'خطأ في تطبيق الكوبون';
 
   @override
   String get includesGracePeriod => '(تتضمن فترة سماح 4 ساعات)';

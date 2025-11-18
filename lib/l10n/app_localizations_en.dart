@@ -1095,7 +1095,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get daysLabel => 'days';
 
   @override
+  String get dayLabel => 'day';
+
+  @override
   String get rentalPeriod => 'Rental Period';
+
+  @override
+  String get minimumOrderAmount => 'Minimum Order';
+
+  @override
+  String get couponApplied => 'Coupon applied!';
+
+  @override
+  String get errorApplyingCoupon => 'Error applying coupon';
 
   @override
   String get includesGracePeriod => '(includes 4-hour grace period)';
