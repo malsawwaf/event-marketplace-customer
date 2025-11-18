@@ -1,4 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../l10n/app_localizations.dart';
 
 class OrdersService {
   final _supabase = Supabase.instance.client;
@@ -207,26 +209,27 @@ class OrdersService {
   }
 
   /// Get order status label
-  String getOrderStatusLabel(String status) {
+  String getOrderStatusLabel(BuildContext context, String status) {
+    final l10n = AppLocalizations.of(context);
     switch (status) {
       case 'pending':
-        return 'Pending Acceptance';
+        return l10n.pendingAcceptance;
       case 'accepted':
-        return 'Accepted';
+        return l10n.accepted;
       case 'preparing':
-        return 'Preparing';
+        return l10n.preparing;
       case 'ready':
-        return 'Ready';
+        return l10n.ready;
       case 'dispatched':
-        return 'On the Way';
+        return l10n.onTheWay;
       case 'delivered':
-        return 'Delivered';
+        return l10n.delivered;
       case 'cancelled':
-        return 'Cancelled';
+        return l10n.cancelled;
       case 'rejected':
-        return 'Rejected';
+        return l10n.rejected;
       default:
-        return 'Unknown';
+        return l10n.unknown;
     }
   }
 
@@ -299,19 +302,20 @@ class OrdersService {
   }
 
   /// Format order date
-  String formatOrderDate(DateTime date) {
+  String formatOrderDate(BuildContext context, DateTime date) {
+    final l10n = AppLocalizations.of(context);
     final now = DateTime.now();
     final difference = now.difference(date);
 
     if (difference.inDays == 0) {
       if (difference.inHours == 0) {
-        return '${difference.inMinutes} minutes ago';
+        return '${difference.inMinutes} ${l10n.minutesAgo}';
       }
-      return '${difference.inHours} hours ago';
+      return '${difference.inHours} ${l10n.hoursAgo}';
     } else if (difference.inDays == 1) {
-      return 'Yesterday';
+      return l10n.yesterday;
     } else if (difference.inDays < 7) {
-      return '${difference.inDays} days ago';
+      return '${difference.inDays} ${l10n.daysAgo}';
     } else {
       return '${date.day}/${date.month}/${date.year}';
     }

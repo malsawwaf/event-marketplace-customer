@@ -290,7 +290,7 @@ class _OrdersListScreenState extends State<OrdersListScreen>
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          _ordersService.formatOrderDate(createdAt),
+                          _ordersService.formatOrderDate(context, createdAt),
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey[600],
@@ -469,7 +469,7 @@ class _OrdersListScreenState extends State<OrdersListScreen>
 
   Widget _buildStatusBadge(String status) {
     final colorName = _ordersService.getOrderStatusColor(status);
-    final label = _ordersService.getOrderStatusLabel(status);
+    final label = _ordersService.getOrderStatusLabel(context, status);
 
     Color backgroundColor;
     Color textColor;

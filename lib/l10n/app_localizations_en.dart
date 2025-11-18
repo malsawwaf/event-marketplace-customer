@@ -1134,7 +1134,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get saved => 'Saved';
 
   @override
-  String get sar => 'SAR';
+  String get sar => '﷼';
 
   @override
   String get failedToInitiatePayment => 'Failed to initiate payment';
@@ -1171,4 +1171,27 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get completePaymentToProceed => 'Complete payment to proceed';
+
+  // Date Formatting
+  @override
+  String get minutesAgo => 'minutes ago';
+
+  @override
+  String get hoursAgo => 'hours ago';
+
+  @override
+  String get yesterday => 'Yesterday';
+
+  @override
+  String get daysAgo => 'days ago';
+
+  // Order Status Labels
+  @override
+  String get pendingAcceptance => 'Pending Acceptance';
+
+  @override
+  String get onTheWay => 'On the Way';
+
+  @override
+  String get unknown => 'Unknown';
 }

@@ -630,7 +630,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '$price SAR',
+                      '$price ${l10n.sar}',
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -750,7 +750,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
                     textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
                   ),
                   Text(
-                    '$price SAR',
+                    '$price ${l10n.sar}',
                     style: TextStyle(
                       fontSize: 12,
                       color: AppTheme.primaryNavy,

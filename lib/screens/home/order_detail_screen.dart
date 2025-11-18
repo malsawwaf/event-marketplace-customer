@@ -223,7 +223,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     ),
                   ),
                   child: Text(
-                    _ordersService.getOrderStatusLabel(status),
+                    _ordersService.getOrderStatusLabel(context, status),
                     style: TextStyle(
                       color: _getStatusColor(status),
                       fontSize: 12,
@@ -318,7 +318,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                             if (index == 0) ...[
                               const SizedBox(height: 2),
                               Text(
-                                _ordersService.formatOrderDate(createdAt),
+                                _ordersService.formatOrderDate(context, createdAt),
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: Colors.grey[600],

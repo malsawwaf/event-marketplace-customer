@@ -1134,7 +1134,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get saved => 'تم التوفير';
 
   @override
-  String get sar => 'ريال';
+  String get sar => '﷼';
 
   @override
   String get failedToInitiatePayment => 'فشل في بدء عملية الدفع';
@@ -1171,4 +1171,27 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get completePaymentToProceed => 'أكمل الدفع للمتابعة';
+
+  // Date Formatting
+  @override
+  String get minutesAgo => 'منذ دقائق';
+
+  @override
+  String get hoursAgo => 'منذ ساعات';
+
+  @override
+  String get yesterday => 'أمس';
+
+  @override
+  String get daysAgo => 'منذ أيام';
+
+  // Order Status Labels
+  @override
+  String get pendingAcceptance => 'في انتظار القبول';
+
+  @override
+  String get onTheWay => 'في الطريق';
+
+  @override
+  String get unknown => 'غير معروف';
 }

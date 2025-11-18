@@ -919,7 +919,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          '${itemTotal.toStringAsFixed(2)} SAR',
+                          '${itemTotal.toStringAsFixed(2)} ${l10n.sar}',
                           style: const TextStyle(
                             color: Colors.green,
                             fontWeight: FontWeight.w600,

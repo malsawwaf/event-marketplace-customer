@@ -475,7 +475,7 @@ class _CartScreenState extends State<CartScreen> with AutomaticKeepAliveClientMi
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '$price SAR ${pricingType == 'per_day' ? 'per day' : pricingType == 'per_event' ? 'per event' : ''}',
+                      '$price ${l10n.sar} ${pricingType == 'per_day' ? 'per day' : pricingType == 'per_event' ? 'per event' : ''}',
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey[600],
@@ -591,7 +591,7 @@ class _CartScreenState extends State<CartScreen> with AutomaticKeepAliveClientMi
 
               // Item Total
               Text(
-                '${itemTotal.toStringAsFixed(2)} SAR',
+                '${itemTotal.toStringAsFixed(2)} ${l10n.sar}',
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
@@ -681,7 +681,7 @@ class _CartScreenState extends State<CartScreen> with AutomaticKeepAliveClientMi
             ),
           ),
           Text(
-            '${amount.toStringAsFixed(2)} SAR',
+            '${amount.toStringAsFixed(2)} ${l10n.sar}',
             style: TextStyle(
               fontSize: fontSize,
               fontWeight: isBold ? FontWeight.bold : FontWeight.normal,

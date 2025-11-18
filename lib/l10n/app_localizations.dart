@@ -452,6 +452,17 @@ abstract class AppLocalizations {
   // Additional Order Confirmation Strings
   String get payWhenOrderIsDelivered;
   String get completePaymentToProceed;
+
+  // Date Formatting
+  String get minutesAgo;
+  String get hoursAgo;
+  String get yesterday;
+  String get daysAgo;
+
+  // Order Status Labels
+  String get pendingAcceptance;
+  String get onTheWay;
+  String get unknown;
 }
 
 class _AppLocalizationsDelegate
