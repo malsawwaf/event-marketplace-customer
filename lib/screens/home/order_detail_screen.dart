@@ -348,7 +348,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
 
   Widget _buildProviderSection(Map<String, dynamic> provider) {
     final l10n = AppLocalizations.of(context)!;
-    final companyName = provider['company_name_en'] as String;
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    final companyName = isArabic && provider['trading_name_ar'] != null
+        ? provider['trading_name_ar'] as String
+        : provider['company_name_en'] as String;
     final photoUrl = provider['profile_photo_url'] as String?;
     final mobile = provider['mobile'] as String?;
 
@@ -384,6 +387,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                           fontWeight: FontWeight.w600,
                           fontSize: 16,
                         ),
+                        textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
                       ),
                       if (mobile != null) ...[
                         const SizedBox(height: 4),
@@ -493,6 +497,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
 
   Widget _buildOrderItemsSection(List<dynamic> orderItems) {
     final l10n = AppLocalizations.of(context)!;
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -513,8 +518,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
               final unitPrice = (orderItem['unit_price'] as num).toDouble();
               final subtotal = (orderItem['subtotal'] as num).toDouble();
               final addons = orderItem['order_item_addons'] as List?;
-              
-              final itemName = item['name'] as String;
+
+              final itemName = isArabic && item['name_ar'] != null
+                  ? item['name_ar'] as String
+                  : item['name'] as String;
               final photoUrls = item['photo_urls'] as List?;
               final photoUrl = photoUrls?.isNotEmpty == true ? photoUrls![0] : null;
 
@@ -569,10 +576,11 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                   fontWeight: FontWeight.w600,
                                   fontSize: 14,
                                 ),
+                                textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                '${unitPrice.toStringAsFixed(2)} SAR × $quantity',
+                                '${unitPrice.toStringAsFixed(2)} ﷼ × $quantity',
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: Colors.grey[600],
@@ -582,7 +590,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                           ),
                         ),
                         Text(
-                          '${subtotal.toStringAsFixed(2)} SAR',
+                          '${subtotal.toStringAsFixed(2)} ﷼',
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
@@ -618,7 +626,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                 ),
                               ),
                               Text(
-                                '${addonPrice.toStringAsFixed(2)} SAR',
+                                '${addonPrice.toStringAsFixed(2)} ﷼',
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: Colors.grey[700],
@@ -725,7 +733,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             ),
           ),
           Text(
-            '${amount.toStringAsFixed(2)} SAR',
+            '${amount.toStringAsFixed(2)} ﷼',
             style: TextStyle(
               fontSize: fontSize,
               fontWeight: isBold ? FontWeight.bold : FontWeight.normal,

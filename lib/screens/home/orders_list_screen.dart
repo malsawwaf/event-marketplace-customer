@@ -320,8 +320,8 @@ class _OrdersListScreenState extends State<OrdersListScreen>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          isArabic && provider['company_name_ar'] != null
-                              ? provider['company_name_ar'] as String
+                          isArabic && provider['trading_name_ar'] != null
+                              ? provider['trading_name_ar'] as String
                               : provider['company_name_en'] as String,
                           style: const TextStyle(
                             fontWeight: FontWeight.w600,
@@ -341,7 +341,7 @@ class _OrdersListScreenState extends State<OrdersListScreen>
                     ),
                   ),
                   Text(
-                    '${totalAmount.toStringAsFixed(2)} SAR',
+                    '${totalAmount.toStringAsFixed(2)} ﷼',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,

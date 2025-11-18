@@ -40,7 +40,7 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
             *,
             providers!inner(
               company_name_en,
-              company_name_ar,
+              trading_name_ar,
               profile_photo_url,
               mobile,
               order_acceptance_timer_minutes
@@ -119,8 +119,8 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
     }
 
     final provider = _orderData!['providers'] as Map<String, dynamic>;
-    final companyName = isArabic && provider['company_name_ar'] != null
-        ? provider['company_name_ar'] as String
+    final companyName = isArabic && provider['trading_name_ar'] != null
+        ? provider['trading_name_ar'] as String
         : provider['company_name_en'] as String;
     final photoUrl = provider['profile_photo_url'] as String?;
     final timerMinutes = provider['order_acceptance_timer_minutes'] as int? ?? 30;
@@ -280,7 +280,7 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
                             const SizedBox(height: 16),
                             _buildDetailRow(
                               l10n.totalAmount,
-                              '${totalAmount.toStringAsFixed(2)} SAR',
+                              '${totalAmount.toStringAsFixed(2)} ﷼',
                               isBold: true,
                             ),
                             const SizedBox(height: 8),

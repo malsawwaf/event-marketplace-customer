@@ -473,8 +473,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
   Widget _buildProviderInfo(Map<String, dynamic> provider) {
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     final companyNameEn = provider['company_name_en'] as String;
-    final companyNameAr = provider['company_name_ar'] as String?;
-    final companyName = isArabic && companyNameAr != null ? companyNameAr : companyNameEn;
+    final tradingNameAr = provider['trading_name_ar'] as String?;
+    final companyName = isArabic && tradingNameAr != null ? tradingNameAr : companyNameEn;
 
     final city = provider['city'] as String? ?? '';
     final country = provider['country'] as String? ?? '';

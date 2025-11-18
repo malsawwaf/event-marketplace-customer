@@ -15,7 +15,7 @@ class OrdersService {
             providers (
               id,
               company_name_en,
-              trading_name,
+              trading_name_ar,
               profile_photo_url,
               mobile
             ),
@@ -24,6 +24,7 @@ class OrdersService {
               items (
                 id,
                 name,
+                name_ar,
                 category_id,
                 photo_urls
               ),
@@ -52,7 +53,7 @@ class OrdersService {
             providers (
               id,
               company_name_en,
-              trading_name,
+              trading_name_ar,
               profile_photo_url,
               mobile
             ),
@@ -61,6 +62,7 @@ class OrdersService {
               items (
                 id,
                 name,
+                name_ar,
                 category_id,
                 photo_urls
               ),
@@ -87,7 +89,7 @@ class OrdersService {
             providers (
               id,
               company_name_en,
-              trading_name,
+              trading_name_ar,
               profile_photo_url,
               mobile,
               store_location
@@ -97,6 +99,7 @@ class OrdersService {
               items (
                 id,
                 name,
+                name_ar,
                 category_id,
                 photo_urls,
                 pricing_type
@@ -251,7 +254,7 @@ class OrdersService {
             providers (
               id,
               company_name_en,
-              trading_name,
+              trading_name_ar,
               profile_photo_url
             ),
             order_items (
@@ -259,6 +262,7 @@ class OrdersService {
               items (
                 id,
                 name,
+                name_ar,
                 photo_urls
               )
             )

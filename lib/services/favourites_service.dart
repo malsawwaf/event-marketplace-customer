@@ -89,7 +89,7 @@ class FavoritesService {
               providers(
                 id,
                 company_name_en,
-                company_name_ar,
+                trading_name_ar,
                 profile_photo_url,
                 store_location,
                 price_range,
@@ -226,7 +226,7 @@ class FavoritesService {
             providers(
               id,
               company_name_en,
-              company_name_ar,
+              trading_name_ar,
               profile_photo_url,
               store_location,
               store_description,

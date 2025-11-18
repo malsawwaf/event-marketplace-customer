@@ -339,8 +339,8 @@ class _FavoritesScreenState extends State<FavoritesScreen>
     bool isProviderFavorited,
   ) {
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
-    final companyName = isArabic && provider['company_name_ar'] != null
-        ? provider['company_name_ar'] as String
+    final companyName = isArabic && provider['trading_name_ar'] != null
+        ? provider['trading_name_ar'] as String
         : provider['company_name_en'] as String;
     final location = provider['store_location'] as String;
     final photoUrl = provider['profile_photo_url'] as String?;
@@ -452,8 +452,8 @@ class _FavoritesScreenState extends State<FavoritesScreen>
 
   Widget _buildProviderCard(Map<String, dynamic> provider) {
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
-    final companyName = isArabic && provider['company_name_ar'] != null
-        ? provider['company_name_ar'] as String
+    final companyName = isArabic && provider['trading_name_ar'] != null
+        ? provider['trading_name_ar'] as String
         : provider['company_name_en'] as String;
     final location = provider['store_location'] as String;
     final photoUrl = provider['profile_photo_url'] as String?;
@@ -558,8 +558,8 @@ class _FavoritesScreenState extends State<FavoritesScreen>
     final itemId = item['id'] as String;
     final stockQuantity = item['stock_quantity'] as int;
     final provider = item['providers'] as Map<String, dynamic>;
-    final companyName = isArabic && provider['company_name_ar'] != null
-        ? provider['company_name_ar'] as String
+    final companyName = isArabic && provider['trading_name_ar'] != null
+        ? provider['trading_name_ar'] as String
         : provider['company_name_en'] as String;
 
     final photoUrl = (photoUrls != null && photoUrls.isNotEmpty)

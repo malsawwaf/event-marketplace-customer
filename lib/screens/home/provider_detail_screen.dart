@@ -143,6 +143,19 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
     }
   }
 
+  String _getCategoryDisplayName(String categoryKey, List<Map<String, dynamic>> items, bool isArabic) {
+    if (items.isEmpty) return categoryKey;
+
+    final firstItem = items.first;
+    final categoryData = firstItem['item_categories'] as Map<String, dynamic>?;
+
+    if (categoryData != null && isArabic && categoryData['name_ar'] != null) {
+      return categoryData['name_ar'] as String;
+    }
+
+    return categoryKey;
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -170,8 +183,8 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
       );
     }
 
-    final businessName = isArabic && _provider!['company_name_ar'] != null
-        ? _provider!['company_name_ar']
+    final businessName = isArabic && _provider!['trading_name_ar'] != null
+        ? _provider!['trading_name_ar']
         : _provider!['company_name_en'] ?? 'Unknown Business';
     final category = _provider!['category'] ?? '';
     final categoryInfo = EventCategories.getById(category);
@@ -430,6 +443,8 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
                 itemCount: _groupedItems.keys.length,
                 itemBuilder: (context, index) {
                   final category = _groupedItems.keys.elementAt(index);
+                  final items = _groupedItems[category]!;
+                  final displayName = _getCategoryDisplayName(category, items, isArabic);
                   final isSelected = category == _selectedCategory;
 
                   return Padding(
@@ -454,13 +469,14 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
                             ),
                           ),
                           child: Text(
-                            category.toUpperCase(),
+                            displayName.toUpperCase(),
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
                               color: isSelected ? Colors.white : AppTheme.primaryNavy,
                               letterSpacing: 0.5,
                             ),
+                            textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
                           ),
                         ),
                       ),
@@ -504,6 +520,7 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
                   children: _groupedItems.entries.map((entry) {
                     final category = entry.key;
                     final items = entry.value;
+                    final displayName = _getCategoryDisplayName(category, items, isArabic);
 
                     return Container(
                       key: _categoryKeys[category],
@@ -521,13 +538,14 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
                               Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 12),
                                 child: Text(
-                                  category.toUpperCase(),
+                                  displayName.toUpperCase(),
                                   style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.grey[700],
                                     letterSpacing: 1.2,
                                   ),
+                                  textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
                                 ),
                               ),
                               Expanded(

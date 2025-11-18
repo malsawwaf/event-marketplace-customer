@@ -14,11 +14,13 @@ class ItemsService {
           .from('items')
           .select('''
             *,
-            item_categories!inner(id, name),
+            item_categories!inner(id, name, name_ar),
             item_addon_groups(
               id,
               name,
+              name_ar,
               description,
+              description_ar,
               is_required,
               selection_type,
               min_selection,
@@ -27,7 +29,9 @@ class ItemsService {
               item_addon_options(
                 id,
                 name,
+                name_ar,
                 description,
+                description_ar,
                 photo_url,
                 additional_price,
                 display_order
@@ -96,7 +100,7 @@ class ItemsService {
                 display_order
               )
             ),
-            providers!inner(company_name_en, company_name_ar, profile_photo_url, store_location, store_location_ar, price_range, city, country)
+            providers!inner(company_name_en, trading_name_ar, profile_photo_url, store_location, store_location_ar, price_range, city, country)
           ''')
           .eq('id', itemId)
           .eq('is_enabled', true)
@@ -122,11 +126,13 @@ class ItemsService {
           .from('items')
           .select('''
             *,
-            item_categories(id, name),
+            item_categories(id, name, name_ar),
             item_addon_groups(
               id,
               name,
+              name_ar,
               description,
+              description_ar,
               is_required,
               selection_type,
               min_selection,
@@ -135,13 +141,15 @@ class ItemsService {
               item_addon_options(
                 id,
                 name,
+                name_ar,
                 description,
+                description_ar,
                 photo_url,
                 additional_price,
                 display_order
               )
             ),
-            providers!inner(company_name_en, profile_photo_url, store_location, average_rating)
+            providers!inner(company_name_en, trading_name_ar, profile_photo_url, store_location, average_rating)
           ''')
           .eq('is_enabled', true)
           .eq('providers.is_active', true);
@@ -392,7 +400,7 @@ class ItemsService {
     final price = (item['price'] as num?)?.toDouble() ?? 0.0;
     final pricingType = item['pricing_type'] as String? ?? 'per_event';
     final label = getPricingTypeLabel(pricingType);
-    return '$price SAR $label';
+    return '$price ﷼ $label';
   }
 
   /// Check if item is in stock

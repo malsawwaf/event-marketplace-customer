@@ -105,8 +105,8 @@ class _ProviderCardWidgetState extends State<ProviderCardWidget> {
     final l10n = AppLocalizations.of(context);
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
-    final companyName = isArabic && widget.provider['company_name_ar'] != null
-        ? widget.provider['company_name_ar'] as String
+    final companyName = isArabic && widget.provider['trading_name_ar'] != null
+        ? widget.provider['trading_name_ar'] as String
         : widget.provider['company_name_en'] as String? ?? 'Unknown';
     final location = isArabic && widget.provider['store_location_ar'] != null
         ? widget.provider['store_location_ar'] as String

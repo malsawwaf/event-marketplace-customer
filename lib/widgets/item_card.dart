@@ -13,8 +13,11 @@ class ItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final itemsService = ItemsService(); // Create instance in build method
-    
-    final name = item['name'] ?? 'Unnamed Item';
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+
+    final name = isArabic && item['name_ar'] != null
+        ? item['name_ar'] ?? 'Unnamed Item'
+        : item['name'] ?? 'Unnamed Item';
     final photoUrl = itemsService.getFirstPhotoUrl(item);
     final priceText = itemsService.formatPrice(item);
     final isInStock = itemsService.isItemInStock(item);
@@ -54,6 +57,7 @@ class ItemCard extends StatelessWidget {
                           ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
+                          textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
                         ),
                         const SizedBox(height: 8),
                         // Price
