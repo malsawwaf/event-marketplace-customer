@@ -1193,5 +1193,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get onTheWay => 'في الطريق';
 
   @override
+  String get rejected => 'مرفوض';
+
+  @override
   String get unknown => 'غير معروف';
 }

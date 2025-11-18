@@ -681,7 +681,7 @@ class _CartScreenState extends State<CartScreen> with AutomaticKeepAliveClientMi
             ),
           ),
           Text(
-            '${amount.toStringAsFixed(2)} ${l10n.sar}',
+            '${amount.toStringAsFixed(2)} ﷼',
             style: TextStyle(
               fontSize: fontSize,
               fontWeight: isBold ? FontWeight.bold : FontWeight.normal,

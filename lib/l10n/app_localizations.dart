@@ -462,6 +462,7 @@ abstract class AppLocalizations {
   // Order Status Labels
   String get pendingAcceptance;
   String get onTheWay;
+  String get rejected;
   String get unknown;
 }
 

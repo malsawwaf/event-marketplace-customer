@@ -750,7 +750,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
                     textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
                   ),
                   Text(
-                    '$price ${l10n.sar}',
+                    '$price ﷼',
                     style: TextStyle(
                       fontSize: 12,
                       color: AppTheme.primaryNavy,

@@ -1193,5 +1193,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onTheWay => 'On the Way';
 
   @override
+  String get rejected => 'Rejected';
+
+  @override
   String get unknown => 'Unknown';
 }
