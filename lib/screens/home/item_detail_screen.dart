@@ -692,7 +692,18 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
               textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
               style: TextStyle(fontSize: 12, color: Colors.grey[600]),
             ),
-          if (price > 0) Text('+$price ﷼', style: const TextStyle(fontWeight: FontWeight.w500)),
+          if (price > 0) Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('+$price ', style: const TextStyle(fontWeight: FontWeight.w500)),
+              Image.asset(
+                'assets/icons/sar_icon.png',
+                width: 10,
+                height: 10,
+                color: Colors.green[700],
+              ),
+            ],
+          ),
         ],
       ),
       value: optionId,
@@ -748,7 +759,18 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
               textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
               style: TextStyle(fontSize: 12, color: Colors.grey[600]),
             ),
-          if (price > 0) Text('+$price ﷼', style: const TextStyle(fontWeight: FontWeight.w500)),
+          if (price > 0) Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('+$price ', style: const TextStyle(fontWeight: FontWeight.w500)),
+              Image.asset(
+                'assets/icons/sar_icon.png',
+                width: 10,
+                height: 10,
+                color: Colors.green[700],
+              ),
+            ],
+          ),
         ],
       ),
       value: isSelected,
