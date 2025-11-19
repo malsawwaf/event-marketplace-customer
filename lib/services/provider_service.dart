@@ -16,7 +16,8 @@ class ProviderService {
       var query = _supabase
           .from('providers')
           .select()
-          .eq('is_active', true);
+          .eq('is_active', true)
+          .eq('verification_status', 'approved');
 
       if (category != null) {
         query = query.eq('category', category);
