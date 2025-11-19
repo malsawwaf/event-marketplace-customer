@@ -922,33 +922,38 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
       }
 
       // If not reviewed, show button
-      return SizedBox(
-        width: double.infinity,
-        height: 50,
-        child: ElevatedButton.icon(
-          onPressed: () async {
-            final result = await Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => SubmitReviewScreen(
-                  orderId: widget.orderId,
-                  order: _order!,
+      if (snapshot.hasData && snapshot.data == false) {
+        return SizedBox(
+          width: double.infinity,
+          height: 50,
+          child: ElevatedButton.icon(
+            onPressed: () async {
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SubmitReviewScreen(
+                    orderId: widget.orderId,
+                    order: _order!,
+                  ),
                 ),
-              ),
-            );
-            // If review was submitted, refresh to hide button
-            if (result == true && mounted) {
-              setState(() {}); // Trigger rebuild
-            }
-          },
-          icon: const Icon(Icons.rate_review),
-          label: Text(l10n.writeAReview),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppTheme.primaryNavy,
-            foregroundColor: Colors.white,
+              );
+              // If review was submitted, refresh to hide button
+              if (result == true && mounted) {
+                setState(() {}); // Trigger rebuild
+              }
+            },
+            icon: const Icon(Icons.rate_review),
+            label: Text(l10n.writeAReview),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.primaryNavy,
+              foregroundColor: Colors.white,
+            ),
           ),
-        ),
-      );
+        );
+      }
+
+      // Loading state - show nothing while checking
+      return const SizedBox.shrink();
     },
   );
 }
