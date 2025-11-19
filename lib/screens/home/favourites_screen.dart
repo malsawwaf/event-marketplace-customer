@@ -749,13 +749,25 @@ class _FavoritesScreenState extends State<FavoritesScreen>
                     overflow: TextOverflow.ellipsis,
                     textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
                   ),
-                  Text(
-                    '$price ﷼',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: AppTheme.primaryNavy,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        price.toStringAsFixed(2),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppTheme.primaryNavy,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Image.asset(
+                        'assets/icons/sar_icon.png',
+                        width: 10,
+                        height: 10,
+                        color: Colors.green[700],
+                      ),
+                    ],
                   ),
                 ],
               ),

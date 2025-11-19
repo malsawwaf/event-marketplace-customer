@@ -400,7 +400,7 @@ class ItemsService {
     final price = (item['price'] as num?)?.toDouble() ?? 0.0;
     final pricingType = item['pricing_type'] as String? ?? 'per_event';
     final label = getPricingTypeLabel(pricingType);
-    return '$price ﷼ $label';
+    return '$price $label';
   }
 
   /// Check if item is in stock

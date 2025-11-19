@@ -61,13 +61,25 @@ class ItemCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         // Price
-                        Text(
-                          priceText,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: isInStock ? Colors.blue[700] : Colors.grey,
-                            fontWeight: FontWeight.w500,
-                          ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              priceText,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: isInStock ? Colors.blue[700] : Colors.grey,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            Image.asset(
+                              'assets/icons/sar_icon.png',
+                              width: 12,
+                              height: 12,
+                              color: isInStock ? Colors.green[700] : Colors.grey,
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 8),
                         // Stock Indicator (Low Stock)
