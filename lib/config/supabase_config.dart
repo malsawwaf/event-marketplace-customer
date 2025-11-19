@@ -6,7 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 /// IMPORTANT: Keep these credentials secure
 /// For production, consider using environment variables
 const supabaseUrl = 'https://hitqjenhkhumvdbsolsv.supabase.co';
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhpdHFqZW5oa2h1bXZkYnNvbHN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk4MDM2MzQsImV4cCI6MjA3NTM3OTYzNH0.YwTpP8oXmin6mbVfHRMI5H815_IQVN9sZLioFaeV_KI';
+const supabaseAnonKey = 'sb_publishable_dio3QJ5R9_5i_4U4rXoxnQ_tzI629-c';
 
 /// Supabase client instance
 /// Access anywhere in the app using: supabase
