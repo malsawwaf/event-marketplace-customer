@@ -680,13 +680,25 @@ class _CartScreenState extends State<CartScreen> with AutomaticKeepAliveClientMi
               color: color,
             ),
           ),
-          Text(
-            '${amount.toStringAsFixed(2)} ﷼',
-            style: TextStyle(
-              fontSize: fontSize,
-              fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-              color: color,
-            ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                amount.toStringAsFixed(2),
+                style: TextStyle(
+                  fontSize: fontSize,
+                  fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+                  color: color,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Image.asset(
+                'assets/icons/sar_icon.png',
+                width: 12,
+                height: 12,
+                color: Colors.green[700],
+              ),
+            ],
           ),
         ],
       ),

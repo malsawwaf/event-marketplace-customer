@@ -579,22 +579,53 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                 textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
                               ),
                               const SizedBox(height: 4),
-                              Text(
-                                '${unitPrice.toStringAsFixed(2)} ﷼ × $quantity',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey[600],
-                                ),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    unitPrice.toStringAsFixed(2),
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 2),
+                                  Image.asset(
+                                    'assets/icons/sar_icon.png',
+                                    width: 10,
+                                    height: 10,
+                                    color: Colors.green[700],
+                                  ),
+                                  Text(
+                                    ' × $quantity',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
                         ),
-                        Text(
-                          '${subtotal.toStringAsFixed(2)} ﷼',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              subtotal.toStringAsFixed(2),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            Image.asset(
+                              'assets/icons/sar_icon.png',
+                              width: 12,
+                              height: 12,
+                              color: Colors.green[700],
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -625,12 +656,24 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                   color: Colors.grey[700],
                                 ),
                               ),
-                              Text(
-                                '${addonPrice.toStringAsFixed(2)} ﷼',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey[700],
-                                ),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    addonPrice.toStringAsFixed(2),
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey[700],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 2),
+                                  Image.asset(
+                                    'assets/icons/sar_icon.png',
+                                    width: 10,
+                                    height: 10,
+                                    color: Colors.green[700],
+                                  ),
+                                ],
                               ),
                             ],
                           ),
@@ -732,13 +775,25 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
               color: color,
             ),
           ),
-          Text(
-            '${amount.toStringAsFixed(2)} ﷼',
-            style: TextStyle(
-              fontSize: fontSize,
-              fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-              color: color,
-            ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                amount.toStringAsFixed(2),
+                style: TextStyle(
+                  fontSize: fontSize,
+                  fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+                  color: color,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Image.asset(
+                'assets/icons/sar_icon.png',
+                width: 12,
+                height: 12,
+                color: Colors.green[700],
+              ),
+            ],
           ),
         ],
       ),

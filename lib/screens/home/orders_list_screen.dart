@@ -340,13 +340,25 @@ class _OrdersListScreenState extends State<OrdersListScreen>
                       ],
                     ),
                   ),
-                  Text(
-                    '${totalAmount.toStringAsFixed(2)} ﷼',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      color: AppTheme.primaryNavy,
-                    ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        totalAmount.toStringAsFixed(2),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: AppTheme.primaryNavy,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Image.asset(
+                        'assets/icons/sar_icon.png',
+                        width: 14,
+                        height: 14,
+                        color: Colors.green[700],
+                      ),
+                    ],
                   ),
                 ],
               ),

@@ -278,10 +278,36 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
                               ),
                             ),
                             const SizedBox(height: 16),
-                            _buildDetailRow(
-                              l10n.totalAmount,
-                              '${totalAmount.toStringAsFixed(2)} ﷼',
-                              isBold: true,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  l10n.totalAmount,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      totalAmount.toStringAsFixed(2),
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Image.asset(
+                                      'assets/icons/sar_icon.png',
+                                      width: 12,
+                                      height: 12,
+                                      color: Colors.green[700],
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
                             const SizedBox(height: 8),
                             _buildDetailRow(
