@@ -330,7 +330,7 @@ class _ProviderCardWidgetState extends State<ProviderCardWidget> {
                               width: 12,
                               height: 12,
                               color: index < _getPriceRangeCount(priceRange)
-                                  ? Colors.green
+                                  ? Colors.green[700]
                                   : Colors.grey[300],
                             ),
                           ),
