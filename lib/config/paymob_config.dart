@@ -1,32 +1,29 @@
 /// Paymob Payment Gateway Configuration (KSA - Saudi Arabia)
-/// Official SDK Integration with Intention API
-/// Get your credentials from: https://ksa.paymob.com/portal2/en/settings
-///
-/// IMPORTANT: Replace these placeholder values with your actual credentials
-/// from the Paymob dashboard before running the app
+/// iFrame Integration
+/// Dashboard: https://ksa.paymob.com/portal2/en/settings
 class PaymobConfig {
-  // Public Key (from dashboard - LIVE)
-  // Format: sau_pk_live_XXXXXXXXXXXXX
-  static const String publicKey = 'YOUR_PAYMOB_PUBLIC_KEY_HERE';
+  // API Key for authentication
+  static const String apiKey = 'ZXlKaGJHY2lPaUpJVXpVeE1pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SmpiR0Z6Y3lJNklrMWxjbU5vWVc1MElpd2ljSEp2Wm1sc1pWOXdheUk2TVRNeU56SXNJbTVoYldVaU9pSnBibWwwYVdGc0luMC52eFhrQThIV3pSWHFBZEt2bFNnZGFZRE9yMjFUSVRhU3FpT19vUFpMRmhTcXpnZjVlcWNpSzdBdTQ2RThXa0hOdE5NeDFaMzZTcTFzQ3JMbzBJM29vdw==';
 
-  // Secret Key (from dashboard - LIVE - for server-side API calls)
-  // Format: sau_sk_live_XXXXXXXXXXXXX
-  static const String secretKey = 'YOUR_PAYMOB_SECRET_KEY_HERE';
+  // Integration ID for card payments
+  static const int cardIntegrationId = 18484;
 
-  // Integration ID for card payments (LIVE)
-  static const int cardIntegrationId = 0; // Replace with your integration ID
+  // iFrame ID for hosted payment page
+  static const int iframeId = 11484;
+
+  // HMAC Secret for transaction verification
+  static const String hmacSecret = 'BED38BD3BFBC6DED0AA3BEA5474A9EA1';
 
   // API Endpoints (KSA region)
-  static const String baseUrl = 'https://ksa.paymob.com';
-  static const String intentionEndpoint = '$baseUrl/v1/intention/';
-  static const String checkoutUrl = '$baseUrl/unifiedcheckout/';
-
-  // Callback URL (configured in dashboard for integration ID)
-  static const String callbackUrl = '$baseUrl/api/acceptance/post_pay';
+  static const String baseUrl = 'https://ksa.paymob.com/api';
+  static const String authEndpoint = '$baseUrl/auth/tokens';
+  static const String orderEndpoint = '$baseUrl/ecommerce/orders';
+  static const String paymentKeyEndpoint = '$baseUrl/acceptance/payment_keys';
+  static const String iframeUrl = 'https://ksa.paymob.com/api/acceptance/iframes/$iframeId';
 
   // Currency
   static const String currency = 'SAR'; // Saudi Riyal
 
-  // Test Mode (set to false when switching to production)
-  static const bool isTestMode = false; // SWITCHED TO LIVE MODE
+  // Test Mode (set to false when using live credentials)
+  static const bool isTestMode = false;
 }

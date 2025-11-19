@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../services/cart_service.dart';
 import '../../services/address_service.dart';
-import '../../services/paymob_intention_service.dart';
-import '../../services/paymob_sdk_service.dart';
+import '../../services/paymob_iframe_service.dart';
 import '../../config/app_theme.dart';
 import '../../l10n/app_localizations.dart';
 import 'address_selection_screen.dart';
 import 'order_confirmation_screen.dart';
+import 'paymob_webview_screen.dart';
 
 class CheckoutScreen extends StatefulWidget {
   final String cartId;
@@ -359,7 +359,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     await _createOrder(customerId, paymentTransactionId: null);
   }
 
-  /// Process online payment via Paymob
+  /// Process online payment via Paymob iFrame
   Future<void> _processOnlinePayment(String customerId) async {
     try {
       final totals = _calculateTotals();
@@ -371,102 +371,70 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
       final orderNumber = 'ORD-${DateTime.now().millisecondsSinceEpoch}';
 
-      // Step 1: Create Payment Intention with Paymob
-      print('🔵 Creating payment intention...');
+      print('🔵 Initiating Paymob iFrame payment...');
 
-      // Parse customer name (ensure lastName is never blank)
+      // Get customer details
       final fullName = customer['full_name']?.toString() ?? 'Customer';
-      final nameParts = fullName.split(' ');
-      final firstName = nameParts.first;
-      final lastName = nameParts.length > 1 ? nameParts.skip(1).join(' ') : firstName;
+      final customerEmail = customer['email']?.toString() ?? 'customer@example.com';
+      final customerPhone = customer['phone_number']?.toString() ?? '0500000000';
 
-      final intentionService = PaymobIntentionService();
-      final intentionResult = await intentionService.createIntention(
+      // Initialize Paymob iFrame service
+      final paymobService = PaymobIframeService();
+
+      // Get payment URL with token
+      final paymentUrl = await paymobService.initiatePayment(
         amount: totals['total']!,
-        customerFirstName: firstName,
-        customerLastName: lastName,
-        customerEmail: customer['email'] ?? 'customer@example.com',
-        customerPhone: customer['phone_number'] ?? '0500000000',
-        orderNumber: orderNumber,
-        country: 'SA',
+        customerName: fullName,
+        customerEmail: customerEmail,
+        customerPhone: customerPhone,
+        orderId: orderNumber,
       );
 
-      if (intentionResult['error'] != null) {
-        if (mounted) {
-          setState(() => _isPlacingOrder = false);
-          final l10n = AppLocalizations.of(context);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${l10n.failedToInitiatePayment}: ${intentionResult['error']}')),
-          );
-        }
-        return;
-      }
+      print('✅ Payment URL generated, opening WebView...');
 
-      final clientSecret = intentionResult['client_secret'] as String;
-      final intentionId = intentionResult['intention_id'] as String?;
-
-      print('✅ Intention created: $intentionId');
-
-      // Step 2: Launch Paymob SDK for payment
-      print('🔵 Launching Paymob SDK...');
-      final sdkService = PaymobSDKService();
-      final paymentResult = await sdkService.processPayment(
-        clientSecret: clientSecret,
-        appName: 'Azimah Tech',
-      );
-
-      print('Payment result: ${paymentResult['status']}');
-
-      // Step 3: Verify transaction status with Paymob API
-      // SDK callbacks are sometimes unreliable, so we verify with the API
-      print('🔍 Verifying transaction status with Paymob API...');
-      Map<String, dynamic>? verification;
-
-      if (intentionId != null) {
-        verification = await intentionService.verifyTransaction(intentionId);
-        print('✅ Verification result: ${verification['status']} - Success: ${verification['success']}');
-      }
-
-      // Step 4: Handle payment result (prioritize API verification over SDK callback)
+      // Open WebView with payment page
       if (mounted) {
-        final bool isActuallySuccessful = verification?['success'] == true ||
-                                          paymentResult['success'] == true;
-
-        if (isActuallySuccessful) {
-          // Payment successful - create order
-          print('✅ Payment verified successful, creating order...');
-          await _createOrder(customerId, paymentTransactionId: intentionId);
-        } else if (paymentResult['status'] == 'Cancelled') {
-          // User explicitly cancelled - don't verify
-          setState(() => _isPlacingOrder = false);
-          final l10n = AppLocalizations.of(context);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.paymentCancelled)),
-          );
-        } else if (verification?['status'] == 'PENDING' || paymentResult['status'] == 'Pending') {
-          // Payment still pending
-          setState(() => _isPlacingOrder = false);
-          final l10n = AppLocalizations.of(context);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(l10n.paymentIsPending),
-              duration: const Duration(seconds: 5),
+        final paymentResult = await Navigator.push<Map<String, dynamic>>(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PaymobWebViewScreen(
+              paymentUrl: paymentUrl,
+              orderNumber: orderNumber,
             ),
-          );
+          ),
+        );
+
+        print('Payment result: $paymentResult');
+
+        // Handle payment result
+        if (paymentResult != null && mounted) {
+          if (paymentResult['success'] == true) {
+            // Payment successful - create order
+            print('✅ Payment successful, creating order...');
+            await _createOrder(customerId, paymentTransactionId: orderNumber);
+          } else if (paymentResult['status'] == 'cancelled') {
+            // User cancelled payment
+            setState(() => _isPlacingOrder = false);
+            final l10n = AppLocalizations.of(context);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(l10n.paymentCancelled)),
+            );
+          } else {
+            // Payment failed
+            setState(() => _isPlacingOrder = false);
+            final l10n = AppLocalizations.of(context);
+            final errorMessage = paymentResult['error']?.toString() ?? l10n.paymentFailed;
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(errorMessage),
+                duration: const Duration(seconds: 5),
+              ),
+            );
+          }
         } else {
-          // Payment failed or rejected
+          // No result returned (WebView closed without completing)
           setState(() => _isPlacingOrder = false);
-          final l10n = AppLocalizations.of(context);
-          final sdkMessage = paymentResult['status'] == 'Rejected'
-              ? l10n.paymentDeclinedByBank
-              : (paymentResult['error'] ?? l10n.paymentFailed);
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(sdkMessage),
-              duration: const Duration(seconds: 5),
-            ),
-          );
         }
       }
     } catch (e) {
