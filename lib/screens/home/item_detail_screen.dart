@@ -280,7 +280,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Photo Gallery
-                  _buildPhotoGallery(photoUrls),
+                  _buildPhotoGallery(photoUrl),
 
                   Padding(
                     padding: const EdgeInsets.all(16),
