@@ -184,7 +184,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                           MaterialPageRoute(
                             builder: (_) => CategoryProvidersScreen(
                               category: EventCategories.venuesHallsId,
-                              categoryName: 'Venues & Halls',
+                              categoryName: EventCategories.venuesHalls.name,
+                              categoryNameAr: EventCategories.venuesHalls.nameAr,
                               selectedCity: _selectedCity!,
                             ),
                           ),
@@ -221,7 +222,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                           MaterialPageRoute(
                             builder: (_) => CategoryProvidersScreen(
                               category: EventCategories.campingPartiesId,
-                              categoryName: 'Camping, Parties & Celebrations',
+                              categoryName: EventCategories.campingParties.name,
+                              categoryNameAr: EventCategories.campingParties.nameAr,
                               selectedCity: _selectedCity!,
                             ),
                           ),
@@ -258,7 +260,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                           MaterialPageRoute(
                             builder: (_) => CategoryProvidersScreen(
                               category: EventCategories.funeralsId,
-                              categoryName: 'Funeral Services',
+                              categoryName: EventCategories.funerals.name,
+                              categoryNameAr: EventCategories.funerals.nameAr,
                               selectedCity: _selectedCity!,
                             ),
                           ),

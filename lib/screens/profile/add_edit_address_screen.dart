@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../services/address_service.dart';
 import '../../config/supabase_config.dart';
 import '../../config/app_theme.dart';
 import '../../l10n/app_localizations.dart';
+import '../../widgets/map_location_picker.dart';
 
 class AddEditAddressScreen extends StatefulWidget {
   final Map<String, dynamic>? address;
@@ -53,6 +55,25 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
     _districtController.dispose();
     _fullAddressController.dispose();
     super.dispose();
+  }
+
+  Future<void> _openMapPicker() async {
+    final result = await Navigator.push<LatLng>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MapLocationPicker(
+          initialLatitude: _latitude,
+          initialLongitude: _longitude,
+        ),
+      ),
+    );
+
+    if (result != null) {
+      setState(() {
+        _latitude = result.latitude;
+        _longitude = result.longitude;
+      });
+    }
   }
 
   Future<void> _saveAddress() async {
@@ -146,11 +167,11 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
               const SizedBox(height: 12),
               Row(
                 children: [
-                  _buildLabelChip('Home'),
+                  _buildLabelChip('Home', l10n.addressTypeHome),
                   const SizedBox(width: 8),
-                  _buildLabelChip('Work'),
+                  _buildLabelChip('Work', l10n.addressTypeWork),
                   const SizedBox(width: 8),
-                  _buildLabelChip('Other'),
+                  _buildLabelChip('Other', l10n.addressTypeOther),
                 ],
               ),
               const SizedBox(height: 8),
@@ -225,39 +246,63 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
               ),
               const SizedBox(height: 16),
 
-              // Location Picker (Placeholder)
-              Container(
-                height: 150,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey[300]!),
-                  borderRadius: BorderRadius.circular(12),
-                  color: Colors.grey[100],
-                ),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.map,
-                        size: 48,
-                        color: Colors.grey[400],
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        '${l10n.location} Picker',
-                        style: TextStyle(
-                          color: Colors.grey[600],
+              // Location Picker
+              InkWell(
+                onTap: _openMapPicker,
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  height: 150,
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: _latitude != null && _longitude != null
+                          ? AppTheme.primaryNavy
+                          : Colors.grey[300]!,
+                      width: _latitude != null && _longitude != null ? 2 : 1,
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                    color: _latitude != null && _longitude != null
+                        ? AppTheme.primaryNavy.withOpacity(0.05)
+                        : Colors.grey[100],
+                  ),
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          _latitude != null && _longitude != null
+                              ? Icons.location_on
+                              : Icons.map,
+                          size: 48,
+                          color: _latitude != null && _longitude != null
+                              ? AppTheme.primaryNavy
+                              : Colors.grey[400],
                         ),
-                      ),
-                      const SizedBox(height: 4),
-                      const Text(
-                        '(Coming Soon)',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey,
+                        const SizedBox(height: 8),
+                        Text(
+                          _latitude != null && _longitude != null
+                              ? '${l10n.location} ${l10n.selected}'
+                              : '${l10n.select} ${l10n.location}',
+                          style: TextStyle(
+                            color: _latitude != null && _longitude != null
+                                ? AppTheme.primaryNavy
+                                : Colors.grey[600],
+                            fontWeight: _latitude != null && _longitude != null
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                          ),
                         ),
-                      ),
-                    ],
+                        if (_latitude != null && _longitude != null) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            '${_latitude!.toStringAsFixed(4)}, ${_longitude!.toStringAsFixed(4)}',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -314,15 +359,15 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
     );
   }
 
-  Widget _buildLabelChip(String label) {
-    final isSelected = _labelController.text == label;
+  Widget _buildLabelChip(String key, String displayLabel) {
+    final isSelected = _labelController.text == key;
     return ChoiceChip(
-      label: Text(label),
+      label: Text(displayLabel),
       selected: isSelected,
       onSelected: (selected) {
         if (selected) {
           setState(() {
-            _labelController.text = label;
+            _labelController.text = key;
           });
         }
       },

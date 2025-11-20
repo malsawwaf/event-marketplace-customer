@@ -121,6 +121,22 @@ class _AddressesScreenState extends State<AddressesScreen> {
     }
   }
 
+  String _getLocalizedLabel(String? label) {
+    if (label == null) return AppLocalizations.of(context).addressLabel;
+
+    final l10n = AppLocalizations.of(context);
+    switch (label) {
+      case 'Home':
+        return l10n.addressTypeHome;
+      case 'Work':
+        return l10n.addressTypeWork;
+      case 'Other':
+        return l10n.addressTypeOther;
+      default:
+        return label; // Return custom label as-is
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -211,7 +227,7 @@ class _AddressesScreenState extends State<AddressesScreen> {
             title: Row(
               children: [
                 Text(
-                  address['label'] ?? l10n.addressLabel,
+                  _getLocalizedLabel(address['label']),
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                   ),

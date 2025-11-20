@@ -6,6 +6,7 @@ import '../../services/cart_service.dart';
 import '../../services/favourites_service.dart';
 import '../../config/app_theme.dart';
 import '../../l10n/app_localizations.dart';
+import '../../utils/cities.dart';
 
 class ItemDetailScreen extends StatefulWidget {
   final String itemId;
@@ -312,7 +313,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          itemsService.getPricingTypeLabel(pricingType),
+                          itemsService.getPricingTypeLabel(pricingType, context),
                           style: const TextStyle(
                             fontSize: 14,
                             color: Colors.grey,
@@ -473,16 +474,29 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
   Widget _buildProviderInfo(Map<String, dynamic> provider) {
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     final companyNameEn = provider['company_name_en'] as String;
+    final companyNameAr = provider['company_name_ar'] as String?;
     final tradingName = provider['trading_name'] as String?;
-    final companyName = isArabic && tradingName != null ? tradingName : companyNameEn;
+
+    // Use Arabic name if available and locale is Arabic, otherwise use trading name or English name
+    final companyName = isArabic && companyNameAr != null && companyNameAr.isNotEmpty
+        ? companyNameAr
+        : (tradingName ?? companyNameEn);
 
     final city = provider['city'] as String? ?? '';
     final country = provider['country'] as String? ?? '';
     final photoUrl = provider['profile_photo_url'] as String?;
 
-    final location = city.isNotEmpty
-        ? (country.isNotEmpty ? '$city, $country' : city)
-        : (country.isNotEmpty ? country : '');
+    // Localize city and country names
+    final localizedCity = city.isNotEmpty
+        ? SaudiCities.getLocalizedCityName(city, isArabic)
+        : '';
+    final localizedCountry = country.isNotEmpty
+        ? SaudiCities.getLocalizedCountryName(country, isArabic)
+        : '';
+
+    final location = localizedCity.isNotEmpty
+        ? (localizedCountry.isNotEmpty ? '$localizedCity, $localizedCountry' : localizedCity)
+        : (localizedCountry.isNotEmpty ? localizedCountry : '');
 
     return Card(
       child: Padding(

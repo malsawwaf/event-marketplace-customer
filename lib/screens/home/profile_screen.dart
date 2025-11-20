@@ -7,6 +7,7 @@ import '../auth/login_screen.dart';
 import '../profile/edit_profile_screen.dart';
 import '../profile/addresses_screen.dart';
 import '../profile/settings_screen.dart';
+import '../profile/help_support_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -170,9 +171,10 @@ class ProfileScreen extends StatelessWidget {
                     title: l10n.helpAndSupport,
                     subtitle: l10n.getHelpOrContactUs,
                     onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(l10n.helpAndSupportComingSoon),
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const HelpSupportScreen(),
                         ),
                       );
                     },

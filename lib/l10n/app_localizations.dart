@@ -160,6 +160,26 @@ abstract class AppLocalizations {
   String get helpAndSupport;
   String get getHelpOrContactUs;
   String get helpAndSupportComingSoon;
+  String get contactUs;
+  String get sendUsMessage;
+  String get frequentlyAskedQuestions;
+  String get name;
+  String get message;
+  String get sendMessage;
+  String get pleaseEnterMessage;
+  String get messageSentSuccessfully;
+  String get noContactInfoAvailable;
+  String get pleaseEnterYourName;
+  String get howToPlaceOrder;
+  String get howToPlaceOrderAnswer;
+  String get howToCancelOrder;
+  String get howToCancelOrderAnswer;
+  String get howToTrackOrder;
+  String get howToTrackOrderAnswer;
+  String get whatPaymentMethods;
+  String get whatPaymentMethodsAnswer;
+  String get howToContactProvider;
+  String get howToContactProviderAnswer;
   String get about;
   String get appVersionAndInformation;
   String get aboutAzimahTech;
@@ -225,6 +245,9 @@ abstract class AppLocalizations {
   String get addressLabel;
   String get defaultLabel;
   String get setAsDefault;
+  String get addressTypeHome;
+  String get addressTypeWork;
+  String get addressTypeOther;
 
   // Auth Screen Additions
   String get signInToContinue;
@@ -284,6 +307,7 @@ abstract class AppLocalizations {
   String get estimatedDelivery;
   String get addons;
   String get select;
+  String get selected;
   String get updateCart;
   String get emptyCart;
   String get yourCartIsEmpty;
@@ -464,6 +488,37 @@ abstract class AppLocalizations {
   String get onTheWay;
   String get rejected;
   String get unknown;
+
+  // Sorting Options
+  String get sortByHighestRating;
+  String get sortByPriceRange;
+  String get sortByNameAsc;
+  String get sortByNameDesc;
+
+  // Image Placeholders
+  String get noImage;
+  String get imageNotAvailable;
+
+  // Stock Status
+  String lowStockWithQty(int qty);
+
+  // Reviews
+  String get recentReviews;
+  String get beTheFirstToReview;
+  String get youPostedThisReview;
+  String get anonymous;
+  String get justNow;
+  String yearAgo(int count);
+  String yearsAgo(int count);
+  String monthAgo(int count);
+  String monthsAgo(int count);
+  String dayAgo(int count);
+  String daysAgo2(int count);
+  String hourAgo(int count);
+  String hoursAgo2(int count);
+  String minuteAgo(int count);
+  String minutesAgo2(int count);
+  String get youReviewedThisOrder;
 }
 
 class _AppLocalizationsDelegate

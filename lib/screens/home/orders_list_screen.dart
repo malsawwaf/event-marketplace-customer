@@ -320,9 +320,7 @@ class _OrdersListScreenState extends State<OrdersListScreen>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          isArabic && provider['trading_name'] != null
-                              ? provider['trading_name'] as String
-                              : provider['company_name_en'] as String,
+                          _getProviderName(provider, isArabic),
                           style: const TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 14,
@@ -426,7 +424,7 @@ class _OrdersListScreenState extends State<OrdersListScreen>
                             Icon(Icons.check_circle, color: Colors.green[700], size: 20),
                             const SizedBox(width: 8),
                             Text(
-                              'You reviewed this order',
+                              l10n.youReviewedThisOrder,
                               style: TextStyle(
                                 color: Colors.green[700],
                                 fontWeight: FontWeight.w600,
@@ -605,5 +603,16 @@ class _OrdersListScreenState extends State<OrdersListScreen>
         );
       }
     }
+  }
+
+  String _getProviderName(Map<String, dynamic> provider, bool isArabic) {
+    final companyNameEn = provider['company_name_en'] as String? ?? 'Unknown';
+    final companyNameAr = provider['company_name_ar'] as String?;
+    final tradingName = provider['trading_name'] as String?;
+
+    if (isArabic && companyNameAr != null && companyNameAr.isNotEmpty) {
+      return companyNameAr;
+    }
+    return tradingName ?? companyNameEn;
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/favourites_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../l10n/app_localizations.dart';
+import '../utils/cities.dart';
 
 class ProviderCardWidget extends StatefulWidget {
   final Map<String, dynamic> provider;
@@ -105,12 +106,37 @@ class _ProviderCardWidgetState extends State<ProviderCardWidget> {
     final l10n = AppLocalizations.of(context);
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
-    final companyName = isArabic && widget.provider['trading_name'] != null
-        ? widget.provider['trading_name'] as String
-        : widget.provider['company_name_en'] as String? ?? 'Unknown';
-    final location = isArabic && widget.provider['store_location_ar'] != null
-        ? widget.provider['store_location_ar'] as String
-        : widget.provider['store_location'] as String? ?? '';
+    // Use Arabic name if available and locale is Arabic, otherwise use trading name or English name
+    final companyNameEn = widget.provider['company_name_en'] as String? ?? 'Unknown';
+    final companyNameAr = widget.provider['company_name_ar'] as String?;
+    final tradingName = widget.provider['trading_name'] as String?;
+
+    final companyName = isArabic && companyNameAr != null && companyNameAr.isNotEmpty
+        ? companyNameAr
+        : (tradingName ?? companyNameEn);
+
+    // Use city field and localize it, with fallback to store_location
+    final city = widget.provider['city'] as String?;
+    final country = widget.provider['country'] as String?;
+    final storeLocation = widget.provider['store_location'] as String?;
+    final storeLocationAr = widget.provider['store_location_ar'] as String?;
+
+    String location;
+    if (city != null && city.isNotEmpty) {
+      final localizedCity = SaudiCities.getLocalizedCityName(city, isArabic);
+      final localizedCountry = country != null && country.isNotEmpty
+          ? SaudiCities.getLocalizedCountryName(country, isArabic)
+          : '';
+      location = localizedCountry.isNotEmpty
+          ? '$localizedCity, $localizedCountry'
+          : localizedCity;
+    } else {
+      // Fallback to store_location if city is not available
+      location = isArabic && storeLocationAr != null
+          ? storeLocationAr
+          : (storeLocation ?? '');
+    }
+
     final photoUrl = widget.provider['profile_photo_url'] as String?;
     final priceRange = widget.provider['price_range'] as String? ?? 'moderate';
     final averageRating = (widget.provider['average_rating'] as num?)?.toDouble() ?? 0.0;
@@ -162,7 +188,7 @@ class _ProviderCardWidgetState extends State<ProviderCardWidget> {
                                     Icon(Icons.business, size: 50, color: Colors.grey[600]),
                                     const SizedBox(height: 8),
                                     Text(
-                                      'Image not available',
+                                      l10n.imageNotAvailable,
                                       style: TextStyle(color: Colors.grey[600], fontSize: 12),
                                     ),
                                   ],
@@ -177,7 +203,7 @@ class _ProviderCardWidgetState extends State<ProviderCardWidget> {
                                 Icon(Icons.business, size: 50, color: Colors.grey[600]),
                                 const SizedBox(height: 8),
                                 Text(
-                                  'No image',
+                                  l10n.noImage,
                                   style: TextStyle(color: Colors.grey[600], fontSize: 12),
                                 ),
                               ],

@@ -357,6 +357,66 @@ class AppLocalizationsEn extends AppLocalizations {
   String get helpAndSupportComingSoon => 'Help & Support - Coming Soon';
 
   @override
+  String get contactUs => 'Contact Us';
+
+  @override
+  String get sendUsMessage => 'Send Us a Message';
+
+  @override
+  String get frequentlyAskedQuestions => 'Frequently Asked Questions';
+
+  @override
+  String get name => 'Name';
+
+  @override
+  String get message => 'Message';
+
+  @override
+  String get sendMessage => 'Send Message';
+
+  @override
+  String get pleaseEnterMessage => 'Please enter your message';
+
+  @override
+  String get messageSentSuccessfully => 'Message sent successfully! We will get back to you soon.';
+
+  @override
+  String get noContactInfoAvailable => 'Contact information not available at the moment.';
+
+  @override
+  String get pleaseEnterYourName => 'Please enter your name';
+
+  @override
+  String get howToPlaceOrder => 'How do I place an order?';
+
+  @override
+  String get howToPlaceOrderAnswer => 'Browse providers by category, select items, add them to your cart, and proceed to checkout. You can pay with card or cash on delivery.';
+
+  @override
+  String get howToCancelOrder => 'How can I cancel my order?';
+
+  @override
+  String get howToCancelOrderAnswer => 'You can cancel your order from the Orders tab before the provider accepts it. Once accepted, please contact the provider directly.';
+
+  @override
+  String get howToTrackOrder => 'How do I track my order?';
+
+  @override
+  String get howToTrackOrderAnswer => 'Go to the Orders tab to see your order status. You will receive notifications for each status update.';
+
+  @override
+  String get whatPaymentMethods => 'What payment methods are accepted?';
+
+  @override
+  String get whatPaymentMethodsAnswer => 'We accept credit/debit cards and cash on delivery. Payment is processed securely through our payment gateway.';
+
+  @override
+  String get howToContactProvider => 'How do I contact a provider?';
+
+  @override
+  String get howToContactProviderAnswer => 'You can view provider contact information on their profile page. Call them directly or send a message through the app.';
+
+  @override
   String get about => 'About';
 
   @override
@@ -536,6 +596,15 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get setAsDefault => 'Set as Default';
 
+  @override
+  String get addressTypeHome => 'Home';
+
+  @override
+  String get addressTypeWork => 'Work';
+
+  @override
+  String get addressTypeOther => 'Other';
+
   // Auth Screen Additions
   @override
   String get signInToContinue => 'Sign in to continue';
@@ -707,6 +776,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get select => 'Select';
+
+  @override
+  String get selected => 'Selected';
 
   @override
   String get updateCart => 'Update Cart';
@@ -1197,4 +1269,77 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get unknown => 'Unknown';
+
+  // Sorting Options
+  @override
+  String get sortByHighestRating => 'Highest Rating';
+
+  @override
+  String get sortByPriceRange => 'Price Range';
+
+  @override
+  String get sortByNameAsc => 'Name (A-Z)';
+
+  @override
+  String get sortByNameDesc => 'Name (Z-A)';
+
+  // Image Placeholders
+  @override
+  String get noImage => 'No image';
+
+  @override
+  String get imageNotAvailable => 'Image not available';
+
+  // Stock Status
+  @override
+  String lowStockWithQty(int qty) => 'Low Stock ($qty left)';
+
+  // Reviews
+  @override
+  String get recentReviews => 'Recent Reviews';
+
+  @override
+  String get beTheFirstToReview => 'Be the first to review!';
+
+  @override
+  String get youPostedThisReview => 'You Posted This Review';
+
+  @override
+  String get anonymous => 'Anonymous';
+
+  @override
+  String get justNow => 'Just now';
+
+  @override
+  String yearAgo(int count) => '$count year ago';
+
+  @override
+  String yearsAgo(int count) => '$count years ago';
+
+  @override
+  String monthAgo(int count) => '$count month ago';
+
+  @override
+  String monthsAgo(int count) => '$count months ago';
+
+  @override
+  String dayAgo(int count) => '$count day ago';
+
+  @override
+  String daysAgo2(int count) => '$count days ago';
+
+  @override
+  String hourAgo(int count) => '$count hour ago';
+
+  @override
+  String hoursAgo2(int count) => '$count hours ago';
+
+  @override
+  String minuteAgo(int count) => '$count minute ago';
+
+  @override
+  String minutesAgo2(int count) => '$count minutes ago';
+
+  @override
+  String get youReviewedThisOrder => 'You reviewed this order';
 }

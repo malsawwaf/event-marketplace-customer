@@ -357,25 +357,85 @@ class AppLocalizationsAr extends AppLocalizations {
   String get helpAndSupportComingSoon => 'المساعدة والدعم - قريباً';
 
   @override
+  String get contactUs => 'تواصل معنا';
+
+  @override
+  String get sendUsMessage => 'أرسل لنا رسالة';
+
+  @override
+  String get frequentlyAskedQuestions => 'الأسئلة الشائعة';
+
+  @override
+  String get name => 'الاسم';
+
+  @override
+  String get message => 'الرسالة';
+
+  @override
+  String get sendMessage => 'إرسال الرسالة';
+
+  @override
+  String get pleaseEnterMessage => 'الرجاء إدخال رسالتك';
+
+  @override
+  String get messageSentSuccessfully => 'تم إرسال الرسالة بنجاح! سنتواصل معك قريباً.';
+
+  @override
+  String get noContactInfoAvailable => 'معلومات الاتصال غير متوفرة في الوقت الحالي.';
+
+  @override
+  String get pleaseEnterYourName => 'الرجاء إدخال اسمك';
+
+  @override
+  String get howToPlaceOrder => 'كيف أقوم بتقديم طلب؟';
+
+  @override
+  String get howToPlaceOrderAnswer => 'تصفح مقدمي الخدمات حسب الفئة، اختر العناصر، أضفها إلى السلة، ثم اذهب إلى إتمام الطلب. يمكنك الدفع بالبطاقة أو الدفع عند الاستلام.';
+
+  @override
+  String get howToCancelOrder => 'كيف يمكنني إلغاء طلبي؟';
+
+  @override
+  String get howToCancelOrderAnswer => 'يمكنك إلغاء طلبك من تبويب الطلبات قبل أن يقبله مقدم الخدمة. بعد القبول، يرجى التواصل مع مقدم الخدمة مباشرة.';
+
+  @override
+  String get howToTrackOrder => 'كيف أتابع طلبي؟';
+
+  @override
+  String get howToTrackOrderAnswer => 'انتقل إلى تبويب الطلبات لرؤية حالة طلبك. ستتلقى إشعارات عند كل تحديث للحالة.';
+
+  @override
+  String get whatPaymentMethods => 'ما هي طرق الدفع المقبولة؟';
+
+  @override
+  String get whatPaymentMethodsAnswer => 'نقبل بطاقات الائتمان/الخصم والدفع عند الاستلام. يتم معالجة الدفع بشكل آمن من خلال بوابة الدفع الخاصة بنا.';
+
+  @override
+  String get howToContactProvider => 'كيف أتواصل مع مقدم الخدمة؟';
+
+  @override
+  String get howToContactProviderAnswer => 'يمكنك عرض معلومات الاتصال بمقدم الخدمة في صفحة ملفه الشخصي. اتصل به مباشرة أو أرسل رسالة من خلال التطبيق.';
+
+  @override
   String get about => 'حول';
 
   @override
   String get appVersionAndInformation => 'إصدار التطبيق والمعلومات';
 
   @override
-  String get aboutAzimahTech => 'حول أزيمة تك';
+  String get aboutAzimahTech => 'حول عزيمة تك';
 
   @override
   String get version => 'الإصدار';
 
   @override
-  String get azimahTechEventMarketplace => 'أزيمة تك - سوق المناسبات';
+  String get azimahTechEventMarketplace => 'عزيمة تك - سوق المناسبات';
 
   @override
   String get browseAndBookEventServices => 'تصفح وحجز خدمات المناسبات';
 
   @override
-  String get copyrightAzimahTech => '© 2025 أزيمة تك';
+  String get copyrightAzimahTech => '© 2025 عزيمة تك';
 
   // Settings Screen
   @override
@@ -536,6 +596,15 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get setAsDefault => 'تعيين كافتراضي';
 
+  @override
+  String get addressTypeHome => 'المنزل';
+
+  @override
+  String get addressTypeWork => 'العمل';
+
+  @override
+  String get addressTypeOther => 'أخرى';
+
   // Auth Screen Additions
   @override
   String get signInToContinue => 'سجل الدخول للمتابعة';
@@ -655,7 +724,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get resetLinkSentSuccessfully => 'تم إرسال رابط إعادة التعيين بنجاح';
 
   @override
-  String get welcomeToAzimahTech => 'مرحباً بك في أزيمة تك';
+  String get welcomeToAzimahTech => 'مرحباً بك في عزيمة تك';
 
   @override
   String get yourEventMarketplace => 'سوق المناسبات الخاص بك';
@@ -707,6 +776,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get select => 'اختر';
+
+  @override
+  String get selected => 'محدد';
 
   @override
   String get updateCart => 'تحديث السلة';
@@ -1197,4 +1269,77 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get unknown => 'غير معروف';
+
+  // Sorting Options
+  @override
+  String get sortByHighestRating => 'الأعلى تقييماً';
+
+  @override
+  String get sortByPriceRange => 'نطاق السعر';
+
+  @override
+  String get sortByNameAsc => 'الاسم (أ-ي)';
+
+  @override
+  String get sortByNameDesc => 'الاسم (ي-أ)';
+
+  // Image Placeholders
+  @override
+  String get noImage => 'لا توجد صورة';
+
+  @override
+  String get imageNotAvailable => 'الصورة غير متوفرة';
+
+  // Stock Status
+  @override
+  String lowStockWithQty(int qty) => 'مخزون منخفض (تبقى $qty)';
+
+  // Reviews
+  @override
+  String get recentReviews => 'المراجعات الأخيرة';
+
+  @override
+  String get beTheFirstToReview => 'كن أول من يقيّم!';
+
+  @override
+  String get youPostedThisReview => 'لقد قمت بكتابة هذا التقييم';
+
+  @override
+  String get anonymous => 'مجهول';
+
+  @override
+  String get justNow => 'الآن';
+
+  @override
+  String yearAgo(int count) => 'منذ سنة';
+
+  @override
+  String yearsAgo(int count) => 'منذ $count سنوات';
+
+  @override
+  String monthAgo(int count) => 'منذ شهر';
+
+  @override
+  String monthsAgo(int count) => 'منذ $count أشهر';
+
+  @override
+  String dayAgo(int count) => 'منذ يوم';
+
+  @override
+  String daysAgo2(int count) => 'منذ $count أيام';
+
+  @override
+  String hourAgo(int count) => 'منذ ساعة';
+
+  @override
+  String hoursAgo2(int count) => 'منذ $count ساعات';
+
+  @override
+  String minuteAgo(int count) => 'منذ دقيقة';
+
+  @override
+  String minutesAgo2(int count) => 'منذ $count دقائق';
+
+  @override
+  String get youReviewedThisOrder => 'لقد قمت بتقييم هذا الطلب';
 }

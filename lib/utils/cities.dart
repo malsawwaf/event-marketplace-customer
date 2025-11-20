@@ -2,6 +2,7 @@
 /// Ordered by population size (major cities first)
 class SaudiCities {
   static const String defaultCountry = 'Saudi Arabia';
+  static const String defaultCountryAr = 'المملكة العربية السعودية';
 
   /// Major cities in Saudi Arabia (Arabic and English names)
   static const List<Map<String, String>> majorCities = [
@@ -77,6 +78,21 @@ class SaudiCities {
       orElse: () => {},
     );
     return city['ar'];
+  }
+
+  /// Get localized city name based on locale
+  static String getLocalizedCityName(String englishName, bool isArabic) {
+    if (!isArabic) return englishName;
+    return getArabicName(englishName) ?? englishName;
+  }
+
+  /// Get localized country name
+  static String getLocalizedCountryName(String englishName, bool isArabic) {
+    if (!isArabic) return englishName;
+    if (englishName.toLowerCase() == 'saudi arabia') {
+      return defaultCountryAr;
+    }
+    return englishName;
   }
 
   /// Match GPS coordinates to nearest major city (simplified)

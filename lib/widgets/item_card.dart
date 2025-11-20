@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/items_service.dart';
 import '../screens/home/item_detail_screen.dart';
+import '../l10n/app_localizations.dart';
 
 class ItemCard extends StatelessWidget {
   final Map<String, dynamic> item;
@@ -13,13 +14,14 @@ class ItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final itemsService = ItemsService(); // Create instance in build method
+    final l10n = AppLocalizations.of(context);
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
     final name = isArabic && item['name_ar'] != null
         ? item['name_ar'] ?? 'Unnamed Item'
         : item['name'] ?? 'Unnamed Item';
     final photoUrl = itemsService.getFirstPhotoUrl(item);
-    final priceText = itemsService.formatPrice(item);
+    final priceText = itemsService.formatPrice(item, context);
     final isInStock = itemsService.isItemInStock(item);
     final isLowStock = itemsService.isLowStock(item);
     final stockQty = itemsService.getStockQuantity(item);
@@ -106,7 +108,7 @@ class ItemCard extends StatelessWidget {
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
-                                  'Low Stock ($stockQty left)',
+                                  l10n.lowStockWithQty(stockQty),
                                   style: TextStyle(
                                     fontSize: 12,
                                     color: Colors.orange[700],

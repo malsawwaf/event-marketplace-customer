@@ -19,8 +19,8 @@ class ReviewCard extends StatelessWidget {
     final reviewText = review['review_text'] ?? '';
     final customer = review['customers'] as Map<String, dynamic>?;
     final customerId = review['customer_id'] as String?;
-    final customerName = reviewsService.formatCustomerName(customer, customerId, currentUserId);
-    final timeAgo = reviewsService.getTimeAgo(review['created_at']);
+    final customerName = reviewsService.formatCustomerName(context, customer, customerId, currentUserId);
+    final timeAgo = reviewsService.getTimeAgo(context, review['created_at']);
 
     return Container(
       width: 280,

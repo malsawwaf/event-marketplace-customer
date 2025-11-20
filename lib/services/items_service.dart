@@ -1,4 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../l10n/app_localizations.dart';
 
 class ItemsService {
   final SupabaseClient _supabase = Supabase.instance.client;
@@ -100,7 +102,7 @@ class ItemsService {
                 display_order
               )
             ),
-            providers!inner(company_name_en, trading_name, profile_photo_url, store_location, store_location_ar, price_range, city, country)
+            providers!inner(company_name_en, company_name_ar, trading_name, profile_photo_url, store_location, store_location_ar, price_range, city, country)
           ''')
           .eq('id', itemId)
           .eq('is_enabled', true)
@@ -149,7 +151,7 @@ class ItemsService {
                 display_order
               )
             ),
-            providers!inner(company_name_en, trading_name, profile_photo_url, store_location, average_rating)
+            providers!inner(company_name_en, company_name_ar, trading_name, profile_photo_url, store_location, average_rating)
           ''')
           .eq('is_enabled', true)
           .eq('providers.is_active', true);
@@ -314,16 +316,17 @@ class ItemsService {
   }
 
   /// Get pricing type label for display
-  String getPricingTypeLabel(String pricingType) {
+  String getPricingTypeLabel(String pricingType, BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     switch (pricingType) {
       case 'per_day':
-        return 'Per Day';
+        return l10n.perDay;
       case 'per_event':
-        return 'Per Event';
+        return l10n.perEvent;
       case 'purchasable':
-        return 'One-time Purchase';
+        return l10n.purchase;
       default:
-        return 'Per Event';
+        return l10n.perEvent;
     }
   }
 
@@ -396,10 +399,10 @@ class ItemsService {
   }
 
   /// Format price with pricing type
-  String formatPrice(Map<String, dynamic> item) {
+  String formatPrice(Map<String, dynamic> item, BuildContext context) {
     final price = (item['price'] as num?)?.toDouble() ?? 0.0;
     final pricingType = item['pricing_type'] as String? ?? 'per_event';
-    final label = getPricingTypeLabel(pricingType);
+    final label = getPricingTypeLabel(pricingType, context);
     return '$price $label';
   }
 

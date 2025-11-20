@@ -1,5 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter/material.dart';
 import 'dart:io';
+import '../l10n/app_localizations.dart';
 
 class ReviewsService {
   final _supabase = Supabase.instance.client;
@@ -58,20 +60,23 @@ class ReviewsService {
   /// Format customer name (first name + stars for last name)
   /// Shows "You Posted This Review" if the review belongs to the current user
   String formatCustomerName(
+    BuildContext context,
     Map<String, dynamic>? customer,
     String? reviewCustomerId,
     String? currentUserId,
   ) {
+    final l10n = AppLocalizations.of(context);
+
     // Check if the review was posted by the logged-in user
     if (reviewCustomerId != null &&
         currentUserId != null &&
         reviewCustomerId == currentUserId) {
-      return 'You Posted This Review';
+      return l10n.youPostedThisReview;
     }
 
-    if (customer == null) return 'Anonymous';
+    if (customer == null) return l10n.anonymous;
 
-    final firstName = customer['first_name'] ?? 'Anonymous';
+    final firstName = customer['first_name'] ?? l10n.anonymous;
     final lastName = customer['last_name'] ?? '';
 
     if (lastName.isEmpty) return firstName;
@@ -84,9 +89,11 @@ class ReviewsService {
   }
 
   /// Get time ago string (e.g., "2 days ago")
-  String getTimeAgo(String? timestamp) {
+  String getTimeAgo(BuildContext context, String? timestamp) {
     if (timestamp == null) return '';
-    
+
+    final l10n = AppLocalizations.of(context);
+
     try {
       final date = DateTime.parse(timestamp);
       final now = DateTime.now();
@@ -94,18 +101,18 @@ class ReviewsService {
 
       if (difference.inDays > 365) {
         final years = (difference.inDays / 365).floor();
-        return '$years ${years == 1 ? 'year' : 'years'} ago';
+        return years == 1 ? l10n.yearAgo(years) : l10n.yearsAgo(years);
       } else if (difference.inDays > 30) {
         final months = (difference.inDays / 30).floor();
-        return '$months ${months == 1 ? 'month' : 'months'} ago';
+        return months == 1 ? l10n.monthAgo(months) : l10n.monthsAgo(months);
       } else if (difference.inDays > 0) {
-        return '${difference.inDays} ${difference.inDays == 1 ? 'day' : 'days'} ago';
+        return difference.inDays == 1 ? l10n.dayAgo(difference.inDays) : l10n.daysAgo2(difference.inDays);
       } else if (difference.inHours > 0) {
-        return '${difference.inHours} ${difference.inHours == 1 ? 'hour' : 'hours'} ago';
+        return difference.inHours == 1 ? l10n.hourAgo(difference.inHours) : l10n.hoursAgo2(difference.inHours);
       } else if (difference.inMinutes > 0) {
-        return '${difference.inMinutes} ${difference.inMinutes == 1 ? 'minute' : 'minutes'} ago';
+        return difference.inMinutes == 1 ? l10n.minuteAgo(difference.inMinutes) : l10n.minutesAgo2(difference.inMinutes);
       } else {
-        return 'Just now';
+        return l10n.justNow;
       }
     } catch (e) {
       return '';

@@ -84,7 +84,7 @@ class FavoritesService {
               pricing_type,
               photo_urls,
               stock_quantity,
-              category,
+              category_id,
               provider_id,
               providers(
                 id,

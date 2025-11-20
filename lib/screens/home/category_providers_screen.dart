@@ -10,12 +10,14 @@ import '../../l10n/app_localizations.dart';
 class CategoryProvidersScreen extends StatefulWidget {
   final String category;
   final String categoryName;
+  final String? categoryNameAr;
   final String selectedCity;
 
   const CategoryProvidersScreen({
     Key? key,
     required this.category,
     required this.categoryName,
+    this.categoryNameAr,
     required this.selectedCity,
   }) : super(key: key);
 
@@ -136,10 +138,16 @@ class _CategoryProvidersScreenState extends State<CategoryProvidersScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
 
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    final displayCategoryName = isArabic && widget.categoryNameAr != null
+        ? widget.categoryNameAr!
+        : widget.categoryName;
+    final displayCity = SaudiCities.getLocalizedCityName(widget.selectedCity, isArabic);
+
     return Scaffold(
       backgroundColor: AppTheme.lightBackground,
       appBar: AppBar(
-        title: Text(widget.categoryName),
+        title: Text(displayCategoryName),
         backgroundColor: AppTheme.primaryNavy,
         foregroundColor: Colors.white,
         elevation: 0,
@@ -160,7 +168,7 @@ class _CategoryProvidersScreenState extends State<CategoryProvidersScreen> {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  widget.selectedCity,
+                  displayCity,
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 16,
@@ -346,22 +354,22 @@ class _CategoryProvidersScreenState extends State<CategoryProvidersScreen> {
                                             fontSize: 14,
                                             fontWeight: FontWeight.w500,
                                           ),
-                                          items: const [
+                                          items: [
                                             DropdownMenuItem(
                                               value: 'rating',
-                                              child: Text('Highest Rating'),
+                                              child: Text(l10n.sortByHighestRating),
                                             ),
                                             DropdownMenuItem(
                                               value: 'price_range',
-                                              child: Text('Price Range'),
+                                              child: Text(l10n.sortByPriceRange),
                                             ),
                                             DropdownMenuItem(
                                               value: 'name_asc',
-                                              child: Text('Name (A-Z)'),
+                                              child: Text(l10n.sortByNameAsc),
                                             ),
                                             DropdownMenuItem(
                                               value: 'name_desc',
-                                              child: Text('Name (Z-A)'),
+                                              child: Text(l10n.sortByNameDesc),
                                             ),
                                           ],
                                           onChanged: _onSortChanged,

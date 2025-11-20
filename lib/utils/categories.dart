@@ -5,12 +5,14 @@ import 'package:flutter/material.dart';
 class EventCategory {
   final String id;
   final String name;
+  final String nameAr;
   final IconData icon;
   final Color color;
 
   const EventCategory({
     required this.id,
     required this.name,
+    required this.nameAr,
     required this.icon,
     required this.color,
   });
@@ -27,6 +29,7 @@ class EventCategories {
   static const EventCategory venuesHalls = EventCategory(
     id: venuesHallsId,
     name: 'Venues & Halls',
+    nameAr: 'القاعات والأماكن',
     icon: Icons.business,
     color: Color(0xFF2196F3), // Blue
   );
@@ -34,6 +37,7 @@ class EventCategories {
   static const EventCategory campingParties = EventCategory(
     id: campingPartiesId,
     name: 'Camping & Parties & Celebrations',
+    nameAr: 'المخيمات والحفلات والاحتفالات',
     icon: Icons.celebration,
     color: Color(0xFFFF9800), // Orange
   );
@@ -41,6 +45,7 @@ class EventCategories {
   static const EventCategory funerals = EventCategory(
     id: funeralsId,
     name: 'Funerals',
+    nameAr: 'خدمات الجنائز',
     icon: Icons.mosque, // Mosque icon
     color: Color(0xFF607D8B), // Blue Grey
   );

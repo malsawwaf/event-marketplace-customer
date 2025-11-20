@@ -6,6 +6,7 @@ import '../../services/favourites_service.dart';
 import '../../services/items_service.dart';
 import '../../services/reviews_service.dart';
 import '../../utils/categories.dart';
+import '../../utils/cities.dart';
 import '../../widgets/item_card.dart';
 import '../../widgets/review_card.dart';
 import '../../l10n/app_localizations.dart';
@@ -184,16 +185,34 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
       );
     }
 
-    final businessName = isArabic && _provider!['trading_name'] != null
-        ? _provider!['trading_name']
-        : _provider!['company_name_en'] ?? 'Unknown Business';
+    // Use Arabic name if available and locale is Arabic, otherwise use trading name or English name
+    final companyNameEn = _provider!['company_name_en'] as String? ?? 'Unknown Business';
+    final companyNameAr = _provider!['company_name_ar'] as String?;
+    final tradingName = _provider!['trading_name'] as String?;
+
+    final businessName = isArabic && companyNameAr != null && companyNameAr.isNotEmpty
+        ? companyNameAr
+        : (tradingName ?? companyNameEn);
+
     final category = _provider!['category'] ?? '';
     final categoryInfo = EventCategories.getById(category);
+    final categoryName = isArabic && categoryInfo?.nameAr != null
+        ? categoryInfo!.nameAr
+        : categoryInfo?.name ?? category;
+
     final description = _provider!['store_description'] ?? 'No description available';
     final rating = (_provider!['average_rating'] ?? 0.0).toDouble();
     final reviewCount = _provider!['total_reviews'] ?? 0;
     final city = _provider!['city'] ?? '';
     final country = _provider!['country'] ?? '';
+
+    // Localize city and country names
+    final localizedCity = city.isNotEmpty
+        ? SaudiCities.getLocalizedCityName(city, isArabic)
+        : '';
+    final localizedCountry = country.isNotEmpty
+        ? SaudiCities.getLocalizedCountryName(country, isArabic)
+        : '';
     final address = _provider!['store_address'] ?? '';
     final priceRange = _provider!['price_range'] ?? '';
     final coverImage = _provider!['profile_photo_url'];
@@ -290,12 +309,13 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
                                   ),
                                   const SizedBox(width: 6),
                                   Text(
-                                    categoryInfo.name,
+                                    categoryName,
                                     style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 12,
                                       fontWeight: FontWeight.bold,
                                     ),
+                                    textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
                                   ),
                                 ],
                               ),
@@ -327,10 +347,10 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
                       ),
                       const SizedBox(height: 16),
                       // Location (City only)
-                      if (city.isNotEmpty)
+                      if (localizedCity.isNotEmpty)
                         _buildInfoRow(
                           Icons.location_on,
-                          '$city${country.isNotEmpty ? ", $country" : ""}',
+                          '$localizedCity${localizedCountry.isNotEmpty ? ", $localizedCountry" : ""}',
                         ),
                       // Price Range with SAR Icon
                       if (priceRange.isNotEmpty)
@@ -581,13 +601,13 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(Icons.rate_review, size: 24),
-              SizedBox(width: 8),
+              const Icon(Icons.rate_review, size: 24),
+              const SizedBox(width: 8),
               Text(
-                'Recent Reviews',
-                style: TextStyle(
+                l10n.recentReviews,
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
@@ -613,7 +633,7 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
                         ),
                         const SizedBox(height: 12),
                         Text(
-                          'Be the first to review!',
+                          l10n.beTheFirstToReview,
                           style: TextStyle(
                             fontSize: 16,
                             color: AppTheme.primaryNavy,
