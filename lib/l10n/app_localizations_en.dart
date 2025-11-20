@@ -1339,7 +1339,4 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String minutesAgo2(int count) => '$count minutes ago';
-
-  @override
-  String get youReviewedThisOrder => 'You reviewed this order';
 }

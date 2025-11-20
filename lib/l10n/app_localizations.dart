@@ -518,7 +518,6 @@ abstract class AppLocalizations {
   String hoursAgo2(int count);
   String minuteAgo(int count);
   String minutesAgo2(int count);
-  String get youReviewedThisOrder;
 }
 
 class _AppLocalizationsDelegate

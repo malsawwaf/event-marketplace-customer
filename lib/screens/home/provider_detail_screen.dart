@@ -596,6 +596,7 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
   }
 
   Widget _buildReviewsSection() {
+    final l10n = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
