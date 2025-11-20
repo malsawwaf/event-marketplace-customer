@@ -332,8 +332,7 @@ class _SubmitReviewScreenState extends State<SubmitReviewScreen> {
               final item = orderItem['items'] as Map<String, dynamic>;
               final itemId = item['id'] as String;
               final itemName = item['name'] as String;
-              final photoUrls = item['photo_urls'] as List?;
-              final photoUrl = photoUrls?.isNotEmpty == true ? photoUrls![0] : null;
+              final photoUrl = item['photo_url'] as String?;
 
               return Container(
                 margin: const EdgeInsets.only(bottom: 16),

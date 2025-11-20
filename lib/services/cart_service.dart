@@ -294,7 +294,7 @@ class CartService {
                 name,
                 price,
                 pricing_type,
-                photo_urls,
+                photo_url,
                 stock_quantity,
                 min_order_quantity,
                 max_order_quantity

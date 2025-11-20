@@ -392,13 +392,9 @@ class _CartScreenState extends State<CartScreen> with AutomaticKeepAliveClientMi
 
     final price = (item['price'] as num).toDouble();
     final pricingType = item['pricing_type'] as String;
-    final photoUrls = item['photo_urls'] as List<dynamic>?;
+    final photoUrl = item['photo_url'] as String?;
     final minQuantity = item['min_order_quantity'] as int? ?? 1;
     final maxQuantity = item['max_order_quantity'] as int?;
-
-    final photoUrl = (photoUrls != null && photoUrls.isNotEmpty)
-        ? photoUrls.first as String
-        : null;
 
     // Calculate item total
     // For per_day items, show base price only - final price calculated at checkout with times

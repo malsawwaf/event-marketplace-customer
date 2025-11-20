@@ -82,7 +82,7 @@ class FavoritesService {
               name,
               price,
               pricing_type,
-              photo_urls,
+              photo_url,
               stock_quantity,
               category_id,
               provider_id,

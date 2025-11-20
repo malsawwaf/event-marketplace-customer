@@ -141,7 +141,7 @@ class ReviewsService {
         'order_id': orderId,
         'rating': providerRating,
         'review_text': reviewText,
-        'photo_urls': photoUrls ?? [],
+        'photo_url': photoUrls ?? [],
         'created_at': DateTime.now().toIso8601String(),
       }).select().single();
 

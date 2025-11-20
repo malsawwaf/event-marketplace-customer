@@ -522,8 +522,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
               final itemName = isArabic && item['name_ar'] != null
                   ? item['name_ar'] as String
                   : item['name'] as String;
-              final photoUrls = item['photo_urls'] as List?;
-              final photoUrl = photoUrls?.isNotEmpty == true ? photoUrls![0] : null;
+              final photoUrl = item['photo_url'] as String?;
 
               final eventDate = orderItem['event_date'] != null
                   ? DateTime.parse(orderItem['event_date'])

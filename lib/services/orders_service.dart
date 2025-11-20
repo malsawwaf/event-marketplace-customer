@@ -26,7 +26,7 @@ class OrdersService {
                 name,
                 name_ar,
                 category_id,
-                photo_urls
+                photo_url
               ),
               order_item_addons (*)
             )
@@ -64,7 +64,7 @@ class OrdersService {
                 name,
                 name_ar,
                 category_id,
-                photo_urls
+                photo_url
               ),
               order_item_addons (*)
             )
@@ -101,7 +101,7 @@ class OrdersService {
                 name,
                 name_ar,
                 category_id,
-                photo_urls,
+                photo_url,
                 pricing_type
               ),
               order_item_addons (*)
@@ -263,7 +263,7 @@ class OrdersService {
                 id,
                 name,
                 name_ar,
-                photo_urls
+                photo_url
               )
             )
           ''')

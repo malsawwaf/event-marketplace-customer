@@ -554,17 +554,13 @@ class _FavoritesScreenState extends State<FavoritesScreen>
         : item['name'] as String;
     final price = (item['price'] as num).toDouble();
     final pricingType = item['pricing_type'] as String;
-    final photoUrls = item['photo_urls'] as List<dynamic>?;
+    final photoUrl = item['photo_url'] as String?;
     final itemId = item['id'] as String;
     final stockQuantity = item['stock_quantity'] as int;
     final provider = item['providers'] as Map<String, dynamic>;
     final companyName = isArabic && provider['trading_name'] != null
         ? provider['trading_name'] as String
         : provider['company_name_en'] as String;
-
-    final photoUrl = (photoUrls != null && photoUrls.isNotEmpty)
-        ? photoUrls.first as String
-        : null;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
@@ -683,12 +679,8 @@ class _FavoritesScreenState extends State<FavoritesScreen>
         ? item['name_ar'] as String
         : item['name'] as String;
     final price = (item['price'] as num).toDouble();
-    final photoUrls = item['photo_urls'] as List<dynamic>?;
+    final photoUrl = item['photo_url'] as String?;
     final itemId = item['id'] as String;
-
-    final photoUrl = (photoUrls != null && photoUrls.isNotEmpty)
-        ? photoUrls.first as String
-        : null;
 
     return InkWell(
       onTap: () async {

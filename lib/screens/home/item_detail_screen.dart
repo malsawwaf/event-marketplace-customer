@@ -253,7 +253,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
     final stockQuantity = _itemData!['stock_quantity'] as int;
     final minQuantity = _itemData!['min_order_quantity'] as int? ?? 1;
     final maxQuantity = _itemData!['max_order_quantity'] as int?;
-    final photoUrls = _itemData!['photo_urls'] as List<dynamic>?;
+    final photoUrl = _itemData!['photo_url'] as String?;
     final provider = _itemData!['providers'] as Map<String, dynamic>;
     final addonGroups = _itemData!['item_addon_groups'] as List<dynamic>?;
 
@@ -381,8 +381,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
     );
   }
 
-  Widget _buildPhotoGallery(List<dynamic>? photoUrls) {
-    if (photoUrls == null || photoUrls.isEmpty) {
+  Widget _buildPhotoGallery(String? photoUrl) {
+    if (photoUrl == null || photoUrl.isEmpty) {
       return Container(
         height: 300,
         color: Colors.grey[300],
@@ -390,49 +390,18 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
       );
     }
 
-    return Column(
-      children: [
-        SizedBox(
-          height: 300,
-          child: PageView.builder(
-            itemCount: photoUrls.length,
-            onPageChanged: (index) => setState(() => _currentPhotoIndex = index),
-            itemBuilder: (context, index) {
-              return Image.network(
-                photoUrls[index] as String,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    color: Colors.grey[300],
-                    child: const Icon(Icons.broken_image, size: 80),
-                  );
-                },
-              );
-            },
-          ),
-        ),
-        if (photoUrls.length > 1)
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(
-                photoUrls.length,
-                (index) => Container(
-                  width: 8,
-                  height: 8,
-                  margin: const EdgeInsets.symmetric(horizontal: 4),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: _currentPhotoIndex == index
-                        ? AppTheme.primaryNavy
-                        : Colors.grey[300],
-                  ),
-                ),
-              ),
-            ),
-          ),
-      ],
+    return SizedBox(
+      height: 300,
+      child: Image.network(
+        photoUrl,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return Container(
+            color: Colors.grey[300],
+            child: const Icon(Icons.broken_image, size: 80),
+          );
+        },
+      ),
     );
   }
 

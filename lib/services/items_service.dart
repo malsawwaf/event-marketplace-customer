@@ -389,13 +389,9 @@ class ItemsService {
     }
   }
 
-  /// Get first photo URL from item's photo_urls array
+  /// Get photo URL from item's photo_url field
   String? getFirstPhotoUrl(Map<String, dynamic> item) {
-    final photoUrls = item['photo_urls'] as List<dynamic>?;
-    if (photoUrls != null && photoUrls.isNotEmpty) {
-      return photoUrls.first as String?;
-    }
-    return null;
+    return item['photo_url'] as String?;
   }
 
   /// Format price with pricing type
