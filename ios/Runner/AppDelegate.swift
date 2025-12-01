@@ -1,5 +1,6 @@
 import Flutter
 import UIKit
+import GoogleMaps
 // import PaymobSDK  // Temporarily disabled - TODO: Update to latest SDK
 
 @main
@@ -10,6 +11,7 @@ import UIKit
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        GMSServices.provideAPIKey("AIzaSyBmgoMQ8JDBPhHBjDwrPw01Z9vKpP-ueS4")
         GeneratedPluginRegistrant.register(with: self)
 
         // Set up Flutter Method Channel for Paymob SDK
