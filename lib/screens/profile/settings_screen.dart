@@ -458,8 +458,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         }
 
                         if (response.statusCode == 200 && responseData?['success'] == true) {
-                          // Sign out locally
-                          await supabase.auth.signOut();
+                          // Sign out locally (ignore errors - user may already be signed out)
+                          try {
+                            await supabase.auth.signOut();
+                          } catch (_) {
+                            // Ignore sign out errors - auth user is already deleted
+                          }
 
                           if (context.mounted) {
                             Navigator.pop(context); // Close dialog
@@ -477,6 +481,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               ),
                             );
                           }
+                          return; // Exit early on success
                         } else {
                           throw Exception(responseData?['error'] ?? 'Failed to delete account (${response.statusCode})');
                         }
