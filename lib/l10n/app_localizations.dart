@@ -190,6 +190,18 @@ abstract class AppLocalizations {
 
   // Settings Screen
   String get account;
+  String get deleteAccount;
+  String get deleteAccountTitle;
+  String get deleteAccountWarning;
+  String get deleteAccountBullet1;
+  String get deleteAccountBullet2;
+  String get deleteAccountBullet3;
+  String get deleteAccountBullet4;
+  String get deleteAccount30Days;
+  String get deleteAccountConfirmCheckbox;
+  String get deleteAccountButton;
+  String get accountDeletedSuccessfully;
+  String get errorDeletingAccount;
   String get changePassword;
   String get notifications;
   String get pushNotifications;

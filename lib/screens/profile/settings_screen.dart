@@ -1,11 +1,12 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../config/supabase_config.dart';
 import '../../config/app_theme.dart';
 import '../../services/language_service.dart';
 import '../../l10n/app_localizations.dart';
-import '../auth/auth_provider.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -37,6 +38,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
             icon: Icons.lock_outline,
             title: l10n.changePassword,
             onTap: () => _showChangePasswordDialog(),
+          ),
+          ListTile(
+            leading: const Icon(Icons.delete_forever, color: Colors.red),
+            title: Text(
+              l10n.deleteAccount,
+              style: const TextStyle(color: Colors.red),
+            ),
+            trailing: const Icon(Icons.chevron_right, color: Colors.red),
+            onTap: () => _showDeleteAccountDialog(),
           ),
           const Divider(),
 
@@ -319,6 +329,191 @@ class _SettingsScreenState extends State<SettingsScreen> {
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text(l10n.close),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDeleteAccountDialog() {
+    final l10n = AppLocalizations.of(context);
+    bool isConfirmed = false;
+    bool isLoading = false;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: Row(
+            children: [
+              const Icon(Icons.warning_amber_rounded, color: Colors.red, size: 28),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  l10n.deleteAccountTitle,
+                  style: const TextStyle(color: Colors.red),
+                ),
+              ),
+            ],
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.deleteAccountWarning,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 12),
+                _buildBulletPoint(l10n.deleteAccountBullet1),
+                _buildBulletPoint(l10n.deleteAccountBullet2),
+                _buildBulletPoint(l10n.deleteAccountBullet3),
+                _buildBulletPoint(l10n.deleteAccountBullet4),
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.orange.shade200),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.schedule, color: Colors.orange.shade700, size: 20),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          l10n.deleteAccount30Days,
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.orange.shade900,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                CheckboxListTile(
+                  value: isConfirmed,
+                  onChanged: isLoading
+                      ? null
+                      : (value) {
+                          setState(() => isConfirmed = value ?? false);
+                        },
+                  title: Text(
+                    l10n.deleteAccountConfirmCheckbox,
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                  controlAffinity: ListTileControlAffinity.leading,
+                  contentPadding: EdgeInsets.zero,
+                  activeColor: Colors.red,
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: isLoading ? null : () => Navigator.pop(context),
+              child: Text(l10n.cancel),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: (!isConfirmed || isLoading)
+                  ? null
+                  : () async {
+                      setState(() => isLoading = true);
+
+                      try {
+                        // Get current session token
+                        final session = supabase.auth.currentSession;
+                        if (session == null) {
+                          throw Exception('No active session');
+                        }
+
+                        // Call Edge Function to delete account
+                        final response = await http.post(
+                          Uri.parse(
+                            '$supabaseUrl/functions/v1/delete-user-account',
+                          ),
+                          headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ${session.accessToken}',
+                          },
+                          body: jsonEncode({'account_type': 'customer'}),
+                        );
+
+                        final responseData = jsonDecode(response.body);
+
+                        if (response.statusCode == 200 && responseData['success'] == true) {
+                          // Sign out locally
+                          await supabase.auth.signOut();
+
+                          if (context.mounted) {
+                            Navigator.pop(context); // Close dialog
+
+                            // Navigate to login and clear stack
+                            Navigator.of(context).pushNamedAndRemoveUntil(
+                              '/login',
+                              (route) => false,
+                            );
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(l10n.accountDeletedSuccessfully),
+                                backgroundColor: Colors.green,
+                              ),
+                            );
+                          }
+                        } else {
+                          throw Exception(responseData['error'] ?? 'Failed to delete account');
+                        }
+                      } catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('${l10n.errorDeletingAccount}: ${e.toString()}'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      } finally {
+                        if (context.mounted) {
+                          setState(() => isLoading = false);
+                        }
+                      }
+                    },
+              child: isLoading
+                  ? const SizedBox(
+                      height: 16,
+                      width: 16,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : Text(l10n.deleteAccountButton),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBulletPoint(String text) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 8, bottom: 6),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('• ', style: TextStyle(fontSize: 14)),
+          Expanded(
+            child: Text(text, style: const TextStyle(fontSize: 14)),
           ),
         ],
       ),

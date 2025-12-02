@@ -442,6 +442,42 @@ class AppLocalizationsEn extends AppLocalizations {
   String get account => 'Account';
 
   @override
+  String get deleteAccount => 'Delete Account';
+
+  @override
+  String get deleteAccountTitle => 'Delete Account';
+
+  @override
+  String get deleteAccountWarning => 'This action is permanent and cannot be undone. By deleting your account:';
+
+  @override
+  String get deleteAccountBullet1 => 'Your personal information, email, and phone number will be removed';
+
+  @override
+  String get deleteAccountBullet2 => 'Your profile photo will be deleted';
+
+  @override
+  String get deleteAccountBullet3 => 'Your order history will be anonymized';
+
+  @override
+  String get deleteAccountBullet4 => 'Your reviews will show as "Anonymous User"';
+
+  @override
+  String get deleteAccount30Days => 'It may take up to 30 days to completely remove all your data from our systems.';
+
+  @override
+  String get deleteAccountConfirmCheckbox => 'I understand this action is irreversible';
+
+  @override
+  String get deleteAccountButton => 'Delete My Account';
+
+  @override
+  String get accountDeletedSuccessfully => 'Your account has been deleted successfully';
+
+  @override
+  String get errorDeletingAccount => 'Error deleting account';
+
+  @override
   String get changePassword => 'Change Password';
 
   @override

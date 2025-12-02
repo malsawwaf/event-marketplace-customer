@@ -442,6 +442,42 @@ class AppLocalizationsAr extends AppLocalizations {
   String get account => 'الحساب';
 
   @override
+  String get deleteAccount => 'حذف الحساب';
+
+  @override
+  String get deleteAccountTitle => 'حذف الحساب';
+
+  @override
+  String get deleteAccountWarning => 'هذا الإجراء نهائي ولا يمكن التراجع عنه. بحذف حسابك:';
+
+  @override
+  String get deleteAccountBullet1 => 'سيتم حذف معلوماتك الشخصية والبريد الإلكتروني ورقم الهاتف';
+
+  @override
+  String get deleteAccountBullet2 => 'سيتم حذف صورة ملفك الشخصي';
+
+  @override
+  String get deleteAccountBullet3 => 'سيتم إخفاء هوية سجل طلباتك';
+
+  @override
+  String get deleteAccountBullet4 => 'ستظهر تقييماتك باسم "مستخدم مجهول"';
+
+  @override
+  String get deleteAccount30Days => 'قد يستغرق الأمر حتى 30 يوماً لحذف جميع بياناتك بالكامل من أنظمتنا.';
+
+  @override
+  String get deleteAccountConfirmCheckbox => 'أفهم أن هذا الإجراء لا رجعة فيه';
+
+  @override
+  String get deleteAccountButton => 'حذف حسابي';
+
+  @override
+  String get accountDeletedSuccessfully => 'تم حذف حسابك بنجاح';
+
+  @override
+  String get errorDeletingAccount => 'خطأ في حذف الحساب';
+
+  @override
   String get changePassword => 'تغيير كلمة المرور';
 
   @override
