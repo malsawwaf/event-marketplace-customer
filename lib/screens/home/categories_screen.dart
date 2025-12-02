@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../config/app_theme.dart';
 import '../../utils/categories.dart';
 import '../../utils/cities.dart';
 import '../../services/location_service.dart';
+import '../../services/notification_service.dart';
 import 'category_providers_screen.dart';
+import 'notifications_screen.dart';
 import '../../l10n/app_localizations.dart';
 
 class CategoriesScreen extends StatefulWidget {
@@ -55,6 +58,57 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
         backgroundColor: AppTheme.primaryNavy,
         foregroundColor: Colors.white,
         elevation: 0,
+        actions: [
+          Consumer<NotificationService>(
+            builder: (context, notificationService, child) {
+              return IconButton(
+                icon: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    const Icon(Icons.notifications_outlined),
+                    if (notificationService.unreadCount > 0)
+                      Positioned(
+                        right: -6,
+                        top: -6,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: AppTheme.secondaryCoral,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white, width: 1.5),
+                          ),
+                          constraints: const BoxConstraints(
+                            minWidth: 18,
+                            minHeight: 18,
+                          ),
+                          child: Text(
+                            notificationService.unreadCount > 99
+                                ? '99+'
+                                : '${notificationService.unreadCount}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const NotificationsScreen(),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       body: SafeArea(
         child: Padding(

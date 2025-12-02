@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../config/app_theme.dart';
 import '../../l10n/app_localizations.dart';
+import '../../services/notification_service.dart';
 import 'auth_provider.dart';
 import '../home/bottom_nav_screen.dart';
 
@@ -40,9 +41,13 @@ class _ProfileCompletionScreenState extends State<ProfileCompletionScreen> {
     if (!mounted) return;
 
     if (success) {
+      // Initialize notifications for authenticated user
+      context.read<NotificationService>().initialize();
+      context.read<NotificationService>().loadUnreadCount();
+
       // Navigate to home
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const BottomNavScreen()),
+        MaterialPageRoute(builder: (_) => BottomNavScreen(key: bottomNavKey)),
       );
     } else {
       // Show error

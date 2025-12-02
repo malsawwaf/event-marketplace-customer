@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../config/app_theme.dart';
 import '../../services/language_service.dart';
+import '../../services/notification_service.dart';
 import '../../l10n/app_localizations.dart';
 import 'auth_provider.dart';
 import 'login_screen.dart';
@@ -46,6 +47,10 @@ class _SplashScreenState extends State<SplashScreen> {
 
         if (hasProfile) {
           print('🔵 Splash: Navigating to home...');
+          // Initialize notifications for authenticated user
+          context.read<NotificationService>().initialize();
+          context.read<NotificationService>().loadUnreadCount();
+
           // ✅ FIXED: Navigate to home with global key
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(

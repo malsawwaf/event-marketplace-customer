@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../config/app_theme.dart';
 import '../../l10n/app_localizations.dart';
+import '../../services/notification_service.dart';
 import '../auth/auth_provider.dart';
 import '../auth/login_screen.dart';
 import '../profile/edit_profile_screen.dart';
@@ -50,6 +51,11 @@ class ProfileScreen extends StatelessWidget {
               );
 
               if (confirm == true) {
+                // Clear notification data before logout
+                final notificationService = context.read<NotificationService>();
+                await notificationService.deleteToken();
+                notificationService.clear();
+
                 await authProvider.signOut();
                 if (context.mounted) {
                   Navigator.of(context).pushAndRemoveUntil(

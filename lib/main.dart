@@ -12,6 +12,7 @@ import 'l10n/app_localizations.dart';
 
 // Import services
 import 'services/language_service.dart';
+import 'services/notification_service.dart';
 
 // Import providers
 import 'screens/auth/auth_provider.dart';
@@ -40,7 +41,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => LanguageService()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
-        // Add other providers here later (cart, favorites, etc.)
+        ChangeNotifierProvider(create: (_) => NotificationService()),
       ],
       child: Consumer<LanguageService>(
         builder: (context, languageService, child) {

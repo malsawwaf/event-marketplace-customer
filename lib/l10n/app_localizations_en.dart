@@ -1375,4 +1375,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String minutesAgo2(int count) => '$count minutes ago';
+
+  // Notifications
+  @override
+  String get noNotifications => 'No Notifications';
+
+  @override
+  String get noNotificationsDescription => 'You\'re all caught up! Check back later for updates.';
+
+  @override
+  String get markAllAsRead => 'Mark All Read';
 }

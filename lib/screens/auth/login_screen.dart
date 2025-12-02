@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../config/app_theme.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/language_service.dart';
+import '../../services/notification_service.dart';
 import 'auth_provider.dart';
 import 'register_screen.dart';
 import 'forgot_password_screen.dart';
@@ -47,6 +48,10 @@ class _LoginScreenState extends State<LoginScreen> {
       if (!mounted) return;
 
       if (hasProfile) {
+        // Initialize notifications for authenticated user
+        context.read<NotificationService>().initialize();
+        context.read<NotificationService>().loadUnreadCount();
+
         // ✅ FIXED: Navigate to home with global key
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(

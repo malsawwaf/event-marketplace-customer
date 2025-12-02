@@ -1,122 +1,300 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../config/supabase_config.dart';
 
-void main() {
-  runApp(const MyApp());
-}
+class NotificationService extends ChangeNotifier {
+  final FirebaseMessaging _messaging = FirebaseMessaging.instance;
+  int _unreadCount = 0;
+  List<Map<String, dynamic>> _notifications = [];
+  bool _isLoading = false;
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  int get unreadCount => _unreadCount;
+  List<Map<String, dynamic>> get notifications => _notifications;
+  bool get isLoading => _isLoading;
 
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
+  /// Initialize push notifications
+  Future<void> initialize() async {
+    try {
+      // Request permission
+      final settings = await _messaging.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+      if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+        // Get FCM token and save it
+        await _saveToken();
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
+        // Listen for token refresh
+        _messaging.onTokenRefresh.listen((token) {
+          _saveTokenToDatabase(token);
+        });
 
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
+        // Handle foreground messages
+        FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
 
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+        // Load initial notification count
+        await loadUnreadCount();
+      }
+    } catch (e) {
+      debugPrint('Error initializing notifications: $e');
+    }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
-    );
+  Future<void> _saveToken() async {
+    try {
+      final token = await _messaging.getToken();
+      if (token != null) {
+        await _saveTokenToDatabase(token);
+      }
+    } catch (e) {
+      debugPrint('Error getting FCM token: $e');
+    }
+  }
+
+  Future<void> _saveTokenToDatabase(String token) async {
+    try {
+      final userId = supabase.auth.currentUser?.id;
+      if (userId == null) return;
+
+      // Upsert the token
+      await supabase.from('user_push_tokens').upsert({
+        'user_id': userId,
+        'user_type': 'customer',
+        'token': token,
+        'platform': Platform.isIOS ? 'ios' : 'android',
+        'updated_at': DateTime.now().toIso8601String(),
+      }, onConflict: 'user_id,token');
+
+      debugPrint('Push token saved successfully');
+    } catch (e) {
+      debugPrint('Error saving push token: $e');
+    }
+  }
+
+  void _handleForegroundMessage(RemoteMessage message) {
+    debugPrint('Received foreground message: ${message.notification?.title}');
+    // Increment unread count and notify listeners
+    _unreadCount++;
+    notifyListeners();
+  }
+
+  /// Load unread notification count
+  Future<void> loadUnreadCount() async {
+    try {
+      final userId = supabase.auth.currentUser?.id;
+      if (userId == null) return;
+
+      // Count individual unread notifications
+      final individualResponse = await supabase
+          .from('notifications')
+          .select('id')
+          .eq('user_id', userId)
+          .eq('is_read', false)
+          .eq('is_mass_notification', false);
+
+      // Count unread mass notification receipts
+      final massResponse = await supabase
+          .from('mass_notification_receipts')
+          .select('id')
+          .eq('user_id', userId)
+          .eq('is_read', false);
+
+      _unreadCount = (individualResponse as List).length + (massResponse as List).length;
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error loading unread count: $e');
+    }
+  }
+
+  /// Load all notifications
+  Future<void> loadNotifications() async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final userId = supabase.auth.currentUser?.id;
+      if (userId == null) return;
+
+      // Get individual notifications
+      final individualResponse = await supabase
+          .from('notifications')
+          .select('*')
+          .eq('user_id', userId)
+          .eq('is_mass_notification', false)
+          .order('created_at', ascending: false)
+          .limit(50);
+
+      // Get mass notifications with read status
+      final massResponse = await supabase
+          .from('mass_notification_receipts')
+          .select('*, notifications(*)')
+          .eq('user_id', userId)
+          .order('created_at', ascending: false)
+          .limit(50);
+
+      // Combine and sort
+      final List<Map<String, dynamic>> allNotifications = [];
+
+      for (final notification in (individualResponse as List)) {
+        allNotifications.add({
+          ...Map<String, dynamic>.from(notification),
+          'is_mass': false,
+        });
+      }
+
+      for (final receipt in (massResponse as List)) {
+        final notification = receipt['notifications'];
+        if (notification != null) {
+          allNotifications.add({
+            ...Map<String, dynamic>.from(notification),
+            'is_mass': true,
+            'is_read': receipt['is_read'],
+            'receipt_id': receipt['id'],
+          });
+        }
+      }
+
+      // Sort by created_at
+      allNotifications.sort((a, b) {
+        final aDate = DateTime.parse(a['created_at']);
+        final bDate = DateTime.parse(b['created_at']);
+        return bDate.compareTo(aDate);
+      });
+
+      _notifications = allNotifications;
+    } catch (e) {
+      debugPrint('Error loading notifications: $e');
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  /// Mark a notification as read
+  Future<void> markAsRead(Map<String, dynamic> notification) async {
+    try {
+      final userId = supabase.auth.currentUser?.id;
+      if (userId == null) return;
+
+      if (notification['is_mass'] == true) {
+        // Mark mass notification receipt as read
+        await supabase
+            .from('mass_notification_receipts')
+            .update({'is_read': true, 'read_at': DateTime.now().toIso8601String()})
+            .eq('id', notification['receipt_id']);
+      } else {
+        // Mark individual notification as read
+        await supabase
+            .from('notifications')
+            .update({'is_read': true})
+            .eq('id', notification['id']);
+      }
+
+      // Update local state
+      final index = _notifications.indexWhere((n) => n['id'] == notification['id']);
+      if (index != -1) {
+        _notifications[index]['is_read'] = true;
+      }
+      if (_unreadCount > 0) _unreadCount--;
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error marking notification as read: $e');
+    }
+  }
+
+  /// Mark all notifications as read
+  Future<void> markAllAsRead() async {
+    try {
+      final userId = supabase.auth.currentUser?.id;
+      if (userId == null) return;
+
+      // Mark individual notifications
+      await supabase
+          .from('notifications')
+          .update({'is_read': true})
+          .eq('user_id', userId)
+          .eq('is_read', false);
+
+      // Mark mass notification receipts
+      await supabase
+          .from('mass_notification_receipts')
+          .update({'is_read': true, 'read_at': DateTime.now().toIso8601String()})
+          .eq('user_id', userId)
+          .eq('is_read', false);
+
+      // Update local state
+      for (var notification in _notifications) {
+        notification['is_read'] = true;
+      }
+      _unreadCount = 0;
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error marking all as read: $e');
+    }
+  }
+
+  /// Delete push token on logout
+  Future<void> deleteToken() async {
+    try {
+      final token = await _messaging.getToken();
+      if (token != null) {
+        await supabase
+            .from('user_push_tokens')
+            .delete()
+            .eq('token', token);
+      }
+    } catch (e) {
+      debugPrint('Error deleting push token: $e');
+    }
+  }
+
+  /// Get notification preferences
+  Future<Map<String, dynamic>?> getPreferences() async {
+    try {
+      final userId = supabase.auth.currentUser?.id;
+      if (userId == null) return null;
+
+      final response = await supabase
+          .from('notification_preferences')
+          .select('*')
+          .eq('user_id', userId)
+          .eq('user_type', 'customer')
+          .maybeSingle();
+
+      return response;
+    } catch (e) {
+      debugPrint('Error getting preferences: $e');
+      return null;
+    }
+  }
+
+  /// Update notification preferences
+  Future<void> updatePreferences(Map<String, dynamic> preferences) async {
+    try {
+      final userId = supabase.auth.currentUser?.id;
+      if (userId == null) return;
+
+      await supabase.from('notification_preferences').upsert({
+        'user_id': userId,
+        'user_type': 'customer',
+        ...preferences,
+        'updated_at': DateTime.now().toIso8601String(),
+      }, onConflict: 'user_id,user_type');
+
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error updating preferences: $e');
+    }
+  }
+
+  /// Clear all local data (for logout)
+  void clear() {
+    _notifications = [];
+    _unreadCount = 0;
+    notifyListeners();
   }
 }

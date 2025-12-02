@@ -530,6 +530,11 @@ abstract class AppLocalizations {
   String hoursAgo2(int count);
   String minuteAgo(int count);
   String minutesAgo2(int count);
+
+  // Notifications
+  String get noNotifications;
+  String get noNotificationsDescription;
+  String get markAllAsRead;
 }
 
 class _AppLocalizationsDelegate
