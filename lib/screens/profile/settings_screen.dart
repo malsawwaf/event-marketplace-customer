@@ -448,9 +448,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           body: jsonEncode({'account_type': 'customer'}),
                         );
 
-                        final responseData = jsonDecode(response.body);
+                        final responseBody = response.body;
+                        Map<String, dynamic>? responseData;
 
-                        if (response.statusCode == 200 && responseData['success'] == true) {
+                        try {
+                          responseData = jsonDecode(responseBody) as Map<String, dynamic>?;
+                        } catch (_) {
+                          // Response is not valid JSON
+                        }
+
+                        if (response.statusCode == 200 && responseData?['success'] == true) {
                           // Sign out locally
                           await supabase.auth.signOut();
 
@@ -471,7 +478,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             );
                           }
                         } else {
-                          throw Exception(responseData['error'] ?? 'Failed to delete account');
+                          throw Exception(responseData?['error'] ?? 'Failed to delete account (${response.statusCode})');
                         }
                       } catch (e) {
                         if (context.mounted) {
