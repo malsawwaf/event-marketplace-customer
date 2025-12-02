@@ -7,6 +7,7 @@ import '../../config/supabase_config.dart';
 import '../../config/app_theme.dart';
 import '../../services/language_service.dart';
 import '../../l10n/app_localizations.dart';
+import '../auth/login_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -469,8 +470,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             Navigator.pop(context); // Close dialog
 
                             // Navigate to login and clear stack
-                            Navigator.of(context).pushNamedAndRemoveUntil(
-                              '/login',
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(builder: (context) => const LoginScreen()),
                               (route) => false,
                             );
 
