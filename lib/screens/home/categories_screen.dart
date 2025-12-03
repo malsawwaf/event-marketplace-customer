@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:geolocator/geolocator.dart';
 import '../../config/app_theme.dart';
 import '../../utils/categories.dart';
 import '../../utils/cities.dart';
@@ -19,21 +20,146 @@ class CategoriesScreen extends StatefulWidget {
 class _CategoriesScreenState extends State<CategoriesScreen> {
   String? _selectedCity;
   bool _isDetectingCity = true;
+  bool _locationFailed = false;
   final LocationService _locationService = LocationService();
 
   @override
   void initState() {
     super.initState();
-    _initializeCity();
+    // Delay initialization to ensure widget is fully mounted
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializeCity();
+    });
   }
 
   Future<void> _initializeCity() async {
-    // Try to detect city only once
-    final detectedCity = await _locationService.detectCurrentCity();
-    if (mounted) {
+    try {
+      // Step 1: Initialize notifications first (this requests notification permission)
+      print('📱 Step 1: Initializing notifications...');
+      final notificationService = Provider.of<NotificationService>(context, listen: false);
+      await notificationService.initialize();
+      print('✅ Notification permission handled');
+
+      // Wait for notification dialog to fully dismiss before proceeding
+      // Android needs more time to dismiss the permission dialog
+      // Increase delay to 2 seconds to ensure the dialog is fully dismissed
+      await Future.delayed(const Duration(seconds: 2));
+      print('⏰ Waited 2 seconds after notification permission');
+
+      // Step 2: Request location permission explicitly
+      print('📍 Step 2: Checking location permission...');
+      LocationPermission permission = await Geolocator.checkPermission();
+      print('📍 Current permission status: $permission');
+
+      if (permission == LocationPermission.denied) {
+        // Add another delay before showing location permission dialog
+        await Future.delayed(const Duration(seconds: 1));
+        print('⏰ Waited 1 second before requesting location permission');
+
+        print('📍 Requesting location permission...');
+        permission = await Geolocator.requestPermission();
+        print('📍 Location permission result: $permission');
+      } else if (permission == LocationPermission.deniedForever) {
+        print('⚠️ Location permission permanently denied');
+        if (mounted) {
+          setState(() {
+            _isDetectingCity = false;
+            _locationFailed = true;
+          });
+          _showCitySelectionDialog();
+        }
+        return;
+      }
+
+      // Small delay after location permission dialog
+      await Future.delayed(const Duration(milliseconds: 300));
+
+      // Step 3: Try to detect city if permission granted
+      if (permission == LocationPermission.always ||
+          permission == LocationPermission.whileInUse) {
+        print('🌍 Step 3: Detecting city...');
+        final detectedCity = await _locationService.detectCurrentCity().timeout(
+          const Duration(seconds: 15),
+          onTimeout: () {
+            print('⚠️ Location detection timed out');
+            return SaudiCities.getCityNamesEnglish().first; // Default to Riyadh
+          },
+        );
+
+        if (mounted) {
+          setState(() {
+            _selectedCity = detectedCity;
+            _isDetectingCity = false;
+            _locationFailed = false;
+          });
+        }
+      } else {
+        // Location permission denied - show city selection dialog
+        print('⚠️ Location permission denied, showing city selector');
+        if (mounted) {
+          setState(() {
+            _isDetectingCity = false;
+            _locationFailed = true;
+          });
+          _showCitySelectionDialog();
+        }
+      }
+    } catch (e) {
+      print('❌ Error during initialization: $e');
+      if (mounted) {
+        setState(() {
+          _isDetectingCity = false;
+          _locationFailed = true;
+        });
+        // Show city selection dialog
+        _showCitySelectionDialog();
+      }
+    }
+  }
+
+  Future<void> _showCitySelectionDialog() async {
+    final l10n = AppLocalizations.of(context);
+    final cities = SaudiCities.getCityNamesEnglish();
+
+    final selectedCity = await showDialog<String>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: Row(
+          children: [
+            Icon(Icons.location_on, color: AppTheme.secondaryCoral),
+            const SizedBox(width: 8),
+            Expanded(child: Text(l10n.selectCity)),
+          ],
+        ),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: cities.length,
+            itemBuilder: (context, index) {
+              final city = cities[index];
+              return ListTile(
+                leading: const Icon(Icons.location_city),
+                title: Text(city),
+                onTap: () => Navigator.pop(context, city),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+
+    if (selectedCity != null && mounted) {
       setState(() {
-        _selectedCity = detectedCity;
-        _isDetectingCity = false;
+        _selectedCity = selectedCity;
+        _locationFailed = false;
+      });
+    } else if (_selectedCity == null && mounted) {
+      // If user dismisses without selecting, default to Riyadh
+      setState(() {
+        _selectedCity = cities.first;
+        _locationFailed = false;
       });
     }
   }

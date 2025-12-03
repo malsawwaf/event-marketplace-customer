@@ -4,6 +4,39 @@ class SaudiCities {
   static const String defaultCountry = 'Saudi Arabia';
   static const String defaultCountryAr = 'المملكة العربية السعودية';
 
+  /// City coordinates for map centering
+  static const Map<String, Map<String, double>> cityCoordinates = {
+    'Riyadh': {'lat': 24.7136, 'lng': 46.6753},
+    'Jeddah': {'lat': 21.5433, 'lng': 39.1728},
+    'Mecca': {'lat': 21.3891, 'lng': 39.8579},
+    'Medina': {'lat': 24.5247, 'lng': 39.5692},
+    'Dammam': {'lat': 26.4207, 'lng': 50.0888},
+    'Khobar': {'lat': 26.2172, 'lng': 50.1971},
+    'Dhahran': {'lat': 26.2361, 'lng': 50.0393},
+    'Taif': {'lat': 21.2705, 'lng': 40.4158},
+    'Buraidah': {'lat': 26.3292, 'lng': 43.9750},
+    'Tabuk': {'lat': 28.3838, 'lng': 36.5549},
+    'Khamis Mushait': {'lat': 18.3002, 'lng': 42.7331},
+    'Hail': {'lat': 27.5219, 'lng': 41.6909},
+    'Hafar Al-Batin': {'lat': 28.4394, 'lng': 45.9713},
+    'Jubail': {'lat': 27.0046, 'lng': 49.6228},
+    'Al Ahsa': {'lat': 25.4075, 'lng': 49.5876},
+    'Najran': {'lat': 17.4924, 'lng': 44.1277},
+    'Yanbu': {'lat': 24.0895, 'lng': 38.0618},
+    'Abha': {'lat': 18.2164, 'lng': 42.5053},
+    'Qatif': {'lat': 26.5214, 'lng': 50.0073},
+    'Arar': {'lat': 30.9753, 'lng': 41.0245},
+    'Sakaka': {'lat': 29.9733, 'lng': 40.2064},
+    'Jizan': {'lat': 16.8892, 'lng': 42.5511},
+    'Al Qunfudhah': {'lat': 19.1273, 'lng': 41.0788},
+    'Al Kharj': {'lat': 24.1556, 'lng': 47.3348},
+  };
+
+  /// Get coordinates for a city
+  static Map<String, double>? getCityCoordinates(String cityName) {
+    return cityCoordinates[cityName];
+  }
+
   /// Major cities in Saudi Arabia (Arabic and English names)
   static const List<Map<String, String>> majorCities = [
     {'en': 'Riyadh', 'ar': 'الرياض'},

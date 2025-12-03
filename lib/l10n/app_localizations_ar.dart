@@ -769,6 +769,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get selectAddress => 'اختر العنوان';
 
   @override
+  String get selectCity => 'اختر المدينة';
+
+  @override
   String get selectedAddress => 'العنوان المختار';
 
   @override
@@ -967,6 +970,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get searchForItems => 'ابحث عن المنتجات، مقدمي الخدمات...';
 
   @override
+  String get searchAddress => 'ابحث عن عنوان...';
+
+  @override
   String get recentSearches => 'عمليات البحث الأخيرة';
 
   @override
@@ -1031,6 +1037,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get state => 'المنطقة';
+
+  @override
+  String get district => 'الحي';
 
   @override
   String get zipCode => 'الرمز البريدي';

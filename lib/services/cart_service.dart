@@ -259,7 +259,8 @@ class CartService {
               trading_name,
               profile_photo_url,
               store_location,
-              price_range
+              price_range,
+              order_acceptance_timer_minutes
             )
           ''')
           .eq('customer_id', customerId)

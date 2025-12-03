@@ -115,15 +115,18 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
         // Handle back button - pop current tab's navigator
         final currentNavigator = _navigatorKeys[_selectedIndex].currentState;
         if (currentNavigator != null && currentNavigator.canPop()) {
           currentNavigator.pop();
-          return false;
+        } else {
+          // Allow exiting the app
+          Navigator.of(context).pop();
         }
-        return true;
       },
       child: Scaffold(
         body: IndexedStack(

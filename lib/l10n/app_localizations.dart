@@ -304,6 +304,7 @@ abstract class AppLocalizations {
   String get welcomeToAzimahTech;
   String get yourEventMarketplace;
   String get selectAddress;
+  String get selectCity;
   String get selectedAddress;
   String get pleaseSelectAddress;
   String get noProviders;
@@ -370,6 +371,7 @@ abstract class AppLocalizations {
   String get submitReview;
   String get thankYouForReview;
   String get searchForItems;
+  String get searchAddress;
   String get recentSearches;
   String get popularSearches;
   String get noResults;
@@ -392,6 +394,7 @@ abstract class AppLocalizations {
   String get street;
   String get city;
   String get state;
+  String get district;
   String get zipCode;
   String get country;
   String get makeDefault;

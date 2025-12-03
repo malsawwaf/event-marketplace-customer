@@ -769,6 +769,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectAddress => 'Select Address';
 
   @override
+  String get selectCity => 'Select City';
+
+  @override
   String get selectedAddress => 'Selected Address';
 
   @override
@@ -967,6 +970,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchForItems => 'Search for items, providers...';
 
   @override
+  String get searchAddress => 'Search for an address...';
+
+  @override
   String get recentSearches => 'Recent Searches';
 
   @override
@@ -1031,6 +1037,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get state => 'State';
+
+  @override
+  String get district => 'District';
 
   @override
   String get zipCode => 'Zip Code';
