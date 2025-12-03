@@ -13,18 +13,18 @@ import FirebaseMessaging
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        // Configure Firebase
-        FirebaseApp.configure()
+        // Note: Firebase is initialized in Flutter's main.dart via firebase_core plugin
+        // Do NOT call FirebaseApp.configure() here to avoid double initialization
 
-        // Set up push notifications
+        GMSServices.provideAPIKey("AIzaSyBmgoMQ8JDBPhHBjDwrPw01Z9vKpP-ueS4")
+        GeneratedPluginRegistrant.register(with: self)
+
+        // Set up push notifications after Flutter plugins are registered
         if #available(iOS 10.0, *) {
             UNUserNotificationCenter.current().delegate = self
         }
         application.registerForRemoteNotifications()
         Messaging.messaging().delegate = self
-
-        GMSServices.provideAPIKey("AIzaSyBmgoMQ8JDBPhHBjDwrPw01Z9vKpP-ueS4")
-        GeneratedPluginRegistrant.register(with: self)
 
         // Set up Flutter Method Channel for Paymob SDK
         let controller = window?.rootViewController as! FlutterViewController
