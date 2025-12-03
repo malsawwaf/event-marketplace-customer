@@ -59,10 +59,10 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyAQ7OjnRqnu4S_-czmsgmpguxudO_T53-s',
-    appId: '1:971219541479:ios:0a78446ba3f09f51723142',
+    appId: '1:971219541479:ios:13eecf758992fd6b723142',
     messagingSenderId: '971219541479',
     projectId: 'azimah-tech',
     storageBucket: 'azimah-tech.firebasestorage.app',
-    iosBundleId: 'com.example.eventMarketplaceCustomer',
+    iosBundleId: 'com.azimahtech.customer',
   );
 }

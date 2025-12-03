@@ -1,16 +1,28 @@
 import Flutter
 import UIKit
 import GoogleMaps
+import FirebaseCore
+import FirebaseMessaging
 // import PaymobSDK  // Temporarily disabled - TODO: Update to latest SDK
 
 @main
-@objc class AppDelegate: FlutterAppDelegate { // PaymobSDKDelegate temporarily removed
+@objc class AppDelegate: FlutterAppDelegate, MessagingDelegate { // PaymobSDKDelegate temporarily removed
     var sdkResult: FlutterResult?
 
     override func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        // Configure Firebase
+        FirebaseApp.configure()
+
+        // Set up push notifications
+        if #available(iOS 10.0, *) {
+            UNUserNotificationCenter.current().delegate = self
+        }
+        application.registerForRemoteNotifications()
+        Messaging.messaging().delegate = self
+
         GMSServices.provideAPIKey("AIzaSyBmgoMQ8JDBPhHBjDwrPw01Z9vKpP-ueS4")
         GeneratedPluginRegistrant.register(with: self)
 
@@ -40,6 +52,17 @@ import GoogleMaps
         print("PaymobSDK: Currently disabled - payment functionality unavailable")
         self.sdkResult?("Error")
         self.sdkResult = nil
+    }
+
+    // MARK: - APNs Token Handling
+    override func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        Messaging.messaging().apnsToken = deviceToken
+        super.application(application, didRegisterForRemoteNotificationsWithDeviceToken: deviceToken)
+    }
+
+    // MARK: - MessagingDelegate
+    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+        print("Firebase registration token: \(String(describing: fcmToken))")
     }
 }
 
