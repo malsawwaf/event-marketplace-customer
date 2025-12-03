@@ -1,11 +1,15 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../config/supabase_config.dart';
 
 class NotificationService extends ChangeNotifier {
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
+  final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
+  bool _localNotificationsInitialized = false;
+
   int _unreadCount = 0;
   List<Map<String, dynamic>> _notifications = [];
   bool _isLoading = false;
@@ -17,6 +21,9 @@ class NotificationService extends ChangeNotifier {
   /// Initialize push notifications
   Future<void> initialize() async {
     try {
+      // Initialize local notifications first
+      await _initializeLocalNotifications();
+
       // Request permission
       final settings = await _messaging.requestPermission(
         alert: true,
@@ -42,6 +49,76 @@ class NotificationService extends ChangeNotifier {
     } catch (e) {
       debugPrint('Error initializing notifications: $e');
     }
+  }
+
+  /// Initialize flutter_local_notifications
+  Future<void> _initializeLocalNotifications() async {
+    if (_localNotificationsInitialized) return;
+
+    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const iosSettings = DarwinInitializationSettings(
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+    );
+    const initSettings = InitializationSettings(
+      android: androidSettings,
+      iOS: iosSettings,
+    );
+
+    await _localNotifications.initialize(
+      initSettings,
+      onDidReceiveNotificationResponse: (NotificationResponse response) {
+        debugPrint('Local notification tapped: ${response.payload}');
+        // Could navigate to notifications screen here
+      },
+    );
+
+    _localNotificationsInitialized = true;
+    debugPrint('Local notifications initialized');
+  }
+
+  /// Show a local notification for foreground messages
+  Future<void> _showLocalNotification({
+    required String title,
+    required String body,
+    String? payload,
+  }) async {
+    if (!_localNotificationsInitialized) {
+      await _initializeLocalNotifications();
+    }
+
+    const androidDetails = AndroidNotificationDetails(
+      'general_notifications',
+      'General Notifications',
+      channelDescription: 'Order updates and general notifications',
+      importance: Importance.high,
+      priority: Priority.high,
+      showWhen: true,
+      enableVibration: true,
+      playSound: true,
+    );
+
+    const iosDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+    );
+
+    const notificationDetails = NotificationDetails(
+      android: androidDetails,
+      iOS: iosDetails,
+    );
+
+    await _localNotifications.show(
+      DateTime.now().millisecondsSinceEpoch.remainder(100000),
+      title,
+      body,
+      notificationDetails,
+      payload: payload,
+    );
+
+    debugPrint('Local notification shown: $title');
   }
 
   Future<void> _saveToken() async {
@@ -77,9 +154,28 @@ class NotificationService extends ChangeNotifier {
 
   void _handleForegroundMessage(RemoteMessage message) {
     debugPrint('Received foreground message: ${message.notification?.title}');
+
+    // Extract title and body
+    final title = message.data['title'] ??
+                  message.notification?.title ??
+                  'New Notification';
+    final body = message.data['body'] ??
+                 message.notification?.body ??
+                 '';
+
+    // Show local notification
+    _showLocalNotification(
+      title: title,
+      body: body,
+      payload: message.data['notification_id'],
+    );
+
     // Increment unread count and notify listeners
     _unreadCount++;
     notifyListeners();
+
+    // Also refresh notifications list in background
+    loadNotifications();
   }
 
   /// Load unread notification count
