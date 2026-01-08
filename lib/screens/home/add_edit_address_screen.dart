@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../services/address_service.dart';
 import '../../config/app_theme.dart';
 import '../../l10n/app_localizations.dart';
+import '../../widgets/map_location_picker.dart';
 
 class AddEditAddressScreen extends StatefulWidget {
   final Map<String, dynamic>? existingAddress;
@@ -244,13 +245,31 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
                     ),
                     const SizedBox(height: 12),
                     OutlinedButton.icon(
-                      onPressed: () {
-                        // TODO: Integrate Google Maps location picker
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('${l10n.location} picker coming soon! Using Jeddah default location.'),
+                      onPressed: () async {
+                        final result = await Navigator.push<LocationPickerResult>(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MapLocationPicker(
+                              initialLatitude: _latitude,
+                              initialLongitude: _longitude,
+                              returnAddressInfo: true,
+                            ),
                           ),
                         );
+
+                        if (result != null && mounted) {
+                          setState(() {
+                            _latitude = result.location.latitude;
+                            _longitude = result.location.longitude;
+                            // Auto-fill city and district if available
+                            if (result.city != null && result.city!.isNotEmpty) {
+                              _cityController.text = result.city!;
+                            }
+                            if (result.district != null && result.district!.isNotEmpty) {
+                              _districtController.text = result.district!;
+                            }
+                          });
+                        }
                       },
                       icon: const Icon(Icons.map),
                       label: Text('${l10n.select} ${l10n.location}'),
