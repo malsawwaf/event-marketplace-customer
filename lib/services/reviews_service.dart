@@ -156,13 +156,88 @@ class ReviewsService {
 
       // Update provider's average rating
       await _updateProviderRating(providerId);
-      
+
       // Update each item's average rating
       for (final itemId in itemRatings.keys) {
         await _updateItemRating(itemId);
       }
+
+      // Send notification to provider about new review
+      await _sendNewReviewNotification(
+        providerId: providerId,
+        reviewId: reviewId,
+        rating: providerRating,
+        reviewText: reviewText,
+      );
     } catch (e) {
       throw Exception('Failed to submit review: $e');
+    }
+  }
+
+  /// Send push notification to provider about new review
+  Future<void> _sendNewReviewNotification({
+    required String providerId,
+    required String reviewId,
+    required double rating,
+    String? reviewText,
+  }) async {
+    try {
+      // Get provider's user_id
+      final providerData = await _supabase
+          .from('providers')
+          .select('user_id')
+          .eq('id', providerId)
+          .maybeSingle();
+
+      if (providerData == null || providerData['user_id'] == null) {
+        print('Could not find provider user_id for review notification');
+        return;
+      }
+
+      final providerUserId = providerData['user_id'] as String;
+
+      // Get customer name
+      final customerId = _supabase.auth.currentUser?.id;
+      String customerName = 'A customer';
+
+      if (customerId != null) {
+        final customerData = await _supabase
+            .from('customers')
+            .select('first_name, last_name')
+            .eq('id', customerId)
+            .maybeSingle();
+
+        if (customerData != null) {
+          final firstName = customerData['first_name'] ?? '';
+          final lastName = customerData['last_name'] ?? '';
+          if (firstName.isNotEmpty) {
+            customerName = lastName.isNotEmpty ? '$firstName ${lastName[0]}.' : firstName;
+          }
+        }
+      }
+
+      // Build star rating string
+      final stars = '⭐' * rating.round();
+
+      // Call the Edge Function to send push notification
+      await _supabase.functions.invoke('send-push-notification', body: {
+        'user_id': providerUserId,
+        'user_type': 'provider',
+        'title_en': 'New Review! $stars',
+        'title_ar': 'تقييم جديد! $stars',
+        'body_en': '$customerName left a ${rating.toStringAsFixed(1)}-star review${reviewText != null && reviewText.isNotEmpty ? ': "${reviewText.length > 50 ? '${reviewText.substring(0, 50)}...' : reviewText}"' : ''}',
+        'body_ar': '$customerName ترك تقييم ${rating.toStringAsFixed(1)} نجوم${reviewText != null && reviewText.isNotEmpty ? ': "${reviewText.length > 50 ? '${reviewText.substring(0, 50)}...' : reviewText}"' : ''}',
+        'notification_type': 'review',
+        'data': {
+          'review_id': reviewId,
+          'rating': rating.toString(),
+        },
+      });
+
+      print('📱 Push notification sent to provider about new review');
+    } catch (e) {
+      // Don't fail the review submission if notification fails
+      print('⚠️ Error sending review notification: $e');
     }
   }
 

@@ -120,6 +120,13 @@ class OrdersService {
   /// Uses safe_update_order_status RPC for atomic operation and race condition prevention
   Future<void> cancelOrder(String orderId) async {
     try {
+      // Get order details before cancelling for notification
+      final orderData = await _supabase
+          .from('orders')
+          .select('provider_id, order_number, total_amount, providers(user_id)')
+          .eq('id', orderId)
+          .single();
+
       // Use the safe RPC function that handles:
       // - Atomic row locking (prevents race conditions)
       // - Status validation (only pending orders can be cancelled)
@@ -135,6 +142,14 @@ class OrdersService {
       if (result is Map && result['success'] == false) {
         throw Exception(result['error'] ?? 'Failed to cancel order');
       }
+
+      // Send notification to provider about cancelled order
+      await _sendOrderCancelledNotification(
+        providerUserId: orderData['providers']?['user_id'] as String?,
+        orderId: orderId,
+        orderNumber: orderData['order_number'] as String,
+        totalAmount: (orderData['total_amount'] as num).toDouble(),
+      );
     } catch (e) {
       // If the RPC function doesn't exist yet, fall back to the old method
       if (e.toString().contains('function') && e.toString().contains('does not exist')) {
@@ -142,6 +157,57 @@ class OrdersService {
       } else {
         throw Exception('Failed to cancel order: $e');
       }
+    }
+  }
+
+  /// Send push notification to provider about order cancellation
+  Future<void> _sendOrderCancelledNotification({
+    required String? providerUserId,
+    required String orderId,
+    required String orderNumber,
+    required double totalAmount,
+  }) async {
+    if (providerUserId == null) return;
+
+    try {
+      // Get customer name
+      final customerId = _supabase.auth.currentUser?.id;
+      String customerName = 'Customer';
+
+      if (customerId != null) {
+        final customerData = await _supabase
+            .from('customers')
+            .select('first_name, last_name')
+            .eq('id', customerId)
+            .maybeSingle();
+
+        if (customerData != null) {
+          customerName = '${customerData['first_name'] ?? ''} ${customerData['last_name'] ?? ''}'.trim();
+          if (customerName.isEmpty) customerName = 'Customer';
+        }
+      }
+
+      // Call the Edge Function to send push notification
+      await _supabase.functions.invoke('send-push-notification', body: {
+        'user_id': providerUserId,
+        'user_type': 'provider',
+        'title_en': 'Order Cancelled ❌',
+        'title_ar': 'تم إلغاء الطلب ❌',
+        'body_en': '$customerName cancelled order $orderNumber (${totalAmount.toStringAsFixed(2)} SAR)',
+        'body_ar': '$customerName ألغى الطلب $orderNumber (${totalAmount.toStringAsFixed(2)} ر.س)',
+        'notification_type': 'order_cancelled',
+        'data': {
+          'order_id': orderId,
+          'order_number': orderNumber,
+          'customer_name': customerName,
+          'total_amount': totalAmount.toString(),
+        },
+      });
+
+      print('📱 Push notification sent to provider about cancelled order $orderNumber');
+    } catch (e) {
+      // Don't fail the cancellation if notification fails
+      print('⚠️ Error sending cancellation notification: $e');
     }
   }
 
