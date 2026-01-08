@@ -645,6 +645,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       final cartService = CartService();
       await cartService.clearCart(widget.cartId);
 
+      // Send push notification to provider
+      await _sendNewOrderNotification(
+        providerId: widget.providerId,
+        orderId: orderId,
+        orderNumber: orderNumber,
+        totalAmount: totals['total'] as double,
+        itemCount: items.length,
+      );
+
       if (mounted) {
         Navigator.pushReplacement(
           context,
@@ -664,6 +673,75 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           SnackBar(content: Text('${l10n.errorCreatingOrder}: $e')),
         );
       }
+    }
+  }
+
+  /// Send push notification to provider about new order
+  Future<void> _sendNewOrderNotification({
+    required String providerId,
+    required String orderId,
+    required String orderNumber,
+    required double totalAmount,
+    required int itemCount,
+  }) async {
+    try {
+      // Get customer name
+      final customerId = _supabase.auth.currentUser?.id;
+      String customerName = 'Customer';
+
+      if (customerId != null) {
+        final customerData = await _supabase
+            .from('customers')
+            .select('first_name, last_name')
+            .eq('id', customerId)
+            .maybeSingle();
+
+        if (customerData != null) {
+          customerName = '${customerData['first_name'] ?? ''} ${customerData['last_name'] ?? ''}'.trim();
+          if (customerName.isEmpty) customerName = 'Customer';
+        }
+      }
+
+      // Get provider's user_id (providers table has user_id column)
+      final providerData = await _supabase
+          .from('providers')
+          .select('user_id')
+          .eq('id', providerId)
+          .maybeSingle();
+
+      if (providerData == null || providerData['user_id'] == null) {
+        print('Could not find provider user_id for push notification');
+        return;
+      }
+
+      final providerUserId = providerData['user_id'] as String;
+
+      // Build order details string
+      final orderDetails = '$itemCount item${itemCount > 1 ? 's' : ''} - $orderNumber';
+
+      // Call the Edge Function to send push notification
+      await _supabase.functions.invoke('send-push-notification', body: {
+        'user_id': providerUserId,
+        'user_type': 'provider',
+        'title_en': 'New Order!',
+        'title_ar': 'طلب جديد!',
+        'body_en': '$customerName placed an order for ${totalAmount.toStringAsFixed(2)} SAR',
+        'body_ar': '$customerName قام بطلب بقيمة ${totalAmount.toStringAsFixed(2)} ر.س',
+        'notification_type': 'new_order',
+        'data': {
+          'order_id': orderId,
+          'order_number': orderNumber,
+          'customer_name': customerName,
+          'order_details': orderDetails,
+          'total_amount': totalAmount.toString(),
+          'currency': 'SAR',
+        },
+      });
+
+      print('Push notification sent to provider for order $orderNumber');
+    } catch (e) {
+      // Don't fail the order if notification fails
+      print('Error sending push notification: $e');
     }
   }
 
