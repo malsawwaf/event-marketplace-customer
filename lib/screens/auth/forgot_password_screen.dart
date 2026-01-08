@@ -4,7 +4,7 @@ import '../../l10n/app_localizations.dart';
 import 'auth_provider.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
-  const ForgotPasswordScreen({Key? key}) : super(key: key);
+  const ForgotPasswordScreen({super.key});
 
   @override
   State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
@@ -145,7 +145,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       )
                     : Text(
                         AppLocalizations.of(context).sendResetLink,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
@@ -251,7 +251,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           ),
           child: Text(
             AppLocalizations.of(context).backToSignIn,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
             ),

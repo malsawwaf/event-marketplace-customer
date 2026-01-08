@@ -15,9 +15,9 @@ class ProviderDetailScreen extends StatefulWidget {
   final String providerId;
 
   const ProviderDetailScreen({
-    Key? key,
+    super.key,
     required this.providerId,
-  }) : super(key: key);
+  });
 
   @override
   State<ProviderDetailScreen> createState() => _ProviderDetailScreenState();
@@ -635,7 +635,7 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
                         const SizedBox(height: 12),
                         Text(
                           l10n.beTheFirstToReview,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 16,
                             color: AppTheme.primaryNavy,
                             fontWeight: FontWeight.w500,

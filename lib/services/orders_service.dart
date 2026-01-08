@@ -117,43 +117,79 @@ class OrdersService {
   }
 
   /// Cancel an order (only if status is 'pending')
+  /// Uses safe_update_order_status RPC for atomic operation and race condition prevention
   Future<void> cancelOrder(String orderId) async {
     try {
-      // First check if order is pending
-      final order = await _supabase
-          .from('orders')
-          .select('status, order_items(item_id, quantity)')
-          .eq('id', orderId)
-          .single();
+      // Use the safe RPC function that handles:
+      // - Atomic row locking (prevents race conditions)
+      // - Status validation (only pending orders can be cancelled)
+      // - Single stock return (prevents duplicate stock returns)
+      // - Payment status update
+      final result = await _supabase.rpc('safe_update_order_status', params: {
+        'p_order_id': orderId,
+        'p_new_status': 'cancelled',
+        'p_actor_type': 'customer',
+      });
 
-      if (order['status'] != 'pending') {
-        throw Exception('Only pending orders can be cancelled');
+      // Check if the operation was successful
+      if (result is Map && result['success'] == false) {
+        throw Exception(result['error'] ?? 'Failed to cancel order');
       }
-
-      // Return stock for all items
-      final orderItems = order['order_items'] as List;
-      for (final item in orderItems) {
-        await _supabase.rpc('return_stock', params: {
-          'p_item_id': item['item_id'],
-          'p_quantity': item['quantity'],
-        });
-      }
-
-      // Update order status
-      await _supabase
-          .from('orders')
-          .update({
-            'status': 'cancelled',
-			'payment_status': 'cancelled',  // ✅ Add this line
-            'updated_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', orderId);
     } catch (e) {
-      throw Exception('Failed to cancel order: $e');
+      // If the RPC function doesn't exist yet, fall back to the old method
+      if (e.toString().contains('function') && e.toString().contains('does not exist')) {
+        await _cancelOrderLegacy(orderId);
+      } else {
+        throw Exception('Failed to cancel order: $e');
+      }
     }
   }
 
-  /// Subscribe to real-time order updates
+  /// Legacy cancel order method (fallback if RPC function not available)
+  Future<void> _cancelOrderLegacy(String orderId) async {
+    // First check current status to prevent race conditions
+    final order = await _supabase
+        .from('orders')
+        .select('status, order_items(item_id, quantity)')
+        .eq('id', orderId)
+        .single();
+
+    final currentStatus = order['status'] as String;
+
+    // Validate status - must be pending
+    if (currentStatus != 'pending') {
+      throw Exception('Order is no longer pending. Current status: $currentStatus');
+    }
+
+    // Return stock for all items
+    final orderItems = order['order_items'] as List;
+    for (final item in orderItems) {
+      await _supabase.rpc('return_stock', params: {
+        'p_item_id': item['item_id'],
+        'p_quantity': item['quantity'],
+      });
+    }
+
+    // Update order status - use conditional update for race protection
+    // Only update if status is still 'pending'
+    final result = await _supabase
+        .from('orders')
+        .update({
+          'status': 'cancelled',
+          'payment_status': 'cancelled',
+          'updated_at': DateTime.now().toIso8601String(),
+        })
+        .eq('id', orderId)
+        .eq('status', 'pending') // Only update if still pending
+        .select('id');
+
+    // Check if the update was successful
+    if (result.isEmpty) {
+      throw Exception('Order was already processed by another action');
+    }
+  }
+
+  /// Subscribe to real-time order updates (INSERT, UPDATE, DELETE)
   RealtimeChannel subscribeToOrderUpdates(
     String customerId,
     Function(Map<String, dynamic>) onOrderUpdate,
@@ -161,7 +197,7 @@ class OrdersService {
     final channel = _supabase
         .channel('customer_orders_$customerId')
         .onPostgresChanges(
-          event: PostgresChangeEvent.all,
+          event: PostgresChangeEvent.insert,
           schema: 'public',
           table: 'orders',
           filter: PostgresChangeFilter(
@@ -170,10 +206,44 @@ class OrdersService {
             value: customerId,
           ),
           callback: (payload) {
+            print('🔵 Realtime: New order inserted');
             onOrderUpdate(payload.newRecord);
           },
         )
-        .subscribe();
+        .onPostgresChanges(
+          event: PostgresChangeEvent.update,
+          schema: 'public',
+          table: 'orders',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'customer_id',
+            value: customerId,
+          ),
+          callback: (payload) {
+            print('🔵 Realtime: Order updated');
+            onOrderUpdate(payload.newRecord);
+          },
+        )
+        .onPostgresChanges(
+          event: PostgresChangeEvent.delete,
+          schema: 'public',
+          table: 'orders',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'customer_id',
+            value: customerId,
+          ),
+          callback: (payload) {
+            print('🔵 Realtime: Order deleted');
+            onOrderUpdate(payload.oldRecord);
+          },
+        )
+        .subscribe((status, [error]) {
+          print('🔵 Realtime subscription status: $status');
+          if (error != null) {
+            print('❌ Realtime error: $error');
+          }
+        });
 
     return channel;
   }
@@ -298,10 +368,12 @@ class OrdersService {
   /// Calculate time remaining for acceptance
   Duration? getAcceptanceTimeRemaining(DateTime? acceptanceDeadline) {
     if (acceptanceDeadline == null) return null;
-    
-    final now = DateTime.now();
-    final remaining = acceptanceDeadline.difference(now);
-    
+
+    // Compare in UTC to avoid timezone issues
+    final now = DateTime.now().toUtc();
+    final deadlineUtc = acceptanceDeadline.toUtc();
+    final remaining = deadlineUtc.difference(now);
+
     return remaining.isNegative ? Duration.zero : remaining;
   }
 

@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../config/app_theme.dart';
 import '../../config/supabase_config.dart';
 import '../../l10n/app_localizations.dart';
 
 class HelpSupportScreen extends StatefulWidget {
-  const HelpSupportScreen({Key? key}) : super(key: key);
+  const HelpSupportScreen({super.key});
 
   @override
   State<HelpSupportScreen> createState() => _HelpSupportScreenState();
@@ -172,7 +171,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
         foregroundColor: Colors.white,
       ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator(color: AppTheme.primaryNavy))
+          ? const Center(child: CircularProgressIndicator(color: AppTheme.primaryNavy))
           : SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -205,7 +204,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
       child: Text(
         title,
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 18,
           fontWeight: FontWeight.bold,
           color: AppTheme.primaryNavy,
@@ -226,7 +225,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
           ListTile(
             leading: CircleAvatar(
               backgroundColor: AppTheme.primaryNavy.withOpacity(0.1),
-              child: Icon(Icons.phone, color: AppTheme.primaryNavy),
+              child: const Icon(Icons.phone, color: AppTheme.primaryNavy),
             ),
             title: Text(l10n.phone),
             subtitle: Text(phone),
@@ -240,7 +239,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
           ListTile(
             leading: CircleAvatar(
               backgroundColor: AppTheme.primaryNavy.withOpacity(0.1),
-              child: Icon(Icons.email, color: AppTheme.primaryNavy),
+              child: const Icon(Icons.email, color: AppTheme.primaryNavy),
             ),
             title: Text(l10n.email),
             subtitle: Text(email),

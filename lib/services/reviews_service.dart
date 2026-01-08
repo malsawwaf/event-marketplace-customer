@@ -26,12 +26,10 @@ class ReviewsService {
       print('📦 Response data: $response');
       
       // Handle response properly - it's already a List
-      if (response is List) {
-        final reviews = response.map((item) => Map<String, dynamic>.from(item as Map)).toList();
-        print('📦 Parsed reviews count: ${reviews.length}');
-        return reviews;
-      }
-      
+      final reviews = response.map((item) => Map<String, dynamic>.from(item as Map)).toList();
+      print('📦 Parsed reviews count: ${reviews.length}');
+      return reviews;
+          
       print('⚠️ Unexpected response type');
       return [];
     } catch (e) {

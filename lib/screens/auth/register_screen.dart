@@ -6,7 +6,7 @@ import 'auth_provider.dart';
 import 'profile_completion_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({Key? key}) : super(key: key);
+  const RegisterScreen({super.key});
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
@@ -130,7 +130,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: IconThemeData(color: AppTheme.primaryNavy),
+        iconTheme: const IconThemeData(color: AppTheme.primaryNavy),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -147,7 +147,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     width: 80,
                     height: 80,
                     errorBuilder: (context, error, stackTrace) {
-                      return Icon(
+                      return const Icon(
                         Icons.celebration,
                         size: 80,
                         color: AppTheme.primaryNavy,
@@ -159,7 +159,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 // Title
                 Text(
                   l10n.createAccount,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
                     color: AppTheme.primaryNavy,
@@ -169,7 +169,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 8),
                 Text(
                   l10n.signUpToGetStarted,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 16,
                     color: AppTheme.textSecondary,
                   ),
@@ -183,13 +183,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   decoration: InputDecoration(
                     labelText: l10n.email,
                     hintText: l10n.enterYourEmail,
-                    prefixIcon: Icon(Icons.email_outlined, color: AppTheme.primaryNavy),
+                    prefixIcon: const Icon(Icons.email_outlined, color: AppTheme.primaryNavy),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: AppTheme.primaryNavy, width: 2),
+                      borderSide: const BorderSide(color: AppTheme.primaryNavy, width: 2),
                     ),
                   ),
                   validator: (value) {
@@ -210,7 +210,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   decoration: InputDecoration(
                     labelText: l10n.password,
                     hintText: l10n.createPassword,
-                    prefixIcon: Icon(Icons.lock_outlined, color: AppTheme.primaryNavy),
+                    prefixIcon: const Icon(Icons.lock_outlined, color: AppTheme.primaryNavy),
                     suffixIcon: IconButton(
                       icon: Icon(
                         _obscurePassword
@@ -229,7 +229,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: AppTheme.primaryNavy, width: 2),
+                      borderSide: const BorderSide(color: AppTheme.primaryNavy, width: 2),
                     ),
                   ),
                 ),
@@ -255,7 +255,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   decoration: InputDecoration(
                     labelText: l10n.confirmPassword,
                     hintText: l10n.reEnterYourPassword,
-                    prefixIcon: Icon(Icons.lock_outlined, color: AppTheme.primaryNavy),
+                    prefixIcon: const Icon(Icons.lock_outlined, color: AppTheme.primaryNavy),
                     suffixIcon: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -285,7 +285,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: AppTheme.primaryNavy, width: 2),
+                      borderSide: const BorderSide(color: AppTheme.primaryNavy, width: 2),
                     ),
                   ),
                 ),
@@ -311,7 +311,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         },
                         child: RichText(
                           text: TextSpan(
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 14,
                               color: AppTheme.textSecondary,
                             ),
@@ -319,7 +319,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               TextSpan(text: l10n.iAgreeToThe),
                               TextSpan(
                                 text: ' ${l10n.termsOfService}',
-                                style: TextStyle(
+                                style: const TextStyle(
                                   color: AppTheme.primaryNavy,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -327,7 +327,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               TextSpan(text: ' ${l10n.and} '),
                               TextSpan(
                                 text: l10n.privacyPolicy,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   color: AppTheme.primaryNavy,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -381,7 +381,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   children: [
                     Text(
                       '${l10n.alreadyHaveAccount} ',
-                      style: TextStyle(color: AppTheme.textSecondary),
+                      style: const TextStyle(color: AppTheme.textSecondary),
                     ),
                     TextButton(
                       onPressed: () {

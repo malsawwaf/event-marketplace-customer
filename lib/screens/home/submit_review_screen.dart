@@ -11,10 +11,10 @@ class SubmitReviewScreen extends StatefulWidget {
   final Map<String, dynamic> order;
 
   const SubmitReviewScreen({
-    Key? key,
+    super.key,
     required this.orderId,
     required this.order,
-  }) : super(key: key);
+  });
 
   @override
   State<SubmitReviewScreen> createState() => _SubmitReviewScreenState();
@@ -27,8 +27,8 @@ class _SubmitReviewScreenState extends State<SubmitReviewScreen> {
   final _imagePicker = ImagePicker();
 
   double _providerRating = 5.0;
-  Map<String, double> _itemRatings = {};
-  List<File> _selectedPhotos = [];
+  final Map<String, double> _itemRatings = {};
+  final List<File> _selectedPhotos = [];
   bool _isSubmitting = false;
 
   @override
@@ -299,7 +299,7 @@ class _SubmitReviewScreenState extends State<SubmitReviewScreen> {
             Center(
               child: Text(
                 _getRatingLabel(_providerRating),
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: AppTheme.primaryNavy,

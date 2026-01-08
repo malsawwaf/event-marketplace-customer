@@ -7,9 +7,9 @@ class ItemCard extends StatelessWidget {
   final Map<String, dynamic> item;
 
   const ItemCard({
-    Key? key,
+    super.key,
     required this.item,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

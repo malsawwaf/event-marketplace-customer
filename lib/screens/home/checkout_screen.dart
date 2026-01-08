@@ -14,10 +14,10 @@ class CheckoutScreen extends StatefulWidget {
   final String providerId;
 
   const CheckoutScreen({
-    Key? key,
+    super.key,
     required this.cartId,
     required this.providerId,
-  }) : super(key: key);
+  });
 
   @override
   State<CheckoutScreen> createState() => _CheckoutScreenState();
@@ -29,9 +29,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   Map<String, dynamic>? _cartData;
   Map<String, dynamic>? _selectedAddress;
-  Map<String, Map<String, DateTime?>> _itemDates = {};
-  Map<String, Map<String, TimeOfDay?>> _itemTimes = {};
-  Set<String> _expandedItems = {};
+  final Map<String, Map<String, DateTime?>> _itemDates = {};
+  final Map<String, Map<String, TimeOfDay?>> _itemTimes = {};
+  final Set<String> _expandedItems = {};
   
   bool _isLoading = true;
   bool _isPlacingOrder = false;
@@ -74,6 +74,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           _selectedAddress = address;
           _isLoading = false;
         });
+
+        // Auto-expand all items that need date selection
+        _autoExpandItemsNeedingDates();
       }
     } catch (e) {
       if (mounted) {
@@ -84,6 +87,53 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         );
       }
     }
+  }
+
+  /// Auto-expand items that need date selection
+  void _autoExpandItemsNeedingDates() {
+    if (_cartData == null) return;
+    final items = _cartData!['items'] as List<dynamic>?;
+    if (items == null) return;
+
+    setState(() {
+      for (final cartItem in items) {
+        final cartItemId = cartItem['id'] as String;
+        // Expand all items by default so users see the date pickers
+        _expandedItems.add(cartItemId);
+      }
+    });
+  }
+
+  /// Check if a specific item needs dates
+  bool _itemNeedsDates(String cartItemId, String pricingType) {
+    final dates = _itemDates[cartItemId];
+    final times = _itemTimes[cartItemId];
+
+    if (pricingType == 'per_day') {
+      return dates == null || dates['startDate'] == null || dates['endDate'] == null ||
+          times == null || times['startTime'] == null || times['endTime'] == null;
+    } else {
+      return dates == null || dates['eventDate'] == null ||
+          times == null || times['eventTime'] == null;
+    }
+  }
+
+  /// Get count of items that still need dates
+  int _getItemsNeedingDatesCount() {
+    if (_cartData == null) return 0;
+    final items = _cartData!['items'] as List<dynamic>?;
+    if (items == null) return 0;
+
+    int count = 0;
+    for (final cartItem in items) {
+      final cartItemId = cartItem['id'] as String;
+      final item = cartItem['items'] as Map<String, dynamic>;
+      final pricingType = item['pricing_type'] as String;
+      if (_itemNeedsDates(cartItemId, pricingType)) {
+        count++;
+      }
+    }
+    return count;
   }
 
   bool _validateDates() {
@@ -201,7 +251,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     }
 
     final vatAmount = subtotal * 0.15;
-    final deliveryFee = 0.0;
+    const deliveryFee = 0.0;
     final total = subtotal + vatAmount + deliveryFee - _discountAmount;
 
     return {
@@ -463,7 +513,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       final orderNumber = 'ORD-${DateTime.now().millisecondsSinceEpoch}';
 
       final timerMinutes = provider['order_acceptance_timer_minutes'] as int? ?? 30;
-      final acceptanceDeadline = DateTime.now().add(Duration(minutes: timerMinutes));
+      // Use UTC to avoid timezone issues with Supabase
+      final acceptanceDeadline = DateTime.now().toUtc().add(Duration(minutes: timerMinutes));
 
       final order = await _supabase.from('orders').insert({
         'customer_id': customerId,
@@ -723,7 +774,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           children: [
             Row(
               children: [
-                Icon(Icons.location_on, color: AppTheme.primaryNavy),
+                const Icon(Icons.location_on, color: AppTheme.primaryNavy),
                 const SizedBox(width: 8),
                 Text(
                   l10n.deliveryAddress,
@@ -769,6 +820,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   Widget _buildOrderItemsSection(List<dynamic> items) {
     final l10n = AppLocalizations.of(context);
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    final itemsNeedingDates = _getItemsNeedingDatesCount();
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -777,7 +831,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           children: [
             Row(
               children: [
-                Icon(Icons.shopping_bag, color: AppTheme.primaryNavy),
+                const Icon(Icons.shopping_bag, color: AppTheme.primaryNavy),
                 const SizedBox(width: 8),
                 Text(
                   '${l10n.orderItems} (${items.length})',
@@ -788,6 +842,66 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 ),
               ],
             ),
+            // Warning banner when dates are missing
+            if (itemsNeedingDates > 0) ...[
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.orange[50],
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.orange[300]!),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.calendar_today, color: Colors.orange[700], size: 24),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            isArabic
+                                ? 'يرجى اختيار التاريخ والوقت'
+                                : 'Please select date & time',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.orange[900],
+                              fontSize: 14,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            isArabic
+                                ? 'اختر التاريخ والوقت لكل منتج أدناه'
+                                : 'Select date and time for each item below',
+                            style: TextStyle(
+                              color: Colors.orange[800],
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.orange[700],
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        '$itemsNeedingDates',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
             const SizedBox(height: 12),
             ...items.map((cartItem) => _buildExpandableItemCard(cartItem)),
           ],
@@ -814,6 +928,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     final dates = _itemDates[cartItemId];
     final times = _itemTimes[cartItemId];
     final itemTotal = _calculateItemTotal(cartItem);
+    final needsDates = _itemNeedsDates(cartItemId, pricingType);
 
     int days = 1;
     if (pricingType == 'per_day') {
@@ -854,8 +969,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey[300]!),
+        border: Border.all(
+          color: needsDates ? Colors.orange[400]! : Colors.grey[300]!,
+          width: needsDates ? 2 : 1,
+        ),
         borderRadius: BorderRadius.circular(8),
+        color: needsDates ? Colors.orange[50] : null,
       ),
       child: Column(
         children: [
@@ -873,6 +992,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               padding: const EdgeInsets.all(12),
               child: Row(
                 children: [
+                  // Warning icon if dates needed
+                  if (needsDates) ...[
+                    Icon(
+                      Icons.warning_amber_rounded,
+                      color: Colors.orange[700],
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                  ],
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -886,19 +1014,38 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           ),
                         ),
                         const SizedBox(height: 4),
-                        Text(
-                          '${itemTotal.toStringAsFixed(2)} ${l10n.sar}',
-                          style: const TextStyle(
-                            color: Colors.green,
-                            fontWeight: FontWeight.w600,
+                        if (needsDates)
+                          Text(
+                            isArabic ? 'يرجى اختيار التاريخ ↓' : 'Select date below ↓',
+                            style: TextStyle(
+                              color: Colors.orange[700],
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          )
+                        else
+                          Text(
+                            '${itemTotal.toStringAsFixed(2)} ${l10n.sar}',
+                            style: const TextStyle(
+                              color: Colors.green,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
-                        ),
                       ],
                     ),
                   ),
+                  // Checkmark if dates are selected
+                  if (!needsDates) ...[
+                    Icon(
+                      Icons.check_circle,
+                      color: Colors.green[600],
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                  ],
                   Icon(
                     isExpanded ? Icons.expand_less : Icons.expand_more,
-                    color: Colors.grey,
+                    color: needsDates ? Colors.orange[700] : Colors.grey,
                   ),
                 ],
               ),
@@ -1208,7 +1355,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           children: [
             Row(
               children: [
-                Icon(Icons.discount, color: AppTheme.primaryNavy),
+                const Icon(Icons.discount, color: AppTheme.primaryNavy),
                 const SizedBox(width: 8),
                 Text(
                   l10n.couponCode,
@@ -1295,7 +1442,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           children: [
             Row(
               children: [
-                Icon(Icons.payment, color: AppTheme.primaryNavy),
+                const Icon(Icons.payment, color: AppTheme.primaryNavy),
                 const SizedBox(width: 8),
                 Text(
                   l10n.paymentMethod,
@@ -1402,14 +1549,22 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   Widget _buildPlaceOrderButton(double total) {
     final l10n = AppLocalizations.of(context);
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     final allDatesValid = _validateDates();
     final canPlaceOrder = !_isPlacingOrder && _selectedAddress != null && allDatesValid;
+    final itemsNeedingDates = _getItemsNeedingDatesCount();
 
     String buttonText = '${l10n.placeOrder} - ${total.toStringAsFixed(2)} ${l10n.sar}';
+    Color buttonColor = AppTheme.primaryNavy;
+
     if (_selectedAddress == null) {
       buttonText = l10n.selectAddress;
     } else if (!allDatesValid) {
-      buttonText = l10n.selectEventDate;
+      // More descriptive text with count
+      buttonText = isArabic
+          ? '↑ اختر التاريخ لـ $itemsNeedingDates منتج'
+          : '↑ Select dates for $itemsNeedingDates item${itemsNeedingDates > 1 ? 's' : ''} above';
+      buttonColor = Colors.orange[600]!;
     }
 
     return Container(
@@ -1431,8 +1586,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           child: ElevatedButton(
             onPressed: canPlaceOrder ? _placeOrder : null,
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.primaryNavy,
-              disabledBackgroundColor: Colors.grey,
+              backgroundColor: canPlaceOrder ? AppTheme.primaryNavy : buttonColor,
+              disabledBackgroundColor: buttonColor,
             ),
             child: _isPlacingOrder
                 ? const SizedBox(
@@ -1443,13 +1598,22 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       color: Colors.white,
                     ),
                   )
-                : Text(
-                    buttonText,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (!allDatesValid && _selectedAddress != null) ...[
+                        const Icon(Icons.calendar_today, size: 18, color: Colors.white),
+                        const SizedBox(width: 8),
+                      ],
+                      Text(
+                        buttonText,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
                   ),
           ),
         ),

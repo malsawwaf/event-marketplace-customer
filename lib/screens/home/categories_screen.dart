@@ -1,124 +1,73 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../config/app_theme.dart';
 import '../../utils/categories.dart';
 import '../../utils/cities.dart';
-import '../../services/location_service.dart';
 import '../../services/notification_service.dart';
 import 'category_providers_screen.dart';
 import 'notifications_screen.dart';
 import '../../l10n/app_localizations.dart';
 
 class CategoriesScreen extends StatefulWidget {
-  const CategoriesScreen({Key? key}) : super(key: key);
+  const CategoriesScreen({super.key});
 
   @override
   State<CategoriesScreen> createState() => _CategoriesScreenState();
 }
 
 class _CategoriesScreenState extends State<CategoriesScreen> {
+  static const String _cityPrefKey = 'selected_city';
   String? _selectedCity;
-  bool _isDetectingCity = true;
-  bool _locationFailed = false;
-  final LocationService _locationService = LocationService();
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    // Delay initialization to ensure widget is fully mounted
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _initializeCity();
-    });
+    _loadSavedCity();
   }
 
-  Future<void> _initializeCity() async {
+  /// Load previously saved city from SharedPreferences
+  Future<void> _loadSavedCity() async {
     try {
-      // Step 1: Initialize notifications first (this requests notification permission)
-      print('📱 Step 1: Initializing notifications...');
-      final notificationService = Provider.of<NotificationService>(context, listen: false);
-      await notificationService.initialize();
-      print('✅ Notification permission handled');
+      final prefs = await SharedPreferences.getInstance();
+      final savedCity = prefs.getString(_cityPrefKey);
 
-      // Wait for notification dialog to fully dismiss before proceeding
-      // Android needs more time to dismiss the permission dialog
-      // Increase delay to 2 seconds to ensure the dialog is fully dismissed
-      await Future.delayed(const Duration(seconds: 2));
-      print('⏰ Waited 2 seconds after notification permission');
+      if (mounted) {
+        setState(() {
+          _selectedCity = savedCity; // Will be null if not set before
+          _isLoading = false;
+        });
 
-      // Step 2: Request location permission explicitly
-      print('📍 Step 2: Checking location permission...');
-      LocationPermission permission = await Geolocator.checkPermission();
-      print('📍 Current permission status: $permission');
-
-      if (permission == LocationPermission.denied) {
-        // Add another delay before showing location permission dialog
-        await Future.delayed(const Duration(seconds: 1));
-        print('⏰ Waited 1 second before requesting location permission');
-
-        print('📍 Requesting location permission...');
-        permission = await Geolocator.requestPermission();
-        print('📍 Location permission result: $permission');
-      } else if (permission == LocationPermission.deniedForever) {
-        print('⚠️ Location permission permanently denied');
-        if (mounted) {
-          setState(() {
-            _isDetectingCity = false;
-            _locationFailed = true;
+        // If no saved city, show selection dialog
+        if (savedCity == null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _showCitySelectionDialog();
           });
-          _showCitySelectionDialog();
-        }
-        return;
-      }
-
-      // Small delay after location permission dialog
-      await Future.delayed(const Duration(milliseconds: 300));
-
-      // Step 3: Try to detect city if permission granted
-      if (permission == LocationPermission.always ||
-          permission == LocationPermission.whileInUse) {
-        print('🌍 Step 3: Detecting city...');
-        final detectedCity = await _locationService.detectCurrentCity().timeout(
-          const Duration(seconds: 15),
-          onTimeout: () {
-            print('⚠️ Location detection timed out');
-            return SaudiCities.getCityNamesEnglish().first; // Default to Riyadh
-          },
-        );
-
-        if (mounted) {
-          setState(() {
-            _selectedCity = detectedCity;
-            _isDetectingCity = false;
-            _locationFailed = false;
-          });
-        }
-      } else {
-        // Location permission denied - show city selection dialog
-        print('⚠️ Location permission denied, showing city selector');
-        if (mounted) {
-          setState(() {
-            _isDetectingCity = false;
-            _locationFailed = true;
-          });
-          _showCitySelectionDialog();
         }
       }
     } catch (e) {
-      print('❌ Error during initialization: $e');
+      print('Error loading saved city: $e');
       if (mounted) {
-        setState(() {
-          _isDetectingCity = false;
-          _locationFailed = true;
-        });
-        // Show city selection dialog
+        setState(() => _isLoading = false);
         _showCitySelectionDialog();
       }
     }
   }
 
+  /// Save selected city to SharedPreferences
+  Future<void> _saveCity(String city) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_cityPrefKey, city);
+    } catch (e) {
+      print('Error saving city: $e');
+    }
+  }
+
   Future<void> _showCitySelectionDialog() async {
     final l10n = AppLocalizations.of(context);
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     final cities = SaudiCities.getCityNamesEnglish();
 
     final selectedCity = await showDialog<String>(
@@ -127,22 +76,28 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       builder: (context) => AlertDialog(
         title: Row(
           children: [
-            Icon(Icons.location_on, color: AppTheme.secondaryCoral),
+            const Icon(Icons.location_on, color: AppTheme.secondaryCoral),
             const SizedBox(width: 8),
             Expanded(child: Text(l10n.selectCity)),
           ],
         ),
         content: SizedBox(
           width: double.maxFinite,
+          height: 400,
           child: ListView.builder(
             shrinkWrap: true,
             itemCount: cities.length,
             itemBuilder: (context, index) {
-              final city = cities[index];
+              final cityEn = cities[index];
+              final cityAr = SaudiCities.getArabicName(cityEn);
+              final displayName = isArabic && cityAr != null
+                  ? '$cityAr ($cityEn)'
+                  : cityEn;
+
               return ListTile(
                 leading: const Icon(Icons.location_city),
-                title: Text(city),
-                onTap: () => Navigator.pop(context, city),
+                title: Text(displayName),
+                onTap: () => Navigator.pop(context, cityEn),
               );
             },
           ),
@@ -153,14 +108,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     if (selectedCity != null && mounted) {
       setState(() {
         _selectedCity = selectedCity;
-        _locationFailed = false;
       });
-    } else if (_selectedCity == null && mounted) {
-      // If user dismisses without selecting, default to Riyadh
-      setState(() {
-        _selectedCity = cities.first;
-        _locationFailed = false;
-      });
+      await _saveCity(selectedCity);
     }
   }
 
@@ -169,6 +118,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       setState(() {
         _selectedCity = newCity;
       });
+      _saveCity(newCity);
     }
   }
 
@@ -246,7 +196,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
               // Header
               Text(
                 l10n.categories,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
                   color: AppTheme.primaryNavy,
@@ -256,7 +206,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
               const SizedBox(height: 8),
               Text(
                 l10n.allCategories,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 16,
                   color: AppTheme.textSecondary,
                 ),
@@ -270,63 +220,85 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.location_on,
-                        color: AppTheme.secondaryCoral,
-                        size: 24,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _isDetectingCity
-                            ? Row(
-                                children: [
-                                  SizedBox(
-                                    width: 16,
-                                    height: 16,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                        AppTheme.primaryNavy,
+                child: InkWell(
+                  onTap: _selectedCity == null ? _showCitySelectionDialog : null,
+                  borderRadius: BorderRadius.circular(12),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.location_on,
+                          color: AppTheme.secondaryCoral,
+                          size: 24,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: _isLoading
+                              ? Row(
+                                  children: [
+                                    const SizedBox(
+                                      width: 16,
+                                      height: 16,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        valueColor: AlwaysStoppedAnimation<Color>(
+                                          AppTheme.primaryNavy,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Text(
-                                    l10n.loading,
-                                    style: TextStyle(
-                                      color: AppTheme.textSecondary,
-                                      fontSize: 14,
+                                    const SizedBox(width: 12),
+                                    Text(
+                                      l10n.loading,
+                                      style: const TextStyle(
+                                        color: AppTheme.textSecondary,
+                                        fontSize: 14,
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              )
-                            : DropdownButton<String>(
-                                value: _selectedCity,
-                                isExpanded: true,
-                                underline: Container(),
-                                icon: Icon(
-                                  Icons.keyboard_arrow_down,
-                                  color: AppTheme.primaryNavy,
-                                ),
-                                style: TextStyle(
-                                  color: AppTheme.primaryNavy,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                                items: SaudiCities.getCityNamesEnglish().map((city) {
-                                  return DropdownMenuItem<String>(
-                                    value: city,
-                                    child: Text(city),
-                                  );
-                                }).toList(),
-                                onChanged: _onCityChanged,
-                              ),
-                      ),
-                    ],
+                                  ],
+                                )
+                              : _selectedCity == null
+                                  ? Row(
+                                      children: [
+                                        Text(
+                                          l10n.selectCity,
+                                          style: const TextStyle(
+                                            color: AppTheme.secondaryCoral,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                        const Spacer(),
+                                        const Icon(
+                                          Icons.arrow_drop_down,
+                                          color: AppTheme.secondaryCoral,
+                                        ),
+                                      ],
+                                    )
+                                  : DropdownButton<String>(
+                                      value: _selectedCity,
+                                      isExpanded: true,
+                                      underline: Container(),
+                                      icon: const Icon(
+                                        Icons.keyboard_arrow_down,
+                                        color: AppTheme.primaryNavy,
+                                      ),
+                                      style: const TextStyle(
+                                        color: AppTheme.primaryNavy,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      items: SaudiCities.getCityNamesEnglish().map((city) {
+                                        return DropdownMenuItem<String>(
+                                          value: city,
+                                          child: Text(city),
+                                        );
+                                      }).toList(),
+                                      onChanged: _onCityChanged,
+                                    ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -342,7 +314,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                       titleAr: 'قاعات و مناسبات',
                       description: 'Wedding halls, conference venues, event spaces',
                       icon: Icons.business,
-                      gradient: LinearGradient(
+                      gradient: const LinearGradient(
                         colors: [
                           AppTheme.primaryNavy,
                           AppTheme.accentBlue,
@@ -380,7 +352,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                       titleAr: 'مخيمات, حفلات و احتفالات',
                       description: 'Camping equipment, party decorations, celebration services',
                       icon: Icons.celebration,
-                      gradient: LinearGradient(
+                      gradient: const LinearGradient(
                         colors: [
                           AppTheme.secondaryCoral,
                           Colors.deepOrange,

@@ -10,10 +10,10 @@ class PaymentWebViewScreen extends StatefulWidget {
   final String orderNumber;
 
   const PaymentWebViewScreen({
-    Key? key,
+    super.key,
     required this.paymentUrl,
     required this.orderNumber,
-  }) : super(key: key);
+  });
 
   @override
   State<PaymentWebViewScreen> createState() => _PaymentWebViewScreenState();
@@ -225,11 +225,11 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      CircularProgressIndicator(color: AppTheme.primaryNavy),
-                      SizedBox(height: 16),
+                      const CircularProgressIndicator(color: AppTheme.primaryNavy),
+                      const SizedBox(height: 16),
                       Text(
                         l10n.loadingSecurePaymentPage,
-                        style: TextStyle(fontSize: 16),
+                        style: const TextStyle(fontSize: 16),
                       ),
                     ],
                   ),

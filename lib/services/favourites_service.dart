@@ -80,6 +80,7 @@ class FavoritesService {
             items!item_favorites_item_id_fkey(
               id,
               name,
+              name_ar,
               price,
               pricing_type,
               photo_url,
@@ -102,28 +103,23 @@ class FavoritesService {
 
       print('📦 Raw item favorites response: $response');
 
-      if (response is List) {
-        // Filter out items where the item or provider data is null (deleted items)
-        final validItems = response.where((item) {
-          final itemData = item['items'];
-          if (itemData == null) {
-            print('⚠️ Skipping favorite with null item data: ${item['id']}');
-            return false;
-          }
-          final providerData = itemData['providers'];
-          if (providerData == null) {
-            print('⚠️ Skipping favorite with null provider data for item: ${itemData['id']}');
-            return false;
-          }
-          return true;
-        }).toList();
+      // Filter out items where the item or provider data is null (deleted items)
+      final validItems = response.where((item) {
+        final itemData = item['items'];
+        if (itemData == null) {
+          print('⚠️ Skipping favorite with null item data: ${item['id']}');
+          return false;
+        }
+        final providerData = itemData['providers'];
+        if (providerData == null) {
+          print('⚠️ Skipping favorite with null provider data for item: ${itemData['id']}');
+          return false;
+        }
+        return true;
+      }).toList();
 
-        print('✅ Valid item favorites: ${validItems.length} out of ${response.length}');
-        return validItems.map((item) => Map<String, dynamic>.from(item)).toList();
-      }
-
-      print('⚠️ Item favorites response is not a list');
-      return [];
+      print('✅ Valid item favorites: ${validItems.length} out of ${response.length}');
+      return validItems.map((item) => Map<String, dynamic>.from(item)).toList();
     } catch (e) {
       print('❌ Error fetching item favorites: $e');
       return [];
@@ -138,11 +134,7 @@ class FavoritesService {
           .select('item_id')
           .eq('customer_id', customerId);
 
-      if (response is List) {
-        return response.map((item) => item['item_id'] as String).toSet();
-      }
-
-      return {};
+      return response.map((item) => item['item_id'] as String).toSet();
     } catch (e) {
       print('Error fetching item favorite IDs: $e');
       return {};
@@ -223,7 +215,7 @@ class FavoritesService {
           .select('''
             id,
             created_at,
-            providers(
+            providers!provider_favorites_provider_id_fkey(
               id,
               company_name_en,
               trading_name,
@@ -241,24 +233,31 @@ class FavoritesService {
           .order('created_at', ascending: false);
 
       print('📦 Raw provider favorites response: $response');
+      print('📦 Response type: ${response.runtimeType}');
+      print('📦 Response length: ${response.length}');
 
-      if (response is List) {
-        // Filter out providers where the provider data is null (deleted providers)
-        final validProviders = response.where((item) {
-          final providerData = item['providers'];
-          if (providerData == null) {
-            print('⚠️ Skipping favorite with null provider data: ${item['id']}');
-            return false;
-          }
-          return true;
-        }).toList();
-
-        print('✅ Valid provider favorites: ${validProviders.length} out of ${response.length}');
-        return validProviders.map((item) => Map<String, dynamic>.from(item)).toList();
+      if (response.isEmpty) {
+        print('⚠️ Provider favorites response is empty');
+        return [];
       }
 
-      print('⚠️ Provider favorites response is not a list');
-      return [];
+      // Log each item for debugging
+      for (var i = 0; i < response.length; i++) {
+        print('📦 Item $i: ${response[i]}');
+      }
+
+      // Filter out providers where the provider data is null (deleted providers)
+      final validProviders = response.where((item) {
+        final providerData = item['providers'];
+        if (providerData == null) {
+          print('⚠️ Skipping favorite with null provider data: ${item['id']}');
+          return false;
+        }
+        return true;
+      }).toList();
+
+      print('✅ Valid provider favorites: ${validProviders.length} out of ${response.length}');
+      return validProviders.map((item) => Map<String, dynamic>.from(item)).toList();
     } catch (e) {
       print('❌ Error fetching provider favorites: $e');
       return [];
@@ -273,11 +272,7 @@ class FavoritesService {
           .select('provider_id')
           .eq('customer_id', customerId);
 
-      if (response is List) {
-        return response.map((item) => item['provider_id'] as String).toSet();
-      }
-
-      return {};
+      return response.map((item) => item['provider_id'] as String).toSet();
     } catch (e) {
       print('Error fetching provider favorite IDs: $e');
       return {};
@@ -372,7 +367,7 @@ class FavoritesService {
           .select('id')
           .eq('customer_id', customerId);
 
-      final itemCount = itemResponse is List ? itemResponse.length : 0;
+      final itemCount = itemResponse.length;
 
       // Count provider favorites
       final providerResponse = await _supabase
@@ -380,7 +375,7 @@ class FavoritesService {
           .select('id')
           .eq('customer_id', customerId);
 
-      final providerCount = providerResponse is List ? providerResponse.length : 0;
+      final providerCount = providerResponse.length;
 
       return {
         'items': itemCount,

@@ -8,7 +8,7 @@ import '../../l10n/app_localizations.dart';
 import '../auth/auth_provider.dart';
 
 class EditProfileScreen extends StatefulWidget {
-  const EditProfileScreen({Key? key}) : super(key: key);
+  const EditProfileScreen({super.key});
 
   @override
   State<EditProfileScreen> createState() => _EditProfileScreenState();
@@ -120,7 +120,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       final userId = supabase.auth.currentUser?.id;
       if (userId == null) return null;
 
-      final fileName = 'profile_$userId\_${DateTime.now().millisecondsSinceEpoch}.jpg';
+      final fileName = 'profile_${userId}_${DateTime.now().millisecondsSinceEpoch}.jpg';
       final path = 'customer_profiles/$fileName';
 
       await supabase.storage
@@ -211,7 +211,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           backgroundColor: AppTheme.primaryNavy,
           foregroundColor: Colors.white,
         ),
-        body: Center(child: CircularProgressIndicator(color: AppTheme.primaryNavy)),
+        body: const Center(child: CircularProgressIndicator(color: AppTheme.primaryNavy)),
       );
     }
 
@@ -241,7 +241,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               ? NetworkImage(_profileImageUrl!)
                               : null) as ImageProvider?,
                       child: _selectedImage == null && _profileImageUrl == null
-                          ? Icon(
+                          ? const Icon(
                               Icons.person,
                               size: 60,
                               color: AppTheme.primaryNavy,
@@ -253,7 +253,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       right: 0,
                       child: Container(
                         padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           color: AppTheme.primaryNavy,
                           shape: BoxShape.circle,
                         ),

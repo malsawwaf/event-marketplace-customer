@@ -6,7 +6,7 @@ import '../../config/app_theme.dart';
 import 'add_edit_address_screen.dart';
 
 class AddressSelectionScreen extends StatefulWidget {
-  const AddressSelectionScreen({Key? key}) : super(key: key);
+  const AddressSelectionScreen({super.key});
 
   @override
   State<AddressSelectionScreen> createState() => _AddressSelectionScreenState();
@@ -54,7 +54,7 @@ class _AddressSelectionScreenState extends State<AddressSelectionScreen> {
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
-        final l10n = AppLocalizations.of(context)!;
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('${l10n.error}: $e')),
         );
@@ -91,7 +91,7 @@ class _AddressSelectionScreenState extends State<AddressSelectionScreen> {
   }
 
   Future<void> _deleteAddress(String addressId) async {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     final confirmed = await showDialog<bool>(
       context: context,
@@ -120,7 +120,7 @@ class _AddressSelectionScreenState extends State<AddressSelectionScreen> {
       await addressService.deleteAddress(addressId);
       
       if (mounted) {
-        final l10n = AppLocalizations.of(context)!;
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(l10n.addressDeletedSuccessfully)),
         );
@@ -128,7 +128,7 @@ class _AddressSelectionScreenState extends State<AddressSelectionScreen> {
       }
     } catch (e) {
       if (mounted) {
-        final l10n = AppLocalizations.of(context)!;
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('${l10n.error}: $e')),
         );
@@ -137,9 +137,9 @@ class _AddressSelectionScreenState extends State<AddressSelectionScreen> {
   }
 
   String _getLocalizedLabel(String? label) {
-    if (label == null) return AppLocalizations.of(context)!.addressLabel;
+    if (label == null) return AppLocalizations.of(context).addressLabel;
 
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     switch (label) {
       case 'Home':
         return l10n.addressTypeHome;
@@ -154,7 +154,7 @@ class _AddressSelectionScreenState extends State<AddressSelectionScreen> {
 
   void _confirmSelection() {
     if (_selectedAddressId == null) {
-      final l10n = AppLocalizations.of(context)!;
+      final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.pleaseSelectAddress)),
       );
@@ -170,7 +170,7 @@ class _AddressSelectionScreenState extends State<AddressSelectionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -208,7 +208,7 @@ class _AddressSelectionScreenState extends State<AddressSelectionScreen> {
   }
 
   Widget _buildEmptyState() {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     return Center(
       child: Column(
@@ -251,7 +251,7 @@ class _AddressSelectionScreenState extends State<AddressSelectionScreen> {
   }
 
   Widget _buildAddressCard(Map<String, dynamic> address) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final addressId = address['id'] as String;
     final labelKey = address['label'] as String;
     final label = _getLocalizedLabel(labelKey);
@@ -313,7 +313,7 @@ class _AddressSelectionScreenState extends State<AddressSelectionScreen> {
                                 ),
                                 child: Text(
                                   l10n.defaultLabel,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 10,
                                     color: AppTheme.primaryNavy,
                                     fontWeight: FontWeight.bold,
@@ -375,7 +375,7 @@ class _AddressSelectionScreenState extends State<AddressSelectionScreen> {
   }
 
   Widget _buildConfirmButton() {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     return Container(
       padding: const EdgeInsets.all(16),

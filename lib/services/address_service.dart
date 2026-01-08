@@ -13,10 +13,8 @@ class AddressService {
           .order('is_default', ascending: false)
           .order('created_at', ascending: false);
 
-      if (response is List) {
-        return response.map((item) => Map<String, dynamic>.from(item)).toList();
-      }
-
+      return response.map((item) => Map<String, dynamic>.from(item)).toList();
+    
       return [];
     } catch (e) {
       print('Error fetching addresses: $e');
@@ -214,10 +212,8 @@ class AddressService {
           .select('id')
           .eq('customer_id', customerId);
 
-      if (response is List) {
-        return response.length;
-      }
-
+      return response.length;
+    
       return 0;
     } catch (e) {
       print('Error getting address count: $e');

@@ -54,7 +54,7 @@ class PaymobIntentionService {
       }
 
       print('🔵 Creating Paymob Intention...');
-      print('Amount: ${amount} SAR (${amountInCents} cents)');
+      print('Amount: $amount SAR ($amountInCents cents)');
       print('Integration ID: ${PaymobConfig.cardIntegrationId}');
 
       // Make POST request to Intention API

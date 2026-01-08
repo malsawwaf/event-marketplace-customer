@@ -11,9 +11,9 @@ import '../../l10n/app_localizations.dart';
 class MainHomeScreen extends StatefulWidget {
   final VoidCallback? onCartUpdate;
   const MainHomeScreen({
-    Key? key,
+    super.key,
     this.onCartUpdate,
-  }) : super(key: key);
+  });
 
   @override
   State<MainHomeScreen> createState() => _MainHomeScreenState();

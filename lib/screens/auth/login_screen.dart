@@ -3,15 +3,14 @@ import 'package:provider/provider.dart';
 import '../../config/app_theme.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/language_service.dart';
-import '../../services/notification_service.dart';
 import 'auth_provider.dart';
 import 'register_screen.dart';
 import 'forgot_password_screen.dart';
 import 'profile_completion_screen.dart';
-import '../home/bottom_nav_screen.dart'; // ✅ This import gives us access to bottomNavKey
+import '../home/bottom_nav_screen.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+  const LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -48,15 +47,11 @@ class _LoginScreenState extends State<LoginScreen> {
       if (!mounted) return;
 
       if (hasProfile) {
-        // Initialize notifications for authenticated user
-        context.read<NotificationService>().initialize();
-        context.read<NotificationService>().loadUnreadCount();
-
-        // ✅ FIXED: Navigate to home with global key
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (_) => BottomNavScreen(key: bottomNavKey), // ✅ Added key
-          ),
+        // Navigate to home - clear entire navigation stack
+        // Note: Notification initialization moved to add-to-cart flow
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => BottomNavScreen(key: bottomNavKey)),
+          (route) => false,
         );
       } else {
         // Navigate to profile completion
@@ -91,7 +86,7 @@ class _LoginScreenState extends State<LoginScreen> {
           Padding(
             padding: const EdgeInsets.only(right: 8),
             child: IconButton(
-              icon: Icon(
+              icon: const Icon(
                 Icons.language,
                 color: AppTheme.primaryNavy,
                 size: 28,
@@ -120,7 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     width: 100,
                     height: 100,
                     errorBuilder: (context, error, stackTrace) {
-                      return Icon(
+                      return const Icon(
                         Icons.celebration,
                         size: 100,
                         color: AppTheme.primaryNavy,
@@ -132,7 +127,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 // Welcome text
                 Text(
                   l10n.welcomeBack,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
                     color: AppTheme.primaryNavy,
@@ -142,7 +137,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 8),
                 Text(
                   l10n.signInToContinue,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 16,
                     color: AppTheme.textSecondary,
                   ),
@@ -156,13 +151,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   decoration: InputDecoration(
                     labelText: l10n.email,
                     hintText: l10n.enterYourEmail,
-                    prefixIcon: Icon(Icons.email_outlined, color: AppTheme.primaryNavy),
+                    prefixIcon: const Icon(Icons.email_outlined, color: AppTheme.primaryNavy),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: AppTheme.primaryNavy, width: 2),
+                      borderSide: const BorderSide(color: AppTheme.primaryNavy, width: 2),
                     ),
                   ),
                   validator: (value) {
@@ -183,7 +178,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   decoration: InputDecoration(
                     labelText: l10n.password,
                     hintText: l10n.enterYourPassword,
-                    prefixIcon: Icon(Icons.lock_outlined, color: AppTheme.primaryNavy),
+                    prefixIcon: const Icon(Icons.lock_outlined, color: AppTheme.primaryNavy),
                     suffixIcon: IconButton(
                       icon: Icon(
                         _obscurePassword
@@ -202,7 +197,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: AppTheme.primaryNavy, width: 2),
+                      borderSide: const BorderSide(color: AppTheme.primaryNavy, width: 2),
                     ),
                   ),
                   validator: (value) {
@@ -274,7 +269,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
                         l10n.or,
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: AppTheme.textSecondary,
                           fontWeight: FontWeight.w500,
                         ),
@@ -295,7 +290,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    side: BorderSide(color: AppTheme.primaryNavy, width: 2),
+                    side: const BorderSide(color: AppTheme.primaryNavy, width: 2),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),

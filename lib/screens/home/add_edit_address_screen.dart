@@ -8,9 +8,9 @@ class AddEditAddressScreen extends StatefulWidget {
   final Map<String, dynamic>? existingAddress;
 
   const AddEditAddressScreen({
-    Key? key,
+    super.key,
     this.existingAddress,
-  }) : super(key: key);
+  });
 
   @override
   State<AddEditAddressScreen> createState() => _AddEditAddressScreenState();
@@ -226,7 +226,7 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.location_on, color: AppTheme.primaryNavy),
+                        const Icon(Icons.location_on, color: AppTheme.primaryNavy),
                         const SizedBox(width: 8),
                         Text(
                           l10n.location,
@@ -268,7 +268,7 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
               value: _isDefault,
               onChanged: (value) => setState(() => _isDefault = value),
               secondary: const Icon(Icons.bookmark),
-              activeColor: AppTheme.primaryNavy,
+              activeThumbColor: AppTheme.primaryNavy,
             ),
             const SizedBox(height: 24),
 

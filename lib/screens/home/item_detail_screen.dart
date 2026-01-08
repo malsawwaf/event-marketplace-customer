@@ -1,20 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../services/items_service.dart';
 import '../../services/stock_service.dart';
 import '../../services/cart_service.dart';
 import '../../services/favourites_service.dart';
+import '../../services/notification_service.dart';
 import '../../config/app_theme.dart';
 import '../../l10n/app_localizations.dart';
 import '../../utils/cities.dart';
+import 'bottom_nav_screen.dart';
 
 class ItemDetailScreen extends StatefulWidget {
   final String itemId;
 
   const ItemDetailScreen({
-    Key? key,
+    super.key,
     required this.itemId,
-  }) : super(key: key);
+  });
 
   @override
   State<ItemDetailScreen> createState() => _ItemDetailScreenState();
@@ -33,7 +36,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
   // Map of group ID to set of selected option IDs
   final Map<String, Set<String>> _selectedAddonOptions = {};
   String? _notes;
-  int _currentPhotoIndex = 0;
+  final int _currentPhotoIndex = 0;
 
   @override
   void initState() {
@@ -200,16 +203,30 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
         final l10n = AppLocalizations.of(context);
         setState(() => _isAddingToCart = false);
 
-        // Show success and navigate back
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.addToCart),
-            backgroundColor: Colors.green,
-            duration: const Duration(seconds: 2),
-          ),
-        );
+        // Refresh cart badge immediately
+        bottomNavKey.currentState?.refreshCartCount();
 
-        Navigator.pop(context, true); // Return true to indicate cart was updated
+        // Initialize notifications (request permission) after first add-to-cart
+        // This is contextually relevant - user will want order updates
+        try {
+          final notificationService = Provider.of<NotificationService>(context, listen: false);
+          await notificationService.initialize();
+        } catch (e) {
+          debugPrint('Error initializing notifications: $e');
+        }
+
+        // Show success and navigate back
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(l10n.addToCart),
+              backgroundColor: Colors.green,
+              duration: const Duration(seconds: 2),
+            ),
+          );
+
+          Navigator.pop(context, true); // Return true to indicate cart was updated
+        }
       }
     } catch (e) {
       if (mounted) {
@@ -229,7 +246,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
     if (_isLoading) {
       return Scaffold(
         appBar: AppBar(title: Text(l10n.itemDetails)),
-        body: Center(child: CircularProgressIndicator()),
+        body: const Center(child: CircularProgressIndicator()),
       );
     }
 

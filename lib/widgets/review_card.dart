@@ -6,9 +6,9 @@ class ReviewCard extends StatelessWidget {
   final Map<String, dynamic> review;
 
   const ReviewCard({
-    Key? key,
+    super.key,
     required this.review,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

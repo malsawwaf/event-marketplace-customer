@@ -135,7 +135,7 @@ class CartService {
           .select('id, name, additional_price')
           .inFilter('id', addonIds);
 
-      if (addons is List && addons.isNotEmpty) {
+      if (addons.isNotEmpty) {
         final addonInserts = addons.map((addon) => {
               'cart_item_id': cartItemId,
               'item_addon_id': addon['id'],
@@ -244,9 +244,10 @@ class CartService {
     }
   }
 
-  /// Get customer's cart with all items, add-ons, and provider details
+  /// Get customer's cart with all items, add-ons, and provider details (optimized)
   Future<List<Map<String, dynamic>>> getCustomerCarts(String customerId) async {
     try {
+      // Single query to get all carts with items, using nested selects
       final carts = await _supabase
           .from('cart')
           .select('''
@@ -261,26 +262,8 @@ class CartService {
               store_location,
               price_range,
               order_acceptance_timer_minutes
-            )
-          ''')
-          .eq('customer_id', customerId)
-          .order('created_at', ascending: false);
-
-      if (carts is! List || carts.isEmpty) {
-        return [];
-      }
-
-      // Fetch cart items for each cart
-      List<Map<String, dynamic>> cartsWithItems = [];
-
-      for (final cart in carts) {
-        final cartData = Map<String, dynamic>.from(cart);
-        final cartId = cartData['id'] as String;
-
-        // Get cart items with item details, add-ons, and reservations
-        final items = await _supabase
-            .from('cart_items')
-            .select('''
+            ),
+            cart_items(
               id,
               item_id,
               quantity,
@@ -299,38 +282,61 @@ class CartService {
                 stock_quantity,
                 min_order_quantity,
                 max_order_quantity
+              ),
+              cart_item_addons(
+                id,
+                item_addon_id,
+                addon_name,
+                additional_price
+              ),
+              stock_reservations(
+                expires_at,
+                status
               )
-            ''')
-            .eq('cart_id', cartId);
+            )
+          ''')
+          .eq('customer_id', customerId)
+          .order('created_at', ascending: false);
 
-        if (items is List && items.isNotEmpty) {
-          // Fetch add-ons and reservations for each item
-          for (var i = 0; i < items.length; i++) {
-            final itemData = Map<String, dynamic>.from(items[i]);
-            final cartItemId = itemData['id'] as String;
+      if (carts.isEmpty) {
+        return [];
+      }
 
-            // Get add-ons
-            final addons = await _supabase
-                .from('cart_item_addons')
-                .select()
-                .eq('cart_item_id', cartItemId);
+      // Process the results to match expected format
+      List<Map<String, dynamic>> cartsWithItems = [];
 
-            itemData['addons'] = addons is List ? addons : [];
+      for (final cart in carts) {
+        final cartData = Map<String, dynamic>.from(cart);
+        final cartItems = cartData['cart_items'] as List<dynamic>?;
 
-            // Get reservation status
-            final reservation = await _supabase
-                .from('stock_reservations')
-                .select('expires_at, status')
-                .eq('cart_item_id', cartItemId)
-                .eq('status', 'active')
-                .maybeSingle();
+        if (cartItems != null && cartItems.isNotEmpty) {
+          // Process each cart item
+          final processedItems = cartItems.map((item) {
+            final itemData = Map<String, dynamic>.from(item);
 
-            itemData['reservation'] = reservation;
+            // Rename cart_item_addons to addons for compatibility
+            itemData['addons'] = itemData['cart_item_addons'] ?? [];
+            itemData.remove('cart_item_addons');
 
-            items[i] = itemData;
-          }
+            // Get active reservation (filter for active status)
+            final reservations = itemData['stock_reservations'] as List<dynamic>?;
+            if (reservations != null && reservations.isNotEmpty) {
+              // Find active reservation
+              final activeReservation = reservations.cast<Map<String, dynamic>>().firstWhere(
+                (r) => r['status'] == 'active',
+                orElse: () => <String, dynamic>{},
+              );
+              itemData['reservation'] = activeReservation.isNotEmpty ? activeReservation : null;
+            } else {
+              itemData['reservation'] = null;
+            }
+            itemData.remove('stock_reservations');
 
-          cartData['items'] = items;
+            return itemData;
+          }).toList();
+
+          cartData['items'] = processedItems;
+          cartData.remove('cart_items');
           cartsWithItems.add(cartData);
         }
       }
@@ -392,7 +398,7 @@ class CartService {
           .eq('customer_id', customerId)
           .eq('status', 'expired');
 
-      if (expiredReservations is! List || expiredReservations.isEmpty) {
+      if (expiredReservations.isEmpty) {
         return [];
       }
 
@@ -412,33 +418,17 @@ class CartService {
     }
   }
 
-  /// Get cart item count for a customer
+  /// Get cart item count for a customer (optimized - single query)
   Future<int> getCartItemCount(String customerId) async {
     try {
-      final carts = await _supabase
-          .from('cart')
-          .select('id')
-          .eq('customer_id', customerId);
+      // Single query using JOIN - much faster than N+1 queries
+      final result = await _supabase
+          .from('cart_items')
+          .select('id, cart!inner(customer_id)')
+          .eq('cart.customer_id', customerId);
 
-      if (carts is! List || carts.isEmpty) {
-        return 0;
-      }
-
-      int totalCount = 0;
-      for (final cart in carts) {
-        final cartId = cart['id'] as String;
-        
-        final items = await _supabase
-            .from('cart_items')
-            .select('id')
-            .eq('cart_id', cartId);
-
-        if (items is List) {
-          totalCount += items.length;
-        }
-      }
-
-      return totalCount;
+      return result.length;
+          return 0;
     } catch (e) {
       print('Error getting cart item count: $e');
       return 0;
@@ -454,7 +444,7 @@ class CartService {
           .select('id')
           .eq('cart_id', cartId);
 
-      if (cartItems is List && cartItems.isNotEmpty) {
+      if (cartItems.isNotEmpty) {
         for (final item in cartItems) {
           await removeItemFromCart(item['id'] as String);
         }

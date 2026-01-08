@@ -45,26 +45,24 @@ class ItemsService {
           .order('category_id')
           .order('created_at', ascending: false);
 
-      if (response is List) {
-        final items = response.map((item) => Map<String, dynamic>.from(item)).toList();
+      final items = response.map((item) => Map<String, dynamic>.from(item)).toList();
 
-        // Group items by category name
-        final Map<String, List<Map<String, dynamic>>> groupedItems = {};
+      // Group items by category name
+      final Map<String, List<Map<String, dynamic>>> groupedItems = {};
 
-        for (final item in items) {
-          final categoryData = item['item_categories'] as Map<String, dynamic>?;
-          final categoryName = categoryData?['name'] as String? ?? 'Uncategorized';
+      for (final item in items) {
+        final categoryData = item['item_categories'] as Map<String, dynamic>?;
+        final categoryName = categoryData?['name'] as String? ?? 'Uncategorized';
 
-          if (!groupedItems.containsKey(categoryName)) {
-            groupedItems[categoryName] = [];
-          }
-
-          groupedItems[categoryName]!.add(item);
+        if (!groupedItems.containsKey(categoryName)) {
+          groupedItems[categoryName] = [];
         }
 
-        return groupedItems;
+        groupedItems[categoryName]!.add(item);
       }
 
+      return groupedItems;
+    
       return {};
     } catch (e) {
       print('Error fetching items: $e');
@@ -169,10 +167,8 @@ class ItemsService {
       // Apply sorting
       final response = await query.order(sortBy ?? 'created_at', ascending: ascending);
 
-      if (response is List) {
-        return response.map((item) => Map<String, dynamic>.from(item)).toList();
-      }
-
+      return response.map((item) => Map<String, dynamic>.from(item)).toList();
+    
       return [];
     } catch (e) {
       print('Error fetching all items: $e');
@@ -207,10 +203,8 @@ class ItemsService {
           .eq('item_id', itemId)
           .order('display_order');
 
-      if (response is List) {
-        return response.map((group) => Map<String, dynamic>.from(group)).toList();
-      }
-
+      return response.map((group) => Map<String, dynamic>.from(group)).toList();
+    
       return [];
     } catch (e) {
       print('Error fetching item add-on groups: $e');
@@ -245,10 +239,8 @@ class ItemsService {
           .eq('is_required', true)
           .order('display_order');
 
-      if (response is List) {
-        return response.map((group) => Map<String, dynamic>.from(group)).toList();
-      }
-
+      return response.map((group) => Map<String, dynamic>.from(group)).toList();
+    
       return [];
     } catch (e) {
       print('Error fetching required add-on groups: $e');
@@ -283,10 +275,8 @@ class ItemsService {
           .eq('is_required', false)
           .order('display_order');
 
-      if (response is List) {
-        return response.map((group) => Map<String, dynamic>.from(group)).toList();
-      }
-
+      return response.map((group) => Map<String, dynamic>.from(group)).toList();
+    
       return [];
     } catch (e) {
       print('Error fetching optional add-on groups: $e');
@@ -304,10 +294,8 @@ class ItemsService {
           .eq('is_required', true)
           .limit(1);
 
-      if (response is List) {
-        return response.isNotEmpty;
-      }
-
+      return response.isNotEmpty;
+    
       return false;
     } catch (e) {
       print('Error checking required add-on groups: $e');
@@ -317,7 +305,7 @@ class ItemsService {
 
   /// Get pricing type label for display
   String getPricingTypeLabel(String pricingType, BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     switch (pricingType) {
       case 'per_day':
         return l10n.perDay;
@@ -378,10 +366,8 @@ class ItemsService {
           .order('created_at', ascending: false)
           .limit(limit);
 
-      if (response is List) {
-        return response.map((item) => Map<String, dynamic>.from(item)).toList();
-      }
-
+      return response.map((item) => Map<String, dynamic>.from(item)).toList();
+    
       return [];
     } catch (e) {
       print('Error fetching featured items: $e');

@@ -9,7 +9,7 @@ import '../../widgets/map_location_picker.dart';
 class AddEditAddressScreen extends StatefulWidget {
   final Map<String, dynamic>? address;
 
-  const AddEditAddressScreen({Key? key, this.address}) : super(key: key);
+  const AddEditAddressScreen({super.key, this.address});
 
   @override
   State<AddEditAddressScreen> createState() => _AddEditAddressScreenState();
@@ -137,7 +137,7 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
       final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${l10n.pleaseSelectAddress}'),
+          content: Text(l10n.pleaseSelectAddress),
           backgroundColor: Colors.orange,
         ),
       );
@@ -300,7 +300,7 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
                                 ),
                               ],
                               const SizedBox(height: 4),
-                              Text(
+                              const Text(
                                 'Tap to change location',
                                 style: TextStyle(
                                   fontSize: 11,

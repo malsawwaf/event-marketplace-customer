@@ -11,9 +11,9 @@ class OrderDetailScreen extends StatefulWidget {
   final String orderId;
 
   const OrderDetailScreen({
-    Key? key,
+    super.key,
     required this.orderId,
-  }) : super(key: key);
+  });
 
   @override
   State<OrderDetailScreen> createState() => _OrderDetailScreenState();
@@ -65,7 +65,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
-        final l10n = AppLocalizations.of(context)!;
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('${l10n.error}: $e')),
         );
@@ -89,7 +89,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     if (_isLoading) {
       return Scaffold(
@@ -98,7 +98,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
           backgroundColor: AppTheme.primaryNavy,
           foregroundColor: Colors.white,
         ),
-        body: Center(child: CircularProgressIndicator(color: AppTheme.primaryNavy)),
+        body: const Center(child: CircularProgressIndicator(color: AppTheme.primaryNavy)),
       );
     }
 
@@ -174,7 +174,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   }
 
   Widget _buildStatusTimeline() {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final status = _order!['status'] as String;
     final createdAt = DateTime.parse(_order!['created_at']);
 
@@ -347,7 +347,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   }
 
   Widget _buildProviderSection(Map<String, dynamic> provider) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     final companyName = isArabic && provider['trading_name'] != null
         ? provider['trading_name'] as String
@@ -417,7 +417,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   }
 
   Widget _buildDeliverySection() {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final deliveryAddress = _order!['delivery_address'] as String;
     final eventDate = _order!['event_date'] != null
         ? DateTime.parse(_order!['event_date'])
@@ -440,7 +440,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.location_on, color: AppTheme.primaryNavy),
+                const Icon(Icons.location_on, color: AppTheme.primaryNavy),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -467,7 +467,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
               const SizedBox(height: 16),
               Row(
                 children: [
-                  Icon(Icons.event, color: AppTheme.primaryNavy),
+                  const Icon(Icons.event, color: AppTheme.primaryNavy),
                   const SizedBox(width: 12),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -496,7 +496,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   }
 
   Widget _buildOrderItemsSection(List<dynamic> orderItems) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     return Card(
       child: Padding(
@@ -710,7 +710,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   }
 
   Widget _buildPricingBreakdown() {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final subtotal = (_order!['subtotal'] as num).toDouble();
     final vatAmount = (_order!['vat_amount'] as num).toDouble();
     final deliveryFee = (_order!['delivery_fee'] as num).toDouble();
@@ -800,7 +800,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   }
 
   Widget _buildPaymentSection() {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final paymentMethod = _order!['payment_method'] as String?;
     final paymentStatus = _order!['payment_status'] as String;
 
@@ -862,7 +862,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   }
 
   Widget _buildCancelButton() {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return SizedBox(
       width: double.infinity,
       height: 50,
@@ -885,7 +885,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   }
 
   Widget _buildReviewButton() {
-  final l10n = AppLocalizations.of(context)!;
+  final l10n = AppLocalizations.of(context);
   return FutureBuilder<bool>(
     future: _reviewsService.hasReviewedOrder(
       widget.orderId,
@@ -995,7 +995,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   }
 
   void _showCancelDialog() {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     showDialog(
       context: context,
@@ -1029,7 +1029,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
       await _ordersService.cancelOrder(widget.orderId);
 
       if (mounted) {
-        final l10n = AppLocalizations.of(context)!;
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('${l10n.cancelOrder} ${l10n.success.toLowerCase()}'),
@@ -1037,12 +1037,15 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
           ),
         );
         // Pop back to orders list and pass true to indicate refresh needed
-        Navigator.pop(context, true);
+        // Check if we can pop before attempting
+        if (Navigator.of(context).canPop()) {
+          Navigator.of(context).pop(true);
+        }
       }
     } catch (e) {
       if (mounted) {
         setState(() => _isCancelling = false);
-        final l10n = AppLocalizations.of(context)!;
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('${l10n.error}: $e'),

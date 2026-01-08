@@ -8,15 +8,18 @@ import 'order_detail_screen.dart';
 import 'submit_review_screen.dart';
 import 'dart:async';
 
+// Global key to access OrdersListScreen for refreshing
+final GlobalKey<_OrdersListScreenState> ordersListKey = GlobalKey<_OrdersListScreenState>();
+
 class OrdersListScreen extends StatefulWidget {
-  const OrdersListScreen({Key? key}) : super(key: key);
+  const OrdersListScreen({super.key});
 
   @override
   State<OrdersListScreen> createState() => _OrdersListScreenState();
 }
 
 class _OrdersListScreenState extends State<OrdersListScreen>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   final _supabase = Supabase.instance.client;
   final _ordersService = OrdersService();
   final _reviewsService = ReviewsService();
@@ -26,10 +29,12 @@ class _OrdersListScreenState extends State<OrdersListScreen>
   bool _isLoading = true;
   RealtimeChannel? _ordersChannel;
   Timer? _timer;
+  String? _cancellingOrderId; // Track which order is being cancelled
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _tabController = TabController(length: 5, vsync: this);
     _loadOrders();
     _setupRealtimeSubscription();
@@ -37,7 +42,21 @@ class _OrdersListScreenState extends State<OrdersListScreen>
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Refresh orders when app comes back to foreground
+    if (state == AppLifecycleState.resumed) {
+      _loadOrders();
+    }
+  }
+
+  /// Public method to refresh orders (can be called from outside)
+  void refreshOrders() {
+    _loadOrders();
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _tabController.dispose();
     _ordersChannel?.unsubscribe();
     _timer?.cancel();
@@ -68,7 +87,7 @@ class _OrdersListScreenState extends State<OrdersListScreen>
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
-        final l10n = AppLocalizations.of(context)!;
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('${l10n.error}: $e')),
         );
@@ -112,7 +131,7 @@ class _OrdersListScreenState extends State<OrdersListScreen>
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -144,7 +163,7 @@ class _OrdersListScreenState extends State<OrdersListScreen>
         ),
       ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator(color: AppTheme.primaryNavy))
+          ? const Center(child: CircularProgressIndicator(color: AppTheme.primaryNavy))
           : TabBarView(
               controller: _tabController,
               children: [
@@ -179,7 +198,7 @@ class _OrdersListScreenState extends State<OrdersListScreen>
   }
 
   Widget _buildOrdersList(List<Map<String, dynamic>> orders) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     if (orders.isEmpty) {
       return ListView(
@@ -232,7 +251,7 @@ class _OrdersListScreenState extends State<OrdersListScreen>
 
   Widget _buildOrderCard(Map<String, dynamic> order) {
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final orderId = order['id'] as String;
     final orderNumber = order['order_number'] as String;
     final status = order['status'] as String;
@@ -343,7 +362,7 @@ class _OrdersListScreenState extends State<OrdersListScreen>
                     children: [
                       Text(
                         totalAmount.toStringAsFixed(2),
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                           color: AppTheme.primaryNavy,
@@ -394,8 +413,19 @@ class _OrdersListScreenState extends State<OrdersListScreen>
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton.icon(
-                    onPressed: () => _showCancelDialog(orderId),
-                    icon: const Icon(Icons.cancel_outlined, size: 18),
+                    onPressed: _cancellingOrderId == orderId
+                        ? null
+                        : () => _showCancelDialog(orderId),
+                    icon: _cancellingOrderId == orderId
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.red,
+                            ),
+                          )
+                        : const Icon(Icons.cancel_outlined, size: 18),
                     label: Text(l10n.cancelOrder),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Colors.red,
@@ -537,7 +567,7 @@ class _OrdersListScreenState extends State<OrdersListScreen>
   }
 
   void _showCancelDialog(String orderId) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     showDialog(
       context: context,
@@ -565,23 +595,31 @@ class _OrdersListScreenState extends State<OrdersListScreen>
   }
 
   Future<void> _cancelOrder(String orderId) async {
-    try {
-      // Show loading dialog
-      if (mounted) {
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) => const Center(
-            child: CircularProgressIndicator(),
-          ),
-        );
-      }
+    // Prevent double-pressing
+    if (_cancellingOrderId != null) return;
 
+    setState(() => _cancellingOrderId = orderId);
+
+    // Show loading dialog and store the navigator
+    final navigator = Navigator.of(context, rootNavigator: true);
+
+    if (mounted) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        useRootNavigator: true,
+        builder: (dialogContext) => const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    try {
       await _ordersService.cancelOrder(orderId);
 
       if (mounted) {
-        Navigator.pop(context); // Close loading dialog
-        final l10n = AppLocalizations.of(context)!;
+        navigator.pop(); // Close loading dialog using root navigator
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('${l10n.cancelOrder} ${l10n.success.toLowerCase()}'),
@@ -593,14 +631,18 @@ class _OrdersListScreenState extends State<OrdersListScreen>
       }
     } catch (e) {
       if (mounted) {
-        Navigator.pop(context); // Close loading dialog
-        final l10n = AppLocalizations.of(context)!;
+        navigator.pop(); // Close loading dialog using root navigator
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${l10n.error}: $e'),
+            content: Text('${l10n.error}: ${e.toString().replaceAll('Exception: ', '')}'),
             backgroundColor: Colors.red,
           ),
         );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _cancellingOrderId = null);
       }
     }
   }

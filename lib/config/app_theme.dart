@@ -37,17 +37,17 @@ class AppTheme {
       useMaterial3: true,
 
       // App Bar Theme
-      appBarTheme: AppBarTheme(
+      appBarTheme: const AppBarTheme(
         backgroundColor: primaryNavy,
         foregroundColor: Colors.white,
         elevation: 0,
         centerTitle: false,
-        titleTextStyle: const TextStyle(
+        titleTextStyle: TextStyle(
           color: Colors.white,
           fontSize: 20,
           fontWeight: FontWeight.w600,
         ),
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: IconThemeData(color: Colors.white),
       ),
 
       // Elevated Button Theme
@@ -175,7 +175,7 @@ class AppTheme {
       ),
 
       // Icon Theme
-      iconTheme: IconThemeData(
+      iconTheme: const IconThemeData(
         color: textPrimary,
         size: 24,
       ),

@@ -153,7 +153,7 @@ class SaudiCities {
       return 'Dammam';
     }
 
-    // Default to Jeddah if can't determine
-    return 'Jeddah';
+    // Default to Riyadh (capital city) if can't determine
+    return 'Riyadh';
   }
 }

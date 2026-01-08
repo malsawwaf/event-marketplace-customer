@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../config/app_theme.dart';
 import '../../l10n/app_localizations.dart';
-import '../../services/notification_service.dart';
 import 'auth_provider.dart';
 import '../home/bottom_nav_screen.dart';
 
 class ProfileCompletionScreen extends StatefulWidget {
-  const ProfileCompletionScreen({Key? key}) : super(key: key);
+  const ProfileCompletionScreen({super.key});
 
   @override
   State<ProfileCompletionScreen> createState() =>
@@ -41,13 +40,11 @@ class _ProfileCompletionScreenState extends State<ProfileCompletionScreen> {
     if (!mounted) return;
 
     if (success) {
-      // Initialize notifications for authenticated user
-      context.read<NotificationService>().initialize();
-      context.read<NotificationService>().loadUnreadCount();
-
-      // Navigate to home
-      Navigator.of(context).pushReplacement(
+      // Navigate to home - clear entire navigation stack
+      // Note: Notification initialization moved to add-to-cart flow
+      Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (_) => BottomNavScreen(key: bottomNavKey)),
+        (route) => false, // Remove all previous routes
       );
     } else {
       // Show error
@@ -80,7 +77,7 @@ class _ProfileCompletionScreenState extends State<ProfileCompletionScreen> {
                     width: 80,
                     height: 80,
                     errorBuilder: (context, error, stackTrace) {
-                      return Icon(
+                      return const Icon(
                         Icons.person_add_alt_1,
                         size: 80,
                         color: AppTheme.primaryNavy,
@@ -92,7 +89,7 @@ class _ProfileCompletionScreenState extends State<ProfileCompletionScreen> {
                 // Title
                 Text(
                   AppLocalizations.of(context).completeYourProfile,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
                     color: AppTheme.primaryNavy,
@@ -102,7 +99,7 @@ class _ProfileCompletionScreenState extends State<ProfileCompletionScreen> {
                 const SizedBox(height: 8),
                 Text(
                   AppLocalizations.of(context).almostThere,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 16,
                     color: AppTheme.textSecondary,
                   ),
@@ -116,13 +113,13 @@ class _ProfileCompletionScreenState extends State<ProfileCompletionScreen> {
                   decoration: InputDecoration(
                     labelText: AppLocalizations.of(context).firstName,
                     hintText: AppLocalizations.of(context).enterYourFirstName,
-                    prefixIcon: Icon(Icons.person_outlined, color: AppTheme.primaryNavy),
+                    prefixIcon: const Icon(Icons.person_outlined, color: AppTheme.primaryNavy),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: AppTheme.primaryNavy, width: 2),
+                      borderSide: const BorderSide(color: AppTheme.primaryNavy, width: 2),
                     ),
                   ),
                   validator: (value) {
@@ -143,13 +140,13 @@ class _ProfileCompletionScreenState extends State<ProfileCompletionScreen> {
                   decoration: InputDecoration(
                     labelText: AppLocalizations.of(context).lastName,
                     hintText: AppLocalizations.of(context).enterYourLastName,
-                    prefixIcon: Icon(Icons.person_outlined, color: AppTheme.primaryNavy),
+                    prefixIcon: const Icon(Icons.person_outlined, color: AppTheme.primaryNavy),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: AppTheme.primaryNavy, width: 2),
+                      borderSide: const BorderSide(color: AppTheme.primaryNavy, width: 2),
                     ),
                   ),
                   validator: (value) {
@@ -170,13 +167,13 @@ class _ProfileCompletionScreenState extends State<ProfileCompletionScreen> {
                   decoration: InputDecoration(
                     labelText: AppLocalizations.of(context).phoneNumber,
                     hintText: AppLocalizations.of(context).phoneHint,
-                    prefixIcon: Icon(Icons.phone_outlined, color: AppTheme.primaryNavy),
+                    prefixIcon: const Icon(Icons.phone_outlined, color: AppTheme.primaryNavy),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: AppTheme.primaryNavy, width: 2),
+                      borderSide: const BorderSide(color: AppTheme.primaryNavy, width: 2),
                     ),
                   ),
                   validator: (value) {
@@ -218,7 +215,7 @@ class _ProfileCompletionScreenState extends State<ProfileCompletionScreen> {
                             )
                           : Text(
                               AppLocalizations.of(context).next,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -230,7 +227,7 @@ class _ProfileCompletionScreenState extends State<ProfileCompletionScreen> {
                 // Info text
                 Text(
                   AppLocalizations.of(context).letsGetStarted,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 14,
                     color: AppTheme.textSecondary,
                   ),

@@ -14,12 +14,12 @@ class CategoryProvidersScreen extends StatefulWidget {
   final String selectedCity;
 
   const CategoryProvidersScreen({
-    Key? key,
+    super.key,
     required this.category,
     required this.categoryName,
     this.categoryNameAr,
     required this.selectedCity,
-  }) : super(key: key);
+  });
 
   @override
   State<CategoryProvidersScreen> createState() => _CategoryProvidersScreenState();
@@ -161,7 +161,7 @@ class _CategoryProvidersScreenState extends State<CategoryProvidersScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
+                const Icon(
                   Icons.location_on,
                   color: AppTheme.secondaryCoral,
                   size: 20,
@@ -238,7 +238,7 @@ class _CategoryProvidersScreenState extends State<CategoryProvidersScreen> {
                               label: Text(l10n.city),
                               style: OutlinedButton.styleFrom(
                                 foregroundColor: AppTheme.primaryNavy,
-                                side: BorderSide(color: AppTheme.primaryNavy),
+                                side: const BorderSide(color: AppTheme.primaryNavy),
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 24,
                                   vertical: 12,
@@ -260,7 +260,7 @@ class _CategoryProvidersScreenState extends State<CategoryProvidersScreen> {
                                   padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                                   child: Row(
                                     children: [
-                                      Icon(
+                                      const Icon(
                                         Icons.star,
                                         color: AppTheme.secondaryCoral,
                                         size: 24,
@@ -268,7 +268,7 @@ class _CategoryProvidersScreenState extends State<CategoryProvidersScreen> {
                                       const SizedBox(width: 8),
                                       Text(
                                         l10n.featured,
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                           fontSize: 20,
                                           fontWeight: FontWeight.bold,
                                           color: AppTheme.primaryNavy,
@@ -313,7 +313,7 @@ class _CategoryProvidersScreenState extends State<CategoryProvidersScreen> {
                                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
                                 child: Text(
                                   l10n.providers,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
                                     color: AppTheme.primaryNavy,
@@ -326,7 +326,7 @@ class _CategoryProvidersScreenState extends State<CategoryProvidersScreen> {
                                   children: [
                                     Text(
                                       l10n.sortBy,
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         fontSize: 14,
                                         color: AppTheme.textSecondary,
                                         fontWeight: FontWeight.w500,
@@ -344,12 +344,12 @@ class _CategoryProvidersScreenState extends State<CategoryProvidersScreen> {
                                           value: _sortBy,
                                           isExpanded: true,
                                           underline: Container(),
-                                          icon: Icon(
+                                          icon: const Icon(
                                             Icons.keyboard_arrow_down,
                                             color: AppTheme.primaryNavy,
                                             size: 20,
                                           ),
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             color: AppTheme.primaryNavy,
                                             fontSize: 14,
                                             fontWeight: FontWeight.w500,

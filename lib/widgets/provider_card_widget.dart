@@ -9,10 +9,10 @@ class ProviderCardWidget extends StatefulWidget {
   final VoidCallback? onTap;
 
   const ProviderCardWidget({
-    Key? key,
+    super.key,
     required this.provider,
     this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   State<ProviderCardWidget> createState() => _ProviderCardWidgetState();
@@ -247,7 +247,7 @@ class _ProviderCardWidgetState extends State<ProviderCardWidget> {
                       ? Container(
                           width: 36,
                           height: 36,
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             color: Colors.white,
                             shape: BoxShape.circle,
                           ),

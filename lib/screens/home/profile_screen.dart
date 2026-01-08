@@ -11,7 +11,7 @@ import '../profile/settings_screen.dart';
 import '../profile/help_support_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+  const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +69,7 @@ class ProfileScreen extends StatelessWidget {
         ],
       ),
       body: profile == null
-          ? Center(child: CircularProgressIndicator(color: AppTheme.primaryNavy))
+          ? const Center(child: CircularProgressIndicator(color: AppTheme.primaryNavy))
           : SingleChildScrollView(
               padding: const EdgeInsets.all(24),
               child: Column(
@@ -82,7 +82,7 @@ class ProfileScreen extends StatelessWidget {
                         ? NetworkImage(profile['profile_image_url'])
                         : null,
                     child: profile['profile_image_url'] == null
-                        ? Icon(
+                        ? const Icon(
                             Icons.person,
                             size: 60,
                             color: AppTheme.primaryNavy,

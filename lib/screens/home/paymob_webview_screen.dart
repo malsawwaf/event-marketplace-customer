@@ -9,10 +9,10 @@ class PaymobWebViewScreen extends StatefulWidget {
   final String orderNumber;
 
   const PaymobWebViewScreen({
-    Key? key,
+    super.key,
     required this.paymentUrl,
     required this.orderNumber,
-  }) : super(key: key);
+  });
 
   @override
   State<PaymobWebViewScreen> createState() => _PaymobWebViewScreenState();

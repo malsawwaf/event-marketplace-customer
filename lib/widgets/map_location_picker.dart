@@ -30,11 +30,11 @@ class MapLocationPicker extends StatefulWidget {
   final bool returnAddressInfo; // If true, returns LocationPickerResult instead of LatLng
 
   const MapLocationPicker({
-    Key? key,
+    super.key,
     this.initialLatitude,
     this.initialLongitude,
     this.returnAddressInfo = false,
-  }) : super(key: key);
+  });
 
   @override
   State<MapLocationPicker> createState() => _MapLocationPickerState();
@@ -376,7 +376,7 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
+                const Icon(
                   Icons.location_pin,
                   size: 50,
                   color: AppTheme.primaryNavy,
@@ -426,7 +426,7 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                     decoration: InputDecoration(
                       hintText: l10n.searchAddress,
                       hintStyle: TextStyle(color: Colors.grey[500]),
-                      prefixIcon: Icon(Icons.search, color: AppTheme.primaryNavy),
+                      prefixIcon: const Icon(Icons.search, color: AppTheme.primaryNavy),
                       suffixIcon: _isSearching
                           ? const Padding(
                               padding: EdgeInsets.all(12.0),
@@ -477,7 +477,7 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                       itemBuilder: (context, index) {
                         final result = _searchResults[index];
                         return ListTile(
-                          leading: Icon(Icons.location_on, color: AppTheme.secondaryCoral),
+                          leading: const Icon(Icons.location_on, color: AppTheme.secondaryCoral),
                           title: Text(
                             result['address'] ?? 'Unknown address',
                             style: const TextStyle(fontSize: 14),
@@ -520,7 +520,7 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                       children: [
                         Row(
                           children: [
-                            Icon(Icons.touch_app, color: AppTheme.primaryNavy, size: 16),
+                            const Icon(Icons.touch_app, color: AppTheme.primaryNavy, size: 16),
                             const SizedBox(width: 6),
                             Text(
                               'Move the map to adjust location',
@@ -634,11 +634,11 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                       padding: const EdgeInsets.all(16),
                       child: Row(
                         children: [
-                          Icon(Icons.location_on, color: AppTheme.secondaryCoral),
+                          const Icon(Icons.location_on, color: AppTheme.secondaryCoral),
                           const SizedBox(width: 8),
                           Text(
                             l10n.selectCity,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
                               color: AppTheme.primaryNavy,

@@ -5,7 +5,7 @@ import '../../l10n/app_localizations.dart';
 import 'categories_screen.dart';
 import 'cart_screen.dart';
 import 'orders_list_screen.dart';
-import 'favourites_screen.dart';
+import 'favourites_screen.dart'; // Also exports favoritesScreenKey
 import 'profile_screen.dart';
 import '../../services/cart_service.dart';
 
@@ -16,9 +16,9 @@ class BottomNavScreen extends StatefulWidget {
   final int initialIndex;
   
   const BottomNavScreen({
-    Key? key,
+    super.key,
     this.initialIndex = 0,
-  }) : super(key: key);
+  });
 
   @override
   State<BottomNavScreen> createState() => _BottomNavScreenState();
@@ -66,6 +66,11 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
     }
   }
 
+  // ✅ Public method to refresh cart count immediately (call after add/update/remove)
+  void refreshCartCount() {
+    _loadCartCount();
+  }
+
   Future<void> _loadCartCount() async {
     final customerId = _supabase.auth.currentUser?.id;
     if (customerId == null) {
@@ -99,6 +104,16 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
     // Refresh cart count when switching to cart tab
     if (index == 1) {
       _loadCartCount();
+    }
+
+    // Refresh orders when switching to orders tab
+    if (index == 2) {
+      ordersListKey.currentState?.refreshOrders();
+    }
+
+    // Refresh favorites when switching to favorites tab
+    if (index == 3) {
+      favoritesScreenKey.currentState?.refreshFavorites();
     }
   }
 
@@ -134,15 +149,15 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
           children: [
             _buildNavigator(0, const CategoriesScreen()),
             _buildNavigator(1, const CartScreen()),
-            _buildNavigator(2, const OrdersListScreen()),
-            _buildNavigator(3, const FavoritesScreen()),
+            _buildNavigator(2, OrdersListScreen(key: ordersListKey)),
+            _buildNavigator(3, FavoritesScreen(key: favoritesScreenKey)),
             _buildNavigator(4, const ProfileScreen()),
           ],
         ),
         bottomNavigationBar: BottomNavigationBar(
           items: [
             BottomNavigationBarItem(
-              icon: Icon(Icons.home),
+              icon: const Icon(Icons.home),
               label: AppLocalizations.of(context).home,
             ),
             BottomNavigationBarItem(
@@ -150,15 +165,15 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
               label: AppLocalizations.of(context).cart,
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.receipt_long),
+              icon: const Icon(Icons.receipt_long),
               label: AppLocalizations.of(context).orders,
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.favorite),
+              icon: const Icon(Icons.favorite),
               label: AppLocalizations.of(context).favorites,
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.person),
+              icon: const Icon(Icons.person),
               label: AppLocalizations.of(context).profile,
             ),
           ],

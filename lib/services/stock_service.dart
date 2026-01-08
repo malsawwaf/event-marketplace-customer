@@ -57,10 +57,8 @@ class StockService {
           .eq('status', 'active')
           .order('created_at', ascending: false);
 
-      if (response is List) {
-        return response.map((item) => Map<String, dynamic>.from(item)).toList();
-      }
-      return [];
+      return response.map((item) => Map<String, dynamic>.from(item)).toList();
+          return [];
     } catch (e) {
       print('Error getting active reservations: $e');
       return [];

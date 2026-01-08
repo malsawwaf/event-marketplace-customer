@@ -6,6 +6,9 @@ import '../../config/app_theme.dart';
 import 'provider_detail_screen.dart';
 import 'item_detail_screen.dart';
 
+// Global key to access FavoritesScreen state from anywhere
+final GlobalKey<_FavoritesScreenState> favoritesScreenKey = GlobalKey<_FavoritesScreenState>();
+
 class FavoritesScreen extends StatefulWidget {
   const FavoritesScreen({Key? key}) : super(key: key);
 
@@ -44,6 +47,12 @@ class _FavoritesScreenState extends State<FavoritesScreen>
   void didPopNext() {
     // Called when returning to this screen from another screen
     print('🔄 Favorites screen: Refreshing after navigation back');
+    _loadFavorites();
+  }
+
+  // Public method to refresh favorites from outside
+  void refreshFavorites() {
+    print('🔄 Favorites screen: Manual refresh triggered');
     _loadFavorites();
   }
 
@@ -86,7 +95,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
       print('❌ Error loading favorites: $e');
       if (mounted) {
         setState(() => _isLoading = false);
-        final l10n = AppLocalizations.of(context)!;
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('${l10n.error}: $e'),
@@ -101,7 +110,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
     final customerId = _supabase.auth.currentUser?.id;
     if (customerId == null) return;
 
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     final confirmed = await showDialog<bool>(
       context: context,
@@ -130,7 +139,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
       await favoritesService.removeProviderFavorite(customerId, providerId);
 
       if (mounted) {
-        final l10n = AppLocalizations.of(context)!;
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('${l10n.providers} ${l10n.removeFromFavorites.toLowerCase()}')),
         );
@@ -138,7 +147,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
       }
     } catch (e) {
       if (mounted) {
-        final l10n = AppLocalizations.of(context)!;
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('${l10n.error}: $e')),
         );
@@ -150,7 +159,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
     final customerId = _supabase.auth.currentUser?.id;
     if (customerId == null) return;
 
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     final confirmed = await showDialog<bool>(
       context: context,
@@ -179,7 +188,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
       await favoritesService.removeItemFavorite(customerId, itemId);
 
       if (mounted) {
-        final l10n = AppLocalizations.of(context)!;
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('${l10n.items} ${l10n.removeFromFavorites.toLowerCase()}')),
         );
@@ -187,7 +196,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
       }
     } catch (e) {
       if (mounted) {
-        final l10n = AppLocalizations.of(context)!;
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('${l10n.error}: $e')),
         );
@@ -197,7 +206,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -218,7 +227,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
         ),
       ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator(color: AppTheme.primaryNavy))
+          ? const Center(child: CircularProgressIndicator(color: AppTheme.primaryNavy))
           : TabBarView(
               controller: _tabController,
               children: [
@@ -231,7 +240,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
   }
 
   Widget _buildAllFavoritesTab() {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     if (_allFavorites.isEmpty) {
       return _buildEmptyState(l10n.noFavorites, l10n.addToFavorites);
     }
@@ -255,7 +264,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
   }
 
   Widget _buildProviderFavoritesTab() {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     if (_providerFavorites.isEmpty) {
       return _buildEmptyState(
         l10n.noFavorites,
@@ -279,7 +288,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
   }
 
   Widget _buildItemFavoritesTab() {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     if (_itemFavorites.isEmpty) {
       return _buildEmptyState(
         l10n.noFavorites,
@@ -346,7 +355,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
     final photoUrl = provider['profile_photo_url'] as String?;
     final providerId = provider['id'] as String;
     final averageRating = (provider['average_rating'] as num?)?.toDouble() ?? 0.0;
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
@@ -548,7 +557,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
 
   Widget _buildItemCard(Map<String, dynamic> item) {
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final name = isArabic && item['name_ar'] != null
         ? item['name_ar'] as String
         : item['name'] as String;
@@ -627,7 +636,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
                     const SizedBox(height: 4),
                     Text(
                       '$price ${l10n.sar}',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
                         color: AppTheme.primaryNavy,
@@ -746,7 +755,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
                     children: [
                       Text(
                         price.toStringAsFixed(2),
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           color: AppTheme.primaryNavy,
                           fontWeight: FontWeight.bold,

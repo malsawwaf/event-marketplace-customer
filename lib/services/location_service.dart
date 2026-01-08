@@ -49,6 +49,18 @@ class LocationService {
       if (placemarks.isNotEmpty) {
         final placemark = placemarks.first;
 
+        // Check if we're in Saudi Arabia
+        final country = placemark.country?.toLowerCase() ?? '';
+        final isoCode = placemark.isoCountryCode?.toLowerCase() ?? '';
+        final isSaudiArabia = country.contains('saudi') ||
+                              isoCode == 'sa' ||
+                              country.contains('السعودية');
+
+        if (!isSaudiArabia) {
+          print('📍 Location is outside Saudi Arabia ($country), using default');
+          return null; // Will trigger default city
+        }
+
         // Try different locality fields
         String? cityName = placemark.locality ??
                           placemark.subAdministrativeArea ??
@@ -70,19 +82,29 @@ class LocationService {
   }
 
   /// Detect user's current city
-  /// Returns city name in English
+  /// Returns city name in English (always returns a valid city, defaults to Riyadh)
   Future<String> detectCurrentCity() async {
+    const defaultCity = 'Riyadh';
+
     try {
       print('🔵 Detecting current city...');
 
       // Get GPS position
       final position = await getCurrentPosition();
       if (position == null) {
-        print('⚠️ Could not get GPS position, using default city');
-        return SaudiCities.getCityNamesEnglish().first; // Default to Riyadh
+        print('⚠️ Could not get GPS position, using default city: $defaultCity');
+        return defaultCity;
       }
 
       print('🔵 GPS Position: ${position.latitude}, ${position.longitude}');
+
+      // Quick check: if coordinates are clearly outside Saudi Arabia, skip geocoding
+      // Saudi Arabia roughly: Lat 16-32, Lng 34-56
+      if (position.latitude < 15 || position.latitude > 33 ||
+          position.longitude < 33 || position.longitude > 57) {
+        print('📍 Coordinates outside Saudi Arabia bounds, using default: $defaultCity');
+        return defaultCity;
+      }
 
       // Try geocoding first (more accurate)
       final cityFromGeocoding = await getCityFromCoordinates(
@@ -106,7 +128,7 @@ class LocationService {
 
     } catch (e) {
       print('❌ Error detecting city: $e');
-      return SaudiCities.getCityNamesEnglish().first; // Default to Riyadh
+      return defaultCity;
     }
   }
 

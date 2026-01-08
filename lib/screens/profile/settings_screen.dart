@@ -10,7 +10,7 @@ import '../../l10n/app_localizations.dart';
 import '../auth/login_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({Key? key}) : super(key: key);
+  const SettingsScreen({super.key});
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -148,7 +148,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
       child: Text(
         title,
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.bold,
           color: AppTheme.primaryNavy,

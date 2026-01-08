@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../config/app_theme.dart';
-import '../../services/language_service.dart';
-import '../../services/notification_service.dart';
 import '../../l10n/app_localizations.dart';
 import 'auth_provider.dart';
 import 'login_screen.dart';
 import 'profile_completion_screen.dart';
-import '../home/bottom_nav_screen.dart'; // ✅ This import gives us access to bottomNavKey
+import '../home/bottom_nav_screen.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({Key? key}) : super(key: key);
+  const SplashScreen({super.key});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -47,21 +45,17 @@ class _SplashScreenState extends State<SplashScreen> {
 
         if (hasProfile) {
           print('🔵 Splash: Navigating to home...');
-          // Initialize notifications for authenticated user
-          context.read<NotificationService>().initialize();
-          context.read<NotificationService>().loadUnreadCount();
-
-          // ✅ FIXED: Navigate to home with global key
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (_) => BottomNavScreen(key: bottomNavKey), // ✅ Added key
-            ),
+          // Navigate to home - clear entire navigation stack
+          // Note: Notification initialization moved to add-to-cart flow
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (_) => BottomNavScreen(key: bottomNavKey)),
+            (route) => false,
           );
         } else {
           print('🔵 Splash: Navigating to profile completion...');
           // Navigate to profile completion
           Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (_) => ProfileCompletionScreen()),
+            MaterialPageRoute(builder: (_) => const ProfileCompletionScreen()),
           );
         }
       } else {

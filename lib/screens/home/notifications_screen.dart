@@ -5,7 +5,7 @@ import '../../services/notification_service.dart';
 import '../../l10n/app_localizations.dart';
 
 class NotificationsScreen extends StatefulWidget {
-  const NotificationsScreen({Key? key}) : super(key: key);
+  const NotificationsScreen({super.key});
 
   @override
   State<NotificationsScreen> createState() => _NotificationsScreenState();
@@ -229,7 +229,7 @@ class _NotificationCard extends StatelessWidget {
                           Container(
                             width: 8,
                             height: 8,
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                               color: AppTheme.primaryNavy,
                               shape: BoxShape.circle,
                             ),

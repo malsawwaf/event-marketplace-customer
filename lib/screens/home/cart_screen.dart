@@ -5,9 +5,10 @@ import '../../services/cart_service.dart';
 import '../../config/app_theme.dart';
 import '../../l10n/app_localizations.dart';
 import 'checkout_screen.dart';
+import 'bottom_nav_screen.dart';
 
 class CartScreen extends StatefulWidget {
-  const CartScreen({Key? key}) : super(key: key);
+  const CartScreen({super.key});
 
   @override
   State<CartScreen> createState() => _CartScreenState();
@@ -99,6 +100,8 @@ class _CartScreenState extends State<CartScreen> with AutomaticKeepAliveClientMi
           SnackBar(content: Text(l10n.removeFromCart)),
         );
         _loadCarts();
+        // Refresh cart badge immediately
+        bottomNavKey.currentState?.refreshCartCount();
       }
     } catch (e) {
       if (mounted) {
@@ -633,11 +636,11 @@ class _CartScreenState extends State<CartScreen> with AutomaticKeepAliveClientMi
                 color: Colors.red[100],
                 borderRadius: BorderRadius.circular(4),
               ),
-              child: Row(
+              child: const Row(
                 children: [
-                  const Icon(Icons.warning, size: 14, color: Colors.red),
-                  const SizedBox(width: 4),
-                  const Expanded(
+                  Icon(Icons.warning, size: 14, color: Colors.red),
+                  SizedBox(width: 4),
+                  Expanded(
                     child: Text(
                       'Reservation expired. Item will be removed.',
                       style: TextStyle(

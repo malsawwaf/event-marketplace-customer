@@ -2,17 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../l10n/app_localizations.dart';
 import '../../config/app_theme.dart';
-import '../home/bottom_nav_screen.dart'; // ✅ Import to access bottomNavKey
+import '../home/bottom_nav_screen.dart';
+import '../home/orders_list_screen.dart'; // Import to access ordersListKey
 
 class OrderConfirmationScreen extends StatefulWidget {
   final String orderId;
   final String orderNumber;
 
   const OrderConfirmationScreen({
-    Key? key,
+    super.key,
     required this.orderId,
     required this.orderNumber,
-  }) : super(key: key);
+  });
 
   @override
   State<OrderConfirmationScreen> createState() => _OrderConfirmationScreenState();
@@ -58,7 +59,7 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
-        final l10n = AppLocalizations.of(context)!;
+        final l10n = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('${l10n.error}: $e')),
         );
@@ -84,25 +85,27 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
   void _goToOrders() {
     print('=== GO TO ORDERS BUTTON CLICKED ===');
     print('bottomNavKey.currentState: ${bottomNavKey.currentState}');
-    
+
     // Pop back to BottomNavScreen
     Navigator.of(context).popUntil((route) => route.isFirst);
-    
-    // Switch to Orders tab (index 2)
+
+    // Switch to Orders tab (index 2) and refresh orders
     Future.delayed(const Duration(milliseconds: 200), () {
       print('=== Attempting to switch to ORDERS tab ===');
       bottomNavKey.currentState?.switchToTab(2);
+      // Refresh orders list to show the new order
+      ordersListKey.currentState?.refreshOrders();
       print('=== SWITCHED TO ORDERS TAB ===');
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
     if (_isLoading) {
-      return Scaffold(
+      return const Scaffold(
         body: Center(child: CircularProgressIndicator(color: AppTheme.primaryNavy)),
       );
     }
@@ -338,12 +341,12 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
                         children: [
                           Row(
                             children: [
-                              Icon(Icons.info_outline, color: AppTheme.primaryNavy),
+                              const Icon(Icons.info_outline, color: AppTheme.primaryNavy),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Text(
                                   l10n.whatHappensNext,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
                                     color: AppTheme.primaryNavy,
@@ -414,7 +417,7 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
                       onPressed: _goToHome,
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppTheme.primaryNavy,
-                        side: BorderSide(color: AppTheme.primaryNavy, width: 2),
+                        side: const BorderSide(color: AppTheme.primaryNavy, width: 2),
                       ),
                       child: Text(
                         l10n.backToHome,
@@ -469,7 +472,7 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
         Container(
           width: 24,
           height: 24,
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             color: AppTheme.primaryNavy,
             shape: BoxShape.circle,
           ),
@@ -496,8 +499,10 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
   }
 
   String _formatDeadline(DateTime deadline) {
-    final now = DateTime.now();
-    final difference = deadline.difference(now);
+    // Compare in UTC to avoid timezone issues
+    final now = DateTime.now().toUtc();
+    final deadlineUtc = deadline.toUtc();
+    final difference = deadlineUtc.difference(now);
 
     if (difference.isNegative) {
       return 'Expired';

@@ -6,7 +6,7 @@ import '../../l10n/app_localizations.dart';
 import 'add_edit_address_screen.dart';
 
 class AddressesScreen extends StatefulWidget {
-  const AddressesScreen({Key? key}) : super(key: key);
+  const AddressesScreen({super.key});
 
   @override
   State<AddressesScreen> createState() => _AddressesScreenState();
@@ -148,7 +148,7 @@ class _AddressesScreenState extends State<AddressesScreen> {
         foregroundColor: Colors.white,
       ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator(color: AppTheme.primaryNavy))
+          ? const Center(child: CircularProgressIndicator(color: AppTheme.primaryNavy))
           : _addresses.isEmpty
               ? _buildEmptyState()
               : _buildAddressList(),
